@@ -1,0 +1,1 @@
+clang++ -Wall -Wextra -Werror *.cpp ../src/*.cpp -o tests && ./tests
