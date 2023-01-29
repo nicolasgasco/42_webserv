@@ -15,6 +15,8 @@ public:
     AddressInfo(std::string port);
     ~AddressInfo();
 
+    struct addrinfo *get_serv_info();
+
 private:
     struct addrinfo _fill_hints();
     void _check_addr_info_status(int status);
