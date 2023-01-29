@@ -2,6 +2,4 @@
 
 > This project is about writing your ow HTTP server. You will be able to test it with an actual browser.
 
-edit by diego
-
 Group project done by [ngasco](https://github.com/nicolasgasco) and [dgerwig](https://github.com/diegogerwig).
