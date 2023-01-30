@@ -48,26 +48,41 @@ bool is_strict_equal(const struct addrinfo info1, const struct addrinfo info2, b
         std::cerr << "ai_flag not equal" << std::endl;
         return false;
     }
+    if (IS_DEBUG)
+        std::cout << std::endl
+                  << "ai_flag: " << info1.ai_flags << ", " << info2.ai_flags << std::endl;
+
     if (info1.ai_family != info2.ai_family)
     {
         std::cerr << "ai_family not equal" << std::endl;
         return false;
     }
+    if (IS_DEBUG)
+        std::cout << "ai_family: " << info1.ai_family << ", " << info2.ai_family << std::endl;
+
     if (info1.ai_socktype != info2.ai_socktype)
     {
         std::cerr << "ai_socktype not equal" << std::endl;
         return false;
     }
+    if (IS_DEBUG)
+        std::cout << "ai_socktype: " << info1.ai_socktype << ", " << info2.ai_socktype << std::endl;
+
     if (info1.ai_protocol != info2.ai_protocol)
     {
         std::cerr << "ai_protocol not equal" << std::endl;
         return false;
     }
+    if (IS_DEBUG)
+        std::cout << "ai_protocol: " << info1.ai_protocol << ", " << info2.ai_protocol << std::endl;
+
     if (info1.ai_addrlen != info2.ai_addrlen)
     {
         std::cerr << "ai_addrlen not equal" << std::endl;
         return false;
     }
+    if (IS_DEBUG)
+        std::cout << "ai_addrlen: " << info1.ai_addrlen << ", " << info2.ai_addrlen << std::endl;
 
     // TODO check if this is required (not NULL)
     // if (strcmp(info1.ai_canonname, info2.ai_canonname))
@@ -79,10 +94,17 @@ bool is_strict_equal(const struct addrinfo info1, const struct addrinfo info2, b
         std::cerr << "ai_addr->sa_family not equal" << std::endl;
         return false;
     }
+    if (IS_DEBUG && info1.ai_addr->sa_family && info2.ai_addr->sa_family)
+        std::cout << "ai_addr->sa_family: " << info1.ai_addr->sa_family << ", " << info2.ai_addr->sa_family << std::endl
+                  << std::endl;
+
     if (strcmp(info1.ai_addr->sa_data, info2.ai_addr->sa_data))
     {
         std::cerr << "ai_addr->sa_data not equal" << std::endl;
         return false;
     }
+    // if (IS_DEBUG)
+    //     std::cout << "ai_addr->sa_data: " << info1.ai_addr->sa_data << ", " << info2.ai_addr->sa_data << std::endl;
+
     return true;
 }

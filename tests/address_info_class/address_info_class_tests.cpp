@@ -18,7 +18,6 @@ void address_info_class_tests(bool IS_DEBUG)
 
             //////////////////////////////////////////////
 
-            int status;
             struct addrinfo hints;
             struct addrinfo *servinfo;
 
@@ -38,7 +37,6 @@ void address_info_class_tests(bool IS_DEBUG)
 
             //////////////////////////////////////////////
 
-            int status;
             struct addrinfo hints;
             struct addrinfo *servinfo;
 
