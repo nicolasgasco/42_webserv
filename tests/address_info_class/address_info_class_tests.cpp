@@ -12,7 +12,7 @@ void address_info_class_tests(bool IS_DEBUG)
     output_suite_title("ADDRESSINFO CLASS");
     {
         std::cout << std::endl
-                  << "Struct is initialized correctly:" << std::endl;
+                  << "Struct should be initialized correctly:" << std::endl;
         {
             AddressInfo info;
 

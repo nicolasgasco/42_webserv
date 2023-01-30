@@ -24,6 +24,11 @@ AddressInfo::~AddressInfo()
     freeaddrinfo(this->_serv_info);
 }
 
+struct addrinfo *AddressInfo::get_serv_info()
+{
+    return this->_serv_info;
+}
+
 struct addrinfo AddressInfo::_fill_hints()
 {
     struct addrinfo hints;
