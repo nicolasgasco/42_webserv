@@ -26,7 +26,7 @@ void address_info_class_tests(bool IS_DEBUG)
             hints.ai_socktype = SOCK_STREAM;
             hints.ai_flags = AI_PASSIVE;
 
-            getaddrinfo(NULL, "3490", &hints, &servinfo);
+            getaddrinfo(NULL, "http", &hints, &servinfo);
 
             output_test_assertion("with default constructor", is_strict_equal(*(info.get_serv_info()), *servinfo, IS_DEBUG));
         }

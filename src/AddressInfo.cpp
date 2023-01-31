@@ -5,7 +5,7 @@ AddressInfo::AddressInfo()
     struct addrinfo hints = this->_fill_hints();
 
     // TODO define default port
-    int status = getaddrinfo(NULL, "3490", &hints, &(this->_serv_info));
+    int status = getaddrinfo(NULL, "http", &hints, &(this->_serv_info));
 
     this->_check_addr_info_status(status);
 }
