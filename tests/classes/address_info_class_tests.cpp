@@ -28,7 +28,7 @@ void address_info_class_tests(bool IS_DEBUG)
 
             getaddrinfo(NULL, "http", &hints, &servinfo);
 
-            output_test_assertion("with default constructor", is_strict_equal(*(info.get_serv_info()), *servinfo, IS_DEBUG));
+            output_test_assertion("with default constructor", is_strict_equal_addrinfo(*(info.get_serv_info()), *servinfo, IS_DEBUG));
         }
         {
             std::string port = "4200";
@@ -47,7 +47,7 @@ void address_info_class_tests(bool IS_DEBUG)
 
             getaddrinfo(NULL, port.c_str(), &hints, &servinfo);
 
-            output_test_assertion("with parameter constructor (4200)", is_strict_equal(*(info.get_serv_info()), *servinfo, IS_DEBUG));
+            output_test_assertion("with parameter constructor (4200)", is_strict_equal_addrinfo(*(info.get_serv_info()), *servinfo, IS_DEBUG));
         }
     }
 }

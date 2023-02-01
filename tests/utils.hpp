@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <netdb.h>
 #include <string.h>
@@ -31,6 +33,14 @@ void output_test_assertion(std::string description, bool result)
         exit(1);
 }
 
+template <typename T>
+bool is_strict_equal(T const value, T const reference, bool IS_DEBUG)
+{
+    if (IS_DEBUG)
+        std::cout << std::boolalpha << "=====own===== " << value << " | " << reference << " =====ref=====" << std::endl;
+    return (value == reference) ? true : false;
+}
+
 /**
  * Check if two addrinfo structs are strictly equal.
  *
@@ -39,7 +49,7 @@ void output_test_assertion(std::string description, bool result)
  * @param IS_DEBUG Boolean indicating if debug output is required.
  * @return Boolean
  */
-bool is_strict_equal(const struct addrinfo info1, const struct addrinfo info2, bool IS_DEBUG)
+bool is_strict_equal_addrinfo(const struct addrinfo info1, const struct addrinfo info2, bool IS_DEBUG)
 {
 
     // addrinfo
