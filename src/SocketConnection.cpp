@@ -5,7 +5,6 @@ SocketConnection::SocketConnection()
     AddressInfo addr_info;
 
     Socket socket(addr_info);
-
     int sock_id = socket.get_socket_id();
 
     this->_bind_and_listen(sock_id, addr_info, BACKLOG_DEFAULT);
