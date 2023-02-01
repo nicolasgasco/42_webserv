@@ -8,5 +8,5 @@ int main()
 
     Socket socket(addr_info);
 
-    SocketConnection sock_connection(socket.get_socket_id(), addr_info);
+    SocketConnection sock_connection(socket.get_socket_id(), addr_info, 10);
 }
