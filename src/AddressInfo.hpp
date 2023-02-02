@@ -5,6 +5,9 @@
 #include <string.h>
 #include <sys/socket.h>
 
+#define YELLOW "\033[0;33m"
+#define NC "\033[0m"
+
 // Structs for reference
 //
 // struct addrinfo
@@ -52,6 +55,7 @@ public:
     struct addrinfo *get_serv_info();
 
 private:
+    void _get_addr_info(std::string port);
     struct addrinfo _fill_hints();
     void _check_addr_info_status(int status);
 };
