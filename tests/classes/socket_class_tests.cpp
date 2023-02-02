@@ -15,6 +15,8 @@ void socket_class_tests(bool IS_DEBUG)
         std::cout << std::endl
                   << "Struct should be initialized correctly:" << std::endl;
         {
+            std::cout.setstate(std::ios_base::failbit);
+
             Socket sock;
             int id = sock.get_socket_id();
 
@@ -35,9 +37,12 @@ void socket_class_tests(bool IS_DEBUG)
             int ref_id = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
             close(ref_id);
 
+            std::cout.clear();
             output_test_assertion("with default constructor", is_strict_equal(id, ref_id, IS_DEBUG));
         }
         {
+            std::cout.setstate(std::ios_base::failbit);
+
             std::string port = "4200";
 
             AddressInfo info(port);
@@ -62,7 +67,8 @@ void socket_class_tests(bool IS_DEBUG)
             int ref_id = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
             close(ref_id);
 
-            output_test_assertion("with default constructor", is_strict_equal(id, ref_id, IS_DEBUG));
+            std::cout.clear();
+            output_test_assertion("with param constructor", is_strict_equal(id, ref_id, IS_DEBUG));
         }
     }
 }
