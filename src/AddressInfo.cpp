@@ -2,21 +2,13 @@
 
 AddressInfo::AddressInfo()
 {
-    struct addrinfo hints = this->_fill_hints();
-
     // TODO define default port
-    int status = getaddrinfo(NULL, "http", &hints, &(this->_serv_info));
-
-    this->_check_addr_info_status(status);
+    this->_get_addr_info("http");
 }
 
 AddressInfo::AddressInfo(std::string port)
 {
-    struct addrinfo hints = this->_fill_hints();
-
-    int status = getaddrinfo(NULL, port.c_str(), &hints, &(this->_serv_info));
-
-    this->_check_addr_info_status(status);
+    this->_get_addr_info(port);
 }
 
 AddressInfo::~AddressInfo()
@@ -27,6 +19,15 @@ AddressInfo::~AddressInfo()
 struct addrinfo *AddressInfo::get_serv_info()
 {
     return this->_serv_info;
+}
+
+void AddressInfo::_get_addr_info(std::string port)
+{
+    struct addrinfo hints = this->_fill_hints();
+
+    int status = getaddrinfo(NULL, port.c_str(), &hints, &(this->_serv_info));
+
+    this->_check_addr_info_status(status);
 }
 
 struct addrinfo AddressInfo::_fill_hints()
@@ -45,4 +46,6 @@ void AddressInfo::_check_addr_info_status(int status)
 {
     if (status != 0)
         std::cerr << "getaddrinfo error: " << gai_strerror(status) << std::endl;
+    else
+        std::cout << YELLOW << "addrinfo list created..." << NC << std::endl;
 }
