@@ -16,7 +16,7 @@
 void output_suite_title(std::string title)
 {
     std::cout << std::endl
-              << YELLOW << std::uppercase << title << NC << std::endl;
+              << YELLOW << std::uppercase << title << NC;
 }
 
 /**
