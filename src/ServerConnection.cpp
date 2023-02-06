@@ -12,7 +12,6 @@ ServerConnection::ServerConnection()
 
 ServerConnection::ServerConnection(int sock_id, addrinfo *addr_info)
 {
-    std::cout << "New connection!!" << std::endl;
     this->_accept_recv_send(sock_id, addr_info);
 }
 
