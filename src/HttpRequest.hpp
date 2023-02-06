@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "utils.hpp"
 
 // TODO change with parameter
 #define BUFF_SIZE 3000

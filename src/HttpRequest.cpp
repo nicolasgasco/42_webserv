@@ -45,7 +45,7 @@ void HttpRequest::_parse_attr_line(std::string line)
     std::string key = strtok(const_cast<char *>(line.c_str()), ": ");
     std::string value = strtok(NULL, "\n\r");
 
-    std::pair<std::string, std::string> key_value_pair(key, value);
+    std::pair<std::string, std::string> key_value_pair(key, ltrim(value));
     this->_attrs.insert(key_value_pair);
 }
 
@@ -70,16 +70,16 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
     std::cout << std::endl;
 
     std::cout << "REQUEST LINE:" << std::endl;
-    std::cout << "method: |" << std.get_req_line()[0] << "|" << std::endl;
-    std::cout << "request-target: |" << std.get_req_line()[1] << "|" << std::endl;
-    std::cout << "HTTP-version: |" << std.get_req_line()[2] << "|" << std::endl;
+    std::cout << "method: " << std.get_req_line()[0] << std::endl;
+    std::cout << "request-target: " << std.get_req_line()[1] << std::endl;
+    std::cout << "HTTP-version: " << std.get_req_line()[2] << std::endl;
 
     std::cout << std::endl;
 
     std::cout << "OPTIONS:" << std::endl;
 
     for (std::map<std::string, std::string>::iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
-        std::cout << it->first << ": |" << it->second << "|" << std::endl;
+        std::cout << it->first << ": " << it->second << std::endl;
 
     return os;
 }
