@@ -45,7 +45,7 @@ void HttpRequest::_parse_attr_line(std::string line)
     std::string key = strtok(const_cast<char *>(line.c_str()), ": ");
     std::string value = strtok(NULL, "\n\r");
 
-    std::pair<std::string, std::string> key_value_pair(key, value);
+    std::pair<std::string, std::string> key_value_pair(key, ltrim(value));
     this->_attrs.insert(key_value_pair);
 }
 
