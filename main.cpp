@@ -3,8 +3,11 @@
 #include "src/SocketConnection.hpp"
 #include "src/ServerConnection.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
+	(void)argc;
+	(void)argv;
+
     AddressInfo addr_info;
 
     Socket socket(addr_info);
