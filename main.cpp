@@ -3,15 +3,17 @@
 #include "src/SocketConnection.hpp"
 #include "src/ServerConnection.hpp"
 
+// TODO replace with parameter or default value
+#define BACKLOG 10
 int main()
 {
     AddressInfo addr_info;
 
     Socket socket(addr_info);
 
-    SocketConnection sock_connection(socket.get_socket_id(), addr_info, 10);
+    SocketConnection sock_connection(socket.get_socket_id(), addr_info, BACKLOG);
 
-    // This while loop should probably be in a Server class
+    // TODO include this loop in a Server class?
     while (true)
     {
         ServerConnection serv_connection(socket.get_socket_id(), addr_info.get_serv_info());
