@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HttpRequest.hpp"
 #include "Socket.hpp"
 
 #define YELLOW "\033[0;33m"
@@ -11,7 +12,6 @@ private:
     int _new_sock_id;
     int _bytes_received;
     int _bytes_sent;
-    char _buff[3000];
 
 public:
     ServerConnection();
