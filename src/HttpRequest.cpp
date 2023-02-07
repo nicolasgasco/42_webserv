@@ -15,12 +15,14 @@ void HttpRequest::parse_req()
     std::string line;
     while (std::getline(buff_stream, line))
     {
+        if (str_isspace(line))
+            continue;
+
         if (line.find(":") != std::string::npos)
             this->_parse_attr_line(line);
         else
             this->_parse_req_line(line);
     }
-    this->_parse_attr_line(line);
     std::cout << *this << std::endl;
 }
 
