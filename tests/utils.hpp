@@ -4,6 +4,8 @@
 #include <netdb.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <map>
+#include <vector>
 
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"
@@ -33,12 +35,76 @@ void output_test_assertion(std::string description, bool result)
         exit(1);
 }
 
+/**
+ * Checks for equality of two values of type T.
+ *
+ * @param value The original value.
+ * @param reference The reference value.
+ * @param IS_DEBUG Boolean to toggle debug output.
+ */
 template <typename T>
 bool is_strict_equal(T const value, T const reference, bool IS_DEBUG)
 {
     if (IS_DEBUG)
         std::cout << std::boolalpha << "=====own===== " << value << " | " << reference << " =====ref=====" << std::endl;
-    return (value == reference) ? true : false;
+    return (value == reference);
+}
+
+/**
+ * Checks for equality of two vectors containing values of type T.
+ *
+ * @param value The original vector.
+ * @param reference The reference vector.
+ * @param IS_DEBUG Boolean to toggle debug output.
+ */
+template <typename T>
+bool is_strict_equal(std::vector<T> const &value, std::vector<T> const &reference, bool IS_DEBUG)
+{
+    if (IS_DEBUG)
+    {
+        std::cout << std::boolalpha << "=====own===== ";
+        for (std::string i : value)
+            std::cout << i << ' ';
+        std::cout << "| ";
+        for (std::string i : reference)
+            std::cout << i << ' ';
+        std::cout << " =====ref=====" << std::endl;
+    }
+    return (equal(value.begin(), value.end(), reference.begin()));
+}
+
+struct Pair_First_Equal
+{
+    template <typename Pair>
+    bool operator()(Pair const &lhs, Pair const &rhs) const
+    {
+        return lhs.first == rhs.first;
+    }
+};
+
+/**
+ * Checks for equality of two maps containing keys and values of type T.
+ *
+ * @param value The original map.
+ * @param reference The reference map.
+ * @param IS_DEBUG Boolean to toggle debug output.
+ */
+template <typename T>
+bool is_strict_equal(std::map<T, T> const &value, std::map<T, T> const &reference, bool IS_DEBUG)
+{
+    if (IS_DEBUG)
+    {
+        std::cout << std::boolalpha << "=====own===== " << std::endl;
+        for (auto it = value.cbegin(); it != value.cend(); ++it)
+            std::cout << it->first << ": " << it->second << std::endl;
+
+        std::cout << " =====ref=====" << std::endl;
+        for (auto it = reference.cbegin(); it != reference.cend(); ++it)
+            std::cout << it->first << ": " << it->second << std::endl;
+    }
+    return (value.size() == reference.size() && std::equal(value.begin(), value.end(),
+                                                           reference.begin(),
+                                                           Pair_First_Equal()));
 }
 
 /**
