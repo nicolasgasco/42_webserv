@@ -8,21 +8,6 @@ HttpRequest::~HttpRequest()
 {
 }
 
-char *HttpRequest::get_buff()
-{
-    return this->_buff;
-}
-
-std::vector<std::string> &HttpRequest::get_req_line()
-{
-    return this->_req_line;
-}
-
-std::map<std::string, std::string> &HttpRequest::get_attrs()
-{
-    return this->_attrs;
-}
-
 void HttpRequest::parse_req()
 {
     std::istringstream buff_stream(std::string(this->_buff));
@@ -45,8 +30,7 @@ void HttpRequest::_parse_attr_line(std::string line)
     std::string key = strtok(const_cast<char *>(line.c_str()), ": ");
     std::string value = strtok(NULL, "\n\r");
 
-    std::pair<std::string, std::string> key_value_pair(key, ltrim(value));
-    this->_attrs.insert(key_value_pair);
+    this->_attrs.insert(std::pair<std::string, std::string>(key, ltrim(value)));
 }
 
 // E.g. Cache-control: max-age=0
@@ -63,6 +47,21 @@ void HttpRequest::_parse_req_line(std::string line)
     // HTTP version
     std::string version_str = strtok(NULL, "\n\r");
     this->_req_line.push_back(version_str);
+}
+
+char *HttpRequest::get_buff()
+{
+    return this->_buff;
+}
+
+std::vector<std::string> &HttpRequest::get_req_line()
+{
+    return this->_req_line;
+}
+
+std::map<std::string, std::string> &HttpRequest::get_attrs()
+{
+    return this->_attrs;
 }
 
 std::ostream &operator<<(std::ostream &os, HttpRequest &std)
