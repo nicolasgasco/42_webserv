@@ -30,3 +30,13 @@ std::string trim(std::string &str)
     std::string r_trimmed = rtrim(l_trimmed);
     return r_trimmed;
 }
+
+bool str_isspace(std::string &str)
+{
+    for (unsigned int i = 0; i < str.size(); i++)
+    {
+        if (!std::isspace(str[i]))
+            return false;
+    }
+    return true;
+}
