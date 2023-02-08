@@ -3,6 +3,14 @@
 #include "HttpRequest.hpp"
 #include "Socket.hpp"
 
+#include <fcntl.h>
+
+// TODO remove this after build is done
+#include "utils/dev_utils.hpp"
+
+// TODO change to parametrized value
+#define REC_BUFF_SIZE 3000
+
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"
 
