@@ -1,5 +1,4 @@
 #include "ServerConnection.hpp"
-#include <fcntl.h>
 
 ServerConnection::ServerConnection()
 {
@@ -31,8 +30,13 @@ void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
     this->_check_accept_return();
 
     HttpRequest req;
-    // TODO change 500 for parametrized value
-    this->_bytes_received = recv(this->_new_sock_id, (void *)req.get_buff(), 500, 0);
+    this->_bytes_received = recv(this->_new_sock_id, (void *)req.get_buff(), REC_BUFF_SIZE, 0);
+
+    // TODO remove this when build is over
+    std::cout << std::endl
+              << "RAW REQUEST:" << std::endl;
+    cout_explicit_whitespaces(std::string(req.get_buff()));
+
     this->_check_recv_return();
     req.parse_req();
 
