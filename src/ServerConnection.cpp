@@ -16,6 +16,7 @@ ServerConnection::ServerConnection(int sock_id, addrinfo *addr_info)
 
 ServerConnection::~ServerConnection()
 {
+    close(this->_new_sock_id);
 }
 
 int ServerConnection::get_new_sock_id()

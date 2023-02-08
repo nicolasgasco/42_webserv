@@ -18,7 +18,7 @@ void http_request_class_tests(bool IS_DEBUG)
             HttpRequest http_request;
 
             char *buff = http_request.get_buff();
-            std::string req_line("GET / HTTP/1.1");
+            std::string req_line("GET / HTTP/1.1\r\n");
             int i = 0;
             for (; i < req_line.size(); ++i)
                 buff[i] = req_line[i];
@@ -45,7 +45,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
             char *buff = http_request.get_buff();
 
-            std::string options_str("GET / HTTP/1.1\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc\nCache-Control: max-age=0\nConnection: keep-alive\n\n\n\n\n");
+            std::string options_str("GET / HTTP/1.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc\r\nCache-Control: max-age=0\r\nConnection: keep-alive\r\n");
 
             int i = 0;
             for (; i < options_str.size(); ++i)
