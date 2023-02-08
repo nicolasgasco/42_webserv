@@ -7,6 +7,8 @@
 #include <map>
 #include <vector>
 
+#include "../src/HttpRequest.hpp"
+
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"
 
@@ -51,26 +53,29 @@ bool is_strict_equal(T const value, T const reference, bool IS_DEBUG)
 }
 
 /**
- * Checks for equality of two vectors containing values of type T.
+ * Checks for equality of two ReqLine structs.
  *
- * @param value The original vector.
- * @param reference The reference vector.
+ * @param value The original ReqLine.
+ * @param reference The reference ReqLine.
  * @param IS_DEBUG Boolean to toggle debug output.
  */
-template <typename T>
-bool is_strict_equal(std::vector<T> const &value, std::vector<T> const &reference, bool IS_DEBUG)
+bool is_strict_equal(ReqLine const &value, ReqLine const &reference, bool IS_DEBUG)
 {
     if (IS_DEBUG)
     {
-        std::cout << std::boolalpha << "=====own===== ";
-        for (std::string i : value)
-            std::cout << i << ' ';
-        std::cout << "| ";
-        for (std::string i : reference)
-            std::cout << i << ' ';
+        std::cout << std::boolalpha << "=====own===== " << std::endl;
+        std::cout << "method: " << value.method << std::endl;
+        std::cout << "target: " << value.target << std::endl;
+        std::cout << "version: " << value.version << std::endl;
+
         std::cout << " =====ref=====" << std::endl;
+        std::cout << "method: " << reference.method << std::endl;
+        std::cout << "target: " << reference.target << std::endl;
+        std::cout << "version: " << reference.version << std::endl;
     }
-    return (equal(value.begin(), value.end(), reference.begin()));
+    if (value.method == reference.method && value.target == reference.target && value.version == reference.version)
+        return true;
+    return false;
 }
 
 struct Pair_First_Equal
