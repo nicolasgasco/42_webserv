@@ -11,18 +11,25 @@ HttpRequest::~HttpRequest()
 void HttpRequest::parse_req()
 {
     std::istringstream buff_stream(std::string(this->_buff));
-
     std::string line;
+
+    // Request line
+    std::getline(buff_stream, line);
+    this->_parse_req_line(line);
+
+    // Headers
     while (std::getline(buff_stream, line))
     {
+        // Found CRLF after Headers
         if (str_isspace(line))
-            continue;
-
-        if (line.find(":") != std::string::npos)
-            this->_parse_attr_line(line);
+            break;
         else
-            this->_parse_req_line(line);
+            this->_parse_attr_line(line);
     }
+
+    // TODO parse body, but only for POST
+
+    // TODO delete this once build is over
     std::cout << *this << std::endl;
 }
 

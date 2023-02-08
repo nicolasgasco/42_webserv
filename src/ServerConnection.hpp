@@ -4,6 +4,7 @@
 #include "Socket.hpp"
 
 #include <fcntl.h>
+#include <unistd.h>
 
 // TODO remove this after build is done
 #include "utils/dev_utils.hpp"
