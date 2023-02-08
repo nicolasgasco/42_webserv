@@ -11,12 +11,19 @@
 // TODO change with parameter
 #define BUFF_SIZE 3000
 
+struct ReqLine
+{
+    std::string method;
+    std::string target;
+    std::string version;
+};
+
 class HttpRequest
 {
 private:
     std::map<std::string, std::string> _attrs;
     char _buff[BUFF_SIZE];
-    std::vector<std::string> _req_line;
+    ReqLine _req_line;
 
 public:
     HttpRequest();
@@ -24,7 +31,7 @@ public:
 
     std::map<std::string, std::string> &get_attrs();
     char *get_buff();
-    std::vector<std::string> &get_req_line();
+    ReqLine &get_req_line();
 
     void parse_req();
 
