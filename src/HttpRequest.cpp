@@ -1,7 +1,9 @@
 #include "HttpRequest.hpp"
+#include <fstream> // std::ifstream
 
 HttpRequest::HttpRequest()
 {
+    this->_err.code = 0;
 }
 
 HttpRequest::~HttpRequest()
@@ -44,8 +46,8 @@ void HttpRequest::parse_req()
     }
 
     // TODO determine if message body is expected by reading header
-    // Should apply only to POST for this project
     // If so, read as stream until amount of octets is depleted
+    // Either Content-Length or Transfer-Encoding
 
     // TODO delete this once build is over
     std::cout << *this << std::endl;
@@ -54,22 +56,44 @@ void HttpRequest::parse_req()
 // E.g. GET / HTTP/1.1
 void HttpRequest::_parse_attr_line(std::string line)
 {
-    std::string key = strtok(const_cast<char *>(line.c_str()), ": ");
+    std::string key = strtok(const_cast<char *>(line.c_str()), ":");
+    // A server MUST reject, with a response status code of 400 (Bad Request)
+    // any received request message that contains whitespace between a header field name and colon
+    if (key.find(' ') != std::string::npos)
+    {
+        this->_err.code = 400;
+        this->_err.message = "Bad Request";
+    }
+
     std::string value = strtok(NULL, "\n\r");
 
-    this->_attrs.insert(std::pair<std::string, std::string>(key, ltrim(value)));
+    this->_attrs.insert(std::pair<std::string, std::string>(ltrim(key), trim(value)));
+
+    // TODO Check Obsolete line folding
 }
 
 // E.g. Cache-control: max-age=0
 void HttpRequest::_parse_req_line(std::string line)
 {
-    this->_req_line.method = strtok(const_cast<char *>(line.c_str()), " ");
-    this->_req_line.target = strtok(NULL, " ");
+    // Recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the CRLF terminator,
+    // treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace
+    std::string method_str = strtok(const_cast<char *>(line.c_str()), WHITESPACES);
+    this->_req_line.method = trim(method_str);
+
+    std::string target_str = strtok(NULL, WHITESPACES);
+    this->_req_line.target = trim(target_str);
 
     // Although the line terminator for the start-line and fields is the sequence CRLF,
     // a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
     std::string version_str = strtok(NULL, "\n");
     this->_req_line.version = trim(version_str);
+
+    // TODO
+    // Return 501 if Method is longer than any supported
+    // Return 414 if URI is too long
+
+    // TODO
+    // Recommended to support at least 8000 octets of request-line
 }
 
 char *HttpRequest::get_buff()
@@ -80,6 +104,11 @@ char *HttpRequest::get_buff()
 ReqLine &HttpRequest::get_req_line()
 {
     return this->_req_line;
+}
+
+ReqErr &HttpRequest::gett_err()
+{
+    return this->_err;
 }
 
 std::map<std::string, std::string> &HttpRequest::get_attrs()
