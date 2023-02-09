@@ -83,7 +83,7 @@ struct Pair_First_Equal
     template <typename Pair>
     bool operator()(Pair const &lhs, Pair const &rhs) const
     {
-        return lhs.first == rhs.first;
+        return lhs.first == rhs.first && lhs.second == rhs.second;
     }
 };
 
