@@ -16,6 +16,7 @@ ServerConnection::ServerConnection(int sock_id, addrinfo *addr_info)
 
 ServerConnection::~ServerConnection()
 {
+    std::cout << YELLOW << "Connection (" << this->_new_sock_id << ") closed..." << NC << std::endl;
     close(this->_new_sock_id);
 }
 
@@ -32,19 +33,19 @@ void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
 
     HttpRequest req;
     this->_bytes_received = recv(this->_new_sock_id, (void *)req.get_buff(), REC_BUFF_SIZE, 0);
-
-    // TODO remove this when build is over
-    std::cout << std::endl
-              << "RAW REQUEST:" << std::endl;
-    cout_explicit_whitespaces(std::string(req.get_buff()));
-
     this->_check_recv_return();
-    req.parse_req();
 
-    // TODO replace this with real answer
-    std::string msg = "<!DOCTYPE HTML PUBLIC '-//IETF//DTD HTML 2.0//EN'><html><head><title>Hello world</title></head><body><h1>Welcome to my test page</h1><p>Hello world!</p></body></html>";
-    this->_bytes_sent = send(this->_new_sock_id, msg.c_str(), msg.length(), 0);
-    this->_check_send_return();
+    req.parse_req();
+    req.output_status();
+
+    bool req_has_err = req.gett_err().code != -1;
+    if (req_has_err)
+    {
+        // TODO replace this with real answer
+        std::string msg = "<!DOCTYPE HTML PUBLIC '-//IETF//DTD HTML 2.0//EN'><html><head><title>Hello world</title></head><body><h1>Welcome to my test page</h1><p>Hello world!</p></body></html>";
+        this->_bytes_sent = send(this->_new_sock_id, msg.c_str(), msg.length(), 0);
+        this->_check_send_return();
+    }
 }
 
 void ServerConnection::_check_accept_return()

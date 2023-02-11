@@ -27,5 +27,5 @@ void cout_explicit_whitespaces(std::string str)
         }
         std::cout << NC;
     }
-    std::cout << GREY << "<-" << NC << std::endl;
+    std::cout << GREY << "<-" << NC << std::endl << std::endl;
 }
