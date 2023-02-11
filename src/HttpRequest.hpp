@@ -15,6 +15,10 @@
 
 #define WHITESPACES " \t\v\f\r"
 
+// TODO refactor this with something more scalable
+// if some logic used elsewhere
+#define LONGEST_METHOD "DELETE"
+
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
 #define NC "\033[0m"
@@ -57,6 +61,8 @@ public:
 private:
     void _parse_req_line(std::string line);
     void _parse_attr_line(std::string line);
+
+    void _set_err(int code, std::string message);
 };
 
 // TODO remove when not required anymore

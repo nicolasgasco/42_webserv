@@ -61,10 +61,7 @@ void HttpRequest::_parse_attr_line(std::string line)
     // A server MUST reject, with a response status code of 400 (Bad Request)
     // any received request message that contains whitespace between a header field name and colon
     if (key.find(' ') != std::string::npos)
-    {
-        this->_err.code = 400;
-        this->_err.message = "Bad Request";
-    }
+        this->_set_err(400, "Bad Request");
 
     std::string value = strtok(NULL, "\n\r");
 
@@ -80,6 +77,11 @@ void HttpRequest::_parse_req_line(std::string line)
     // treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace
     std::string method_str = strtok(const_cast<char *>(line.c_str()), WHITESPACES);
     this->_req_line.method = trim(method_str);
+
+    // A server that receives a method longer than any that it implements
+    // SHOULD respond with a 501 (Not Implemented) status code
+    if (this->_req_line.method.length() > std::string(LONGEST_METHOD).length())
+        this->_set_err(501, "Not Implemented");
 
     std::string target_str = strtok(NULL, WHITESPACES);
     this->_req_line.target = trim(target_str);
@@ -128,6 +130,12 @@ ReqErr &HttpRequest::gett_err()
 std::map<std::string, std::string> &HttpRequest::get_attrs()
 {
     return this->_attrs;
+}
+
+void HttpRequest::_set_err(int code, std::string message)
+{
+    this->_err.code = code;
+    this->_err.message = message;
 }
 
 std::ostream &operator<<(std::ostream &os, HttpRequest &std)
