@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "utils/utils.hpp"
+// TODO remove this after build is done
+#include "utils/dev_utils.hpp"
 
 // TODO change with parameter
 #define BUFF_SIZE 3000
@@ -42,12 +44,15 @@ public:
     HttpRequest();
     ~HttpRequest();
 
+    // Getters
     std::map<std::string, std::string> &get_attrs();
     char *get_buff();
     ReqLine &get_req_line();
     ReqErr &gett_err();
 
+    // Methods
     void parse_req();
+    void output_status();
 
 private:
     void _parse_req_line(std::string line);

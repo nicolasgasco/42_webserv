@@ -12,6 +12,11 @@ HttpRequest::~HttpRequest()
 
 void HttpRequest::parse_req()
 {
+    // TODO remove this when build is over
+    std::cout << std::endl
+              << "RAW REQUEST:" << std::endl;
+    cout_explicit_whitespaces(std::string(this->_buff));
+
     std::istringstream buff_stream(std::string(this->_buff));
     std::string line;
 
@@ -23,7 +28,6 @@ void HttpRequest::parse_req()
             continue;
         else
         {
-            std::cout << line << std::endl;
             this->_parse_req_line(line);
             break;
         }
@@ -48,9 +52,6 @@ void HttpRequest::parse_req()
     // TODO determine if message body is expected by reading header
     // If so, read as stream until amount of octets is depleted
     // Either Content-Length or Transfer-Encoding
-
-    // TODO delete this once build is over
-    std::cout << *this << std::endl;
 }
 
 // E.g. GET / HTTP/1.1
@@ -96,6 +97,19 @@ void HttpRequest::_parse_req_line(std::string line)
     // Recommended to support at least 8000 octets of request-line
 }
 
+void HttpRequest::output_status()
+{
+    if (this->_err.code != -1)
+        std::cerr << this->_err << std::endl;
+    else
+    {
+        std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
+
+        // TODO delete this once build is over
+        std::cout << *this << std::endl;
+    }
+}
+
 char *HttpRequest::get_buff()
 {
     return this->_buff;
@@ -121,16 +135,16 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
     std::cout << std::endl;
 
     std::cout << "REQUEST LINE:" << std::endl;
-    std::cout << "method: " << std.get_req_line().method << std::endl;
-    std::cout << "request-target: " << std.get_req_line().target << std::endl;
-    std::cout << "HTTP-version: " << std.get_req_line().version << std::endl;
+    std::cout << "method: " << YELLOW << "." << NC << std.get_req_line().method << YELLOW << "." << NC << std::endl;
+    std::cout << "request-target: " << YELLOW << "." << NC << std.get_req_line().target << YELLOW << "." << NC << std::endl;
+    std::cout << "HTTP-version: " << YELLOW << "." << NC << std.get_req_line().version << YELLOW << "." << NC << std::endl;
 
     std::cout << std::endl;
 
     std::cout << "OPTIONS:" << std::endl;
 
     for (std::map<std::string, std::string>::iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
-        std::cout << it->first << ": " << it->second << std::endl;
+        std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
 
     return os;
 }
