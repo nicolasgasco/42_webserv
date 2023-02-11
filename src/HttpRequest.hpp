@@ -19,6 +19,9 @@
 // if some logic used elsewhere
 #define LONGEST_METHOD "DELETE"
 
+// TODO replace with computed value
+#define LONGEST_URI 124
+
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
 #define NC "\033[0m"

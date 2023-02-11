@@ -86,6 +86,11 @@ void HttpRequest::_parse_req_line(std::string line)
     std::string target_str = strtok(NULL, WHITESPACES);
     this->_req_line.target = trim(target_str);
 
+    // A server that receives a request-target longer than any URI it wishes to parse
+    // MUST respond with a 414 (URI Too Long) status code
+    if (this->_req_line.target.length() > LONGEST_URI)
+        this->_set_err(414, "URI Too Long");
+
     // Although the line terminator for the start-line and fields is the sequence CRLF,
     // a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
     std::string version_str = strtok(NULL, "\n");

@@ -108,6 +108,26 @@ void http_request_class_tests(bool IS_DEBUG)
                 std::cout.clear();
                 output_test_assertion("should be 501 if method is longer than longest supported one", is_strict_equal(http_request.gett_err().code, 501, IS_DEBUG));
             }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_ HTTP/1.1\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                std::cout.clear();
+                output_test_assertion("should be 414 if method is longer than longest supported one", is_strict_equal(http_request.gett_err().code, 414, IS_DEBUG));
+            }
         }
         {
             std::cout << std::endl
