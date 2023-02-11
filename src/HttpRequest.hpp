@@ -13,6 +13,10 @@
 
 #define WHITESPACES " \t\v\f\r"
 
+#define YELLOW "\033[0;33m"
+#define RED "\033[0;31m"
+#define NC "\033[0m"
+
 struct ReqLine
 {
     std::string method;
@@ -50,5 +54,7 @@ private:
     void _parse_attr_line(std::string line);
 };
 
-// TODO when not required anymore
+// TODO remove when not required anymore
 std::ostream &operator<<(std::ostream &os, HttpRequest &std);
+
+std::ostream &operator<<(std::ostream &os, ReqErr &std);

@@ -3,7 +3,7 @@
 
 HttpRequest::HttpRequest()
 {
-    this->_err.code = 0;
+    this->_err.code = -1;
 }
 
 HttpRequest::~HttpRequest()
@@ -132,5 +132,11 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
     for (std::map<std::string, std::string>::iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
         std::cout << it->first << ": " << it->second << std::endl;
 
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, ReqErr &std)
+{
+    std::cerr << RED << std.code << ": " << std.message << NC;
     return os;
 }
