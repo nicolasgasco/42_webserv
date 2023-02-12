@@ -9,7 +9,7 @@ HttpResponse::HttpResponse(HttpRequest &req)
     _status_line.reason = req.has_error() ? req.gett_err().message : "OK";
 
     this->_build_status_line();
-    this->_build_message_body(req.get_req_line().target);
+    this->_build_message_body(req);
 
     // TODO delete this when build is done
     std::cout << *this << std::endl;
@@ -37,8 +37,10 @@ void HttpResponse::_build_status_line()
     this->_buff += this->_status_line.reason + "\r\n";
 }
 
-void HttpResponse::_build_message_body(std::string target)
+void HttpResponse::_build_message_body(HttpRequest &req)
 {
+    std::string target = req.get_req_line().target;
+
     std::string file_path;
     if (target == "/")
     {
@@ -53,18 +55,46 @@ void HttpResponse::_build_message_body(std::string target)
 
     std::ifstream file(file_path);
     std::string buffer_str;
+    std::ostringstream data_stream;
 
     if (file)
     {
-        std::ostringstream data_stream;
         data_stream << file.rdbuf(); // reading data
         this->_buff += "\r\n";
         this->_buff += data_stream.str();
+        return;
     }
-    else
+
+    this->_err.code = 404;
+    this->_err.message = "Not Found";
+    // TODO delete this when build is over
+    std::cerr << std::endl
+              << RED << this->_err << NC << std::endl;
+
+    this->_status_line.code = this->_err.code;
+    this->_status_line.reason = this->_err.message;
+
+    // Only for pages
+    std::string req_accept = req.get_attrs()["Accept"];
+    if (req_accept.find(ACCEPT_HTML) != std::string::npos)
     {
-        // TODO file doesn't exist
-        std::cerr << RED << "File does not exist..." << NC << std::endl;
+        std::string err_404_path = PUBLIC_PATH;
+        err_404_path += ERRORS_PATH;
+        err_404_path += "/404.html";
+
+        // TODO handle this?
+        std::ifstream err_file(err_404_path);
+        if (err_file)
+        {
+            data_stream << err_file.rdbuf();
+            this->_buff += "\r\n";
+            this->_buff += data_stream.str();
+        }
+        else
+        {
+            // TODO remove this when build is over
+            std::cerr << RED << "You broke something in HttpResponse.cpp..." << NC << std::endl;
+        }
     }
 }
 
