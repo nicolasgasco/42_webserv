@@ -40,3 +40,39 @@ bool str_isspace(std::string &str)
     }
     return true;
 }
+
+/**
+ * Builds a complete path from single sections.
+ *
+ * @param frag1 First fragment of path.
+ * @param frag2 Second fragment of path.
+ * @returns Complete path as string
+ */
+std::string build_path(std::string frag1, std::string frag2)
+{
+    std::string result = frag1;
+    if (frag2.at(0) != '/')
+        result += "/";
+    result += frag2;
+    return result;
+}
+
+/**
+ * Builds a complete path from single sections.
+ *
+ * @param frag1 First fragment of path.
+ * @param frag2 Second fragment of path.
+ * @param frag3 Third fragment of path.
+ * @returns Complete path as string
+ */
+std::string build_path(std::string frag1, std::string frag2, std::string frag3)
+{
+    std::string result = frag1;
+    if (frag2.at(0) != '/')
+        result += "/";
+    result += frag2;
+    if (frag3.at(0) != '/')
+        result += "/";
+    result += frag3;
+    return result;
+}
