@@ -1,6 +1,6 @@
 #include "../utils.hpp"
 
-#include "../../src/utils/utils.hpp"
+#include "../../inc/utils.hpp"
 
 #include <iostream>
 #include <string>

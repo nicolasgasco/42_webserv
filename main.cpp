@@ -1,7 +1,7 @@
-#include "src/AddressInfo.hpp"
-#include "src/Socket.hpp"
-#include "src/SocketConnection.hpp"
-#include "src/ServerConnection.hpp"
+#include "AddressInfo.hpp"
+#include "Socket.hpp"
+#include "SocketConnection.hpp"
+#include "ServerConnection.hpp"
 
 // TODO replace with parameter or default value
 #define BACKLOG 10

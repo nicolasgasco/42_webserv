@@ -1,6 +1,6 @@
 #include "../utils.hpp"
 
-#include "../../src/AddressInfo.hpp"
+#include "../../inc/AddressInfo.hpp"
 
 #include <iostream>
 #include <netdb.h>

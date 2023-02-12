@@ -1,6 +1,6 @@
 #include "../utils.hpp"
 
-#include "../../src/SocketConnection.hpp"
+#include "../../inc/SocketConnection.hpp"
 #include <iostream>
 #include <netdb.h>
 #include <string.h>
