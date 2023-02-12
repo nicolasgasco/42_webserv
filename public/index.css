@@ -1,0 +1,56 @@
+
+body {
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px 10px;
+  border-bottom: 3px black solid;
+}
+
+.header__logo {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Hero section */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 60px 25px;
+}
+
+.hero-section__title {
+  font-size: 2.5rem;
+}
+
+.hero-section__avatar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.hero-section__avatar-container > :first-child {
+  border-radius: 50% 0 0 50%;
+}
+
+.hero-section__avatar-container > :last-child {
+  border-radius: 0 50% 50% 0%;
+}
+
+.hero-section__avatar-container > * {
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+}
