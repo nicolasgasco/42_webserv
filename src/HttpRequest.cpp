@@ -32,6 +32,8 @@ void HttpRequest::parse_req()
             break;
         }
     }
+    if (this->has_error())
+        return;
 
     // A recipient that receives whitespace between the start-line and the first header field
     // MUST either reject the message as invalid or consume each whitespace-preceded line
@@ -83,8 +85,14 @@ void HttpRequest::_parse_req_line(std::string line)
     if (this->_req_line.method.length() > std::string(LONGEST_METHOD).length())
         this->_set_err(501, "Not Implemented");
 
-    std::string target_str = strtok(NULL, WHITESPACES);
-    this->_req_line.target = trim(target_str);
+    char *target_char_ptr = strtok(NULL, WHITESPACES);
+    if (target_char_ptr)
+    {
+        std::string target_str(target_char_ptr);
+        this->_req_line.target = trim(target_str);
+    }
+    else
+        this->_set_err(400, "Bad Request");
 
     // A server that receives a request-target longer than any URI it wishes to parse
     // MUST respond with a 414 (URI Too Long) status code
@@ -93,12 +101,14 @@ void HttpRequest::_parse_req_line(std::string line)
 
     // Although the line terminator for the start-line and fields is the sequence CRLF,
     // a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
-    std::string version_str = strtok(NULL, "\n");
-    this->_req_line.version = trim(version_str);
-
-    // TODO
-    // Return 501 if Method is longer than any supported
-    // Return 414 if URI is too long
+    char *version_char_ptr = strtok(NULL, "\n");
+    if (version_char_ptr)
+    {
+        std::string version_str(version_char_ptr);
+        this->_req_line.version = trim(version_str);
+    }
+    else
+        this->_set_err(400, "Bad Request");
 
     // TODO
     // Recommended to support at least 8000 octets of request-line
@@ -135,6 +145,11 @@ ReqErr &HttpRequest::gett_err()
 std::map<std::string, std::string> &HttpRequest::get_attrs()
 {
     return this->_attrs;
+}
+
+bool HttpRequest::has_error()
+{
+    return this->_err.code != -1;
 }
 
 void HttpRequest::_set_err(int code, std::string message)
