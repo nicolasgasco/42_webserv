@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "utils/utils.hpp"
+#include "utils.hpp"
 // TODO remove this after build is done
-#include "utils/dev_utils.hpp"
+#include "dev_utils.hpp"
 
 // TODO change with parameter
 #define BUFF_SIZE 3000

@@ -9,4 +9,5 @@ do
     esac
 done
 
-clang++ *.cpp --std=c++11 ../src/*.cpp ../src/utils/*.cpp -o tests && ./tests $DEBUG
+./tests $DEBUG
+#clang++ *.cpp --std=c++11 ../src/*.cpp ../src/utils/*.cpp -o tests && ./tests $DEBUG

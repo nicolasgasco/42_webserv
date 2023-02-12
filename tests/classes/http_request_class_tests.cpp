@@ -1,6 +1,6 @@
 #include "../utils.hpp"
 
-#include "../../src/HttpRequest.hpp"
+#include "../../inc/HttpRequest.hpp"
 
 #include <fstream>
 #include <map>

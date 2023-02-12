@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-#include "../src/HttpRequest.hpp"
+#include "../inc/HttpRequest.hpp"
 
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"

@@ -1,7 +1,7 @@
 #pragma once
 
 // TODO remove this after build is done
-#include "utils/dev_utils.hpp"
+#include "dev_utils.hpp"
 #include "HttpRequest.hpp"
 
 #include <fstream>
