@@ -40,10 +40,7 @@ void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
     if (req.has_error())
         return;
 
-    int res_code = req.has_error() ? req.gett_err().code : 200;
-    std::string res_reason = req.has_error() ? req.gett_err().message : "OK";
-
-    HttpResponse res(res_code, res_reason);
+    HttpResponse res(req);
 
     this->_bytes_sent = send(this->_new_sock_id, res.get_buff().c_str(), res.get_buff().length(), 0);
     this->_check_send_return();

@@ -47,13 +47,48 @@
     .title {
       text-align: center;
     }
+
+    .avatar-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .avatar-container > :first-child {
+      border-radius: 50% 0 0 50%;
+    }
+
+    .avatar-container > :last-child {
+      border-radius: 0 50% 50% 0%;
+    }
+
+    .avatar {
+      width: 250px;
+      height: auto;
+      object-fit: contain;
+    }
   </style>
   <body>
     <div class="header">
       <img src="assets/42_logo.png" alt="42" class="logo_42" />
     </div>
     <main>
-      <h1 class="title">Welcome to our Webserv project!</h1>
+      <section>
+        <h1 class="title">Welcome to our Webserv project!</h1>
+        <div class="avatar-container">
+          <img
+            src="assets/ngasco.jpeg"
+            alt="Portrait of ngasco"
+            class="avatar"
+          />
+          <img
+            src="assets/dgerwig.jpeg"
+            alt="Portrait of dgerwig"
+            class="avatar"
+          />
+        </div>
+      </section>
     </main>
   </body>
 </html>

@@ -2,6 +2,7 @@
 
 // TODO remove this after build is done
 #include "utils/dev_utils.hpp"
+#include "HttpRequest.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -11,7 +12,11 @@
 // TODO centralize this
 #define HTTP_PROTOCOL "HTTP/1.1"
 
+// TODO centralize this
+#define PUBLIC_PATH "public"
+
 #define YELLOW "\033[0;33m"
+#define RED "\033[0;31m"
 #define NC "\033[0m"
 
 struct StatusLine
@@ -28,7 +33,7 @@ private:
     StatusLine _status_line;
 
 public:
-    HttpResponse(int &code, std::string &reason);
+    HttpResponse(HttpRequest &req);
     ~HttpResponse();
 
     StatusLine get_status_line();
@@ -36,7 +41,7 @@ public:
 
 private:
     void _build_status_line();
-    void _build_message_body();
+    void _build_message_body(std::string target);
 };
 
 // TODO remove when not required anymore
