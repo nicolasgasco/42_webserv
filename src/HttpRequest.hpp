@@ -22,6 +22,9 @@
 // TODO replace with computed value
 #define LONGEST_URI 124
 
+// TODO centralize this
+#define HTTP_PROTOCOL "HTTP/1.1"
+
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
 #define NC "\033[0m"
@@ -69,6 +72,9 @@ private:
     void _parse_attr_line(std::string line);
 
     void _set_err(int code, std::string message);
+
+    // Computed properties
+    bool _is_method_supported();
 };
 
 // TODO remove when not required anymore
