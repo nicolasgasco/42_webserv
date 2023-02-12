@@ -92,18 +92,18 @@ void HttpRequest::_parse_req_line(std::string line)
     this->_req_line.method = trim(method_str);
 
     bool is_method_too_long = this->_req_line.method.length() > std::string(LONGEST_METHOD).length();
-
     if (is_method_too_long || !this->_is_method_supported()) // 501 - Method is too long or not supported
         this->_set_err(501, "Not Implemented");
 
     char *target_char_ptr = strtok(NULL, WHITESPACES);
-    if (target_char_ptr)
+    if (!target_char_ptr) // 400 - Malformed request line
     {
-        std::string target_str(target_char_ptr);
-        this->_req_line.target = trim(target_str);
-    }
-    else // 400 - Malformed request line
         this->_set_err(400, "Bad Request");
+        return;
+    }
+
+    std::string target_str(target_char_ptr);
+    this->_req_line.target = trim(target_str);
 
     if (this->_req_line.target.length() > LONGEST_URI) // 414 -Target too long
         this->_set_err(414, "URI Too Long");
@@ -111,13 +111,14 @@ void HttpRequest::_parse_req_line(std::string line)
     /* Although the line terminator for the start-line and fields is the sequence CRLF,
        a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR. */
     char *version_char_ptr = strtok(NULL, "\n");
-    if (version_char_ptr)
+    if (!version_char_ptr) // 400 - Malformed request line
     {
-        std::string version_str(version_char_ptr);
-        this->_req_line.version = trim(version_str);
-    }
-    else // 400 - Malformed request line
         this->_set_err(400, "Bad Request");
+        return;
+    }
+
+    std::string version_str(version_char_ptr);
+    this->_req_line.version = trim(version_str);
 
     if (this->_req_line.version != HTTP_PROTOCOL) // 400 - Wrong HTTP protocol version
         this->_set_err(400, "Bad Request");
