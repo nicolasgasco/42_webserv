@@ -37,12 +37,15 @@ void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
 
     req.parse_req();
     req.output_status();
-    if (!req.has_error())
+    if (req.has_error())
         return;
 
-    // TODO replace this with real answer
-    std::string msg = "<!DOCTYPE HTML PUBLIC '-//IETF//DTD HTML 2.0//EN'><html><head><title>Hello world</title></head><body><h1>Welcome to my test page</h1><p>Hello world!</p></body></html>";
-    this->_bytes_sent = send(this->_new_sock_id, msg.c_str(), msg.length(), 0);
+    int res_code = req.has_error() ? req.gett_err().code : 200;
+    std::string res_reason = req.has_error() ? req.gett_err().message : "OK";
+
+    HttpResponse res(res_code, res_reason);
+
+    this->_bytes_sent = send(this->_new_sock_id, res.get_buff().c_str(), res.get_buff().length(), 0);
     this->_check_send_return();
 }
 
