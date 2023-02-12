@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 #include "Socket.hpp"
 
 #include <fcntl.h>
