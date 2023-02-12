@@ -32,7 +32,7 @@ void HttpRequest::parse_req()
             break;
         }
     }
-    if (this->_err.code != -1)
+    if (this->has_error())
         return;
 
     // A recipient that receives whitespace between the start-line and the first header field
@@ -145,6 +145,11 @@ ReqErr &HttpRequest::gett_err()
 std::map<std::string, std::string> &HttpRequest::get_attrs()
 {
     return this->_attrs;
+}
+
+bool HttpRequest::has_error()
+{
+    return this->_err.code != -1;
 }
 
 void HttpRequest::_set_err(int code, std::string message)

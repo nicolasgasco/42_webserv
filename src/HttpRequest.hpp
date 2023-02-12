@@ -61,6 +61,9 @@ public:
     void parse_req();
     void output_status();
 
+    // Computed properties
+    bool has_error();
+
 private:
     void _parse_req_line(std::string line);
     void _parse_attr_line(std::string line);
