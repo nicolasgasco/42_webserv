@@ -72,17 +72,16 @@ void HttpRequest::_parse_attr_line(std::string line)
     // TODO Check Obsolete line folding
 }
 
-// E.g. Cache-control: max-age=0
 void HttpRequest::_parse_req_line(std::string line)
 {
-    // Recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the CRLF terminator,
-    // treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace
+    /* Recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the CRLF terminator,
+       treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace */
     std::string method_str = strtok(const_cast<char *>(line.c_str()), WHITESPACES);
     this->_req_line.method = trim(method_str);
 
-    // A server that receives a method longer than any that it implements
-    // SHOULD respond with a 501 (Not Implemented) status code
-    if (this->_req_line.method.length() > std::string(LONGEST_METHOD).length())
+    bool is_method_too_long = this->_req_line.method.length() > std::string(LONGEST_METHOD).length();
+
+    if (is_method_too_long || !this->_is_method_supported()) // 501 - Method is too long or not supported
         this->_set_err(501, "Not Implemented");
 
     char *target_char_ptr = strtok(NULL, WHITESPACES);
@@ -91,23 +90,24 @@ void HttpRequest::_parse_req_line(std::string line)
         std::string target_str(target_char_ptr);
         this->_req_line.target = trim(target_str);
     }
-    else
+    else // 400 - Malformed request line
         this->_set_err(400, "Bad Request");
 
-    // A server that receives a request-target longer than any URI it wishes to parse
-    // MUST respond with a 414 (URI Too Long) status code
-    if (this->_req_line.target.length() > LONGEST_URI)
+    if (this->_req_line.target.length() > LONGEST_URI) // 414 -Target too long
         this->_set_err(414, "URI Too Long");
 
-    // Although the line terminator for the start-line and fields is the sequence CRLF,
-    // a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR.
+    /* Although the line terminator for the start-line and fields is the sequence CRLF,
+       a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR. */
     char *version_char_ptr = strtok(NULL, "\n");
     if (version_char_ptr)
     {
         std::string version_str(version_char_ptr);
         this->_req_line.version = trim(version_str);
     }
-    else
+    else // 400 - Malformed request line
+        this->_set_err(400, "Bad Request");
+
+    if (this->_req_line.version != HTTP_PROTOCOL) // 400 - Wrong HTTP protocol version
         this->_set_err(400, "Bad Request");
 
     // TODO
@@ -150,6 +150,16 @@ std::map<std::string, std::string> &HttpRequest::get_attrs()
 bool HttpRequest::has_error()
 {
     return this->_err.code != -1;
+}
+
+bool HttpRequest::_is_method_supported()
+{
+    std::vector<std::string> supported_methods;
+    supported_methods.push_back("GET");
+    supported_methods.push_back("POST");
+    supported_methods.push_back("DELETE");
+
+    return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
 
 void HttpRequest::_set_err(int code, std::string message)
