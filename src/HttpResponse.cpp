@@ -43,14 +43,11 @@ void HttpResponse::_build_message_body(HttpRequest &req)
 
     std::string file_path;
     if (target == "/")
-    {
-        file_path += PUBLIC_PATH;
-        file_path += "/index.html";
-    }
+        file_path = build_path(PUBLIC_PATH, "index.html");
     else
     {
         // TODO add logic to fetch file dynamically
-        file_path = PUBLIC_PATH + target;
+        file_path = build_path(PUBLIC_PATH, target);
     }
 
     std::ifstream file(file_path);
@@ -78,9 +75,7 @@ void HttpResponse::_build_message_body(HttpRequest &req)
     std::string req_accept = req.get_attrs()["Accept"];
     if (req_accept.find(ACCEPT_HTML) != std::string::npos)
     {
-        std::string err_404_path = PUBLIC_PATH;
-        err_404_path += ERRORS_PATH;
-        err_404_path += "/404.html";
+        std::string err_404_path = build_path(PUBLIC_PATH, ERRORS_PATH, "404.html");
 
         // TODO handle this?
         std::ifstream err_file(err_404_path);
