@@ -3,13 +3,21 @@
 HttpResponse::HttpResponse(HttpRequest &req)
 {
     _status_line.version = HTTP_PROTOCOL;
-    // TODO compute this instead of mocking
-    _status_line.code = req.has_error() ? req.gett_err().code : 200;
-    // TODO compute this instead of mocking
-    _status_line.reason = req.has_error() ? req.gett_err().message : "OK";
 
-    this->_build_status_line();
-    this->_build_message_body(req);
+    if (req.has_error())
+    {
+        _status_line.code = req.gett_err().code;
+        _status_line.reason = req.gett_err().message;
+
+        this->_buff = this->_build_status_line();
+        // Build generic error page
+    }
+    else
+    {
+        this->_buff = this->_build_message_body(req);
+        // Pre-append status line
+        this->_buff.insert(0, this->_build_status_line());
+    }
 
     // TODO delete this when build is done
     std::cout << *this << std::endl;
@@ -30,36 +38,36 @@ std::string HttpResponse::get_buff()
     return this->_buff;
 }
 
-void HttpResponse::_build_status_line()
+std::string HttpResponse::_build_status_line()
 {
-    this->_buff += this->_status_line.version + " ";
-    this->_buff += std::to_string(this->_status_line.code) + " ";
-    this->_buff += this->_status_line.reason + "\r\n";
+    std::string status_line;
+    status_line += this->_status_line.version + " ";
+    status_line += std::to_string(this->_status_line.code) + " ";
+    status_line += this->_status_line.reason + "\r\n";
+    return status_line;
 }
 
-void HttpResponse::_build_message_body(HttpRequest &req)
+std::string HttpResponse::_build_message_body(HttpRequest &req)
 {
-    std::string target = req.get_req_line().target;
+    std::string message_body;
 
-    std::string file_path;
-    if (target == "/")
-        file_path = build_path(PUBLIC_PATH, "index.html");
-    else
-    {
-        // TODO add logic to fetch file dynamically
-        file_path = build_path(PUBLIC_PATH, target);
-    }
+    std::string target = req.get_req_line().target;
+    bool is_target_root = target == "/";
+    std::string file_path = is_target_root ? build_path(PUBLIC_PATH, "index.html") : build_path(PUBLIC_PATH, target);
 
     std::ifstream file(file_path);
-    std::string buffer_str;
     std::ostringstream data_stream;
 
     if (file)
     {
-        data_stream << file.rdbuf(); // reading data
-        this->_buff += "\r\n";
-        this->_buff += data_stream.str();
-        return;
+        data_stream << file.rdbuf();
+
+        message_body += "\r\n" + data_stream.str();
+
+        this->_status_line.code = 200;
+        this->_status_line.reason = "OK";
+
+        return message_body;
     }
 
     this->_err.code = 404;
@@ -71,26 +79,31 @@ void HttpResponse::_build_message_body(HttpRequest &req)
     this->_status_line.code = this->_err.code;
     this->_status_line.reason = this->_err.message;
 
-    // Only for pages
-    std::string req_accept = req.get_attrs()["Accept"];
-    if (req_accept.find(ACCEPT_HTML) != std::string::npos)
-    {
-        std::string err_404_path = build_path(PUBLIC_PATH, ERRORS_PATH, "404.html");
+    // 404 - Not Found - Only for page request
+    bool is_html_req = req.get_attrs()["Accept"].find(ACCEPT_HTML) != std::string::npos;
+    if (is_html_req)
+        message_body += this->_build_404_page(data_stream);
 
-        // TODO handle this?
-        std::ifstream err_file(err_404_path);
-        if (err_file)
-        {
-            data_stream << err_file.rdbuf();
-            this->_buff += "\r\n";
-            this->_buff += data_stream.str();
-        }
-        else
-        {
-            // TODO remove this when build is over
-            std::cerr << RED << "You broke something in HttpResponse.cpp..." << NC << std::endl;
-        }
+    return message_body;
+}
+
+std::string HttpResponse::_build_404_page(std::ostringstream &data_stream)
+{
+    std::string message_body_404_page;
+
+    std::string err_404_path = build_path(PUBLIC_PATH, ERRORS_PATH, "404.html");
+
+    std::ifstream err_file(err_404_path);
+    if (err_file)
+    {
+        data_stream << err_file.rdbuf();
+        message_body_404_page += "\r\n" + data_stream.str();
+
+        this->_status_line.code = 404;
+        this->_status_line.reason = "Not Found";
     }
+
+    return message_body_404_page;
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)
