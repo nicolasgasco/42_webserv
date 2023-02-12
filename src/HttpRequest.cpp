@@ -42,6 +42,8 @@ void HttpRequest::parse_req()
     // without further processing of it
     while (std::getline(buff_stream, line))
     {
+        if (this->has_error())
+            return;
         if (str_isspace(line))
         {
             if (this->_attrs.size())
@@ -61,15 +63,23 @@ void HttpRequest::parse_req()
 // E.g. GET / HTTP/1.1
 void HttpRequest::_parse_attr_line(std::string line)
 {
-    std::string key = strtok(const_cast<char *>(line.c_str()), ":");
     // A server MUST reject, with a response status code of 400 (Bad Request)
     // any received request message that contains whitespace between a header field name and colon
-    if (key.find(' ') != std::string::npos)
+    if (line.find(" :") != std::string::npos)
         this->_set_err(400, "Bad Request");
 
-    std::string value = strtok(NULL, "\n\r");
+    char *key_char_ptr = strtok(const_cast<char *>(line.c_str()), ":");
+    char *value_char_ptr = strtok(NULL, "\n\r");
 
-    this->_attrs.insert(std::pair<std::string, std::string>(ltrim(key), trim(value)));
+    if (!key_char_ptr || !value_char_ptr)
+    {
+        this->_set_err(400, "Bad Request");
+        return;
+    }
+
+    std::string key_str(key_char_ptr);
+    std::string value_str(value_char_ptr);
+    this->_attrs.insert(std::pair<std::string, std::string>(ltrim(key_str), trim(value_str)));
 
     // TODO Check Obsolete line folding
 }

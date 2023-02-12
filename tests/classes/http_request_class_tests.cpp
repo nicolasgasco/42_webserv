@@ -264,7 +264,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 char *buff = http_request.get_buff();
 
-                std::string options_str("GET / HTTP/1.1\r\n\r\n\r\n\r\n\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc\r\nCache-Control : max-age=0\r\nConnection: keep-alive\r\n");
+                std::string options_str("GET / HTTP/1.1\r\n Cache-Control : max-age=0\r\n");
 
                 int i = 0;
                 for (; i < options_str.size(); ++i)
@@ -275,6 +275,66 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 std::cout.clear();
                 output_test_assertion("should be 400 if space before colon", is_strict_equal(http_request.gett_err().code, 400, IS_DEBUG));
+            }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET / HTTP/1.1\r\n Cache-Control: max-age=0\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                std::cout.clear();
+                output_test_assertion("should be OK if space is before key and not colon", is_strict_equal(http_request.gett_err().code, -1, IS_DEBUG));
+            }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET / HTTP/1.1\r\n: max-age=0\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                std::cout.clear();
+                output_test_assertion("should be 400 if key is missing", is_strict_equal(http_request.gett_err().code, 400, IS_DEBUG));
+            }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET / HTTP/1.1\r\n Cache-Control:\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                std::cout.clear();
+                output_test_assertion("should be 400 if value is missing", is_strict_equal(http_request.gett_err().code, 400, IS_DEBUG));
             }
         }
     }
