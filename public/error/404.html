@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Webserv</title>
+    <title>404 - Webserv</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +15,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <!-- Styles -->
-    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="error/404.css" />
     <link rel="stylesheet" href="commons.css" />
   </head>
   <body>
@@ -27,23 +27,12 @@
         ></a
       >
     </div>
-    <main>
-      <section class="hero-section centered padded">
-        <h1 class="hero-section__title">Welcome to our Webserv project!</h1>
-        <div class="hero-section__avatar-container">
-          <img src="assets/ngasco.jpeg" alt="Portrait of ngasco" />
-          <img src="assets/dgerwig.jpeg" alt="Portrait of dgerwig" />
-        </div>
-      </section>
-      <section class="quick-actions centered padded">
-        <h2>Quick actions</h2>
-        <ul>
-          <li>
-            Route that does not exist:
-            <a href="/does-not-exist">/does-not-exist</a>
-          </li>
-        </ul>
-      </section>
+    <main class="container centered padded">
+      <h1>404 - Not Found</h1>
+      <p>
+        The page you're looking for doesn't exist. <a href="/">Back to home</a>
+      </p>
+      <img src="assets/error/404.png" alt="" class="container__illustration" />
     </main>
   </body>
 </html>
