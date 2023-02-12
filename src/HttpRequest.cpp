@@ -129,15 +129,13 @@ void HttpRequest::_parse_req_line(std::string line)
 
 void HttpRequest::output_status()
 {
+    // TODO delete this once build is over
+    std::cout << *this << std::endl;
+
     if (this->_err.code != -1)
         std::cerr << this->_err << std::endl;
     else
-    {
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
-
-        // TODO delete this once build is over
-        std::cout << *this << std::endl;
-    }
 }
 
 char *HttpRequest::get_buff()
