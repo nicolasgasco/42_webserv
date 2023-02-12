@@ -13,7 +13,7 @@
 // TODO change with parameter
 #define BUFF_SIZE 3000
 
-#define WHITESPACES " \t\v\f\r"
+#define WHITESPACES " \t\v\f\r\n"
 
 // TODO refactor this with something more scalable
 // if some logic used elsewhere

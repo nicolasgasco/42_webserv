@@ -128,6 +128,46 @@ void http_request_class_tests(bool IS_DEBUG)
                 std::cout.clear();
                 output_test_assertion("should be 414 if method is longer than longest supported one", is_strict_equal(http_request.gett_err().code, 414, IS_DEBUG));
             }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("/ HTTP/1.1\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                std::cout.clear();
+                output_test_assertion("should be 400 if request line is made up of 2 chunks", is_strict_equal(http_request.gett_err().code, 400, IS_DEBUG));
+            }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("/\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                std::cout.clear();
+                output_test_assertion("should be 400 if request line is made up of 1 chunk", is_strict_equal(http_request.gett_err().code, 400, IS_DEBUG));
+            }
         }
         {
             std::cout << std::endl
