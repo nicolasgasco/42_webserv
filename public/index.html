@@ -16,19 +16,34 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <!-- Styles -->
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="commons.css" />
   </head>
   <body>
     <div class="header">
-      <img src="assets/42_logo.png" alt="42" class="header__logo" />
+      <a href="/"
+        ><img src="assets/42_logo.png" alt="42" class="header__logo" /><span
+          class="sr-only"
+          >Go to homepage</span
+        ></a
+      >
     </div>
     <main>
-      <section class="hero-section">
+      <section class="hero-section centered padded">
         <h1 class="hero-section__title">Welcome to our Webserv project!</h1>
         <div class="hero-section__avatar-container">
           <img src="assets/ngasco.jpeg" alt="Portrait of ngasco" />
           <img src="assets/dgerwig.jpeg" alt="Portrait of dgerwig" />
         </div>
         <p>For now, we only have this page, but soon, more will come.</p>
+      </section>
+      <section class="quick-actions centered padded">
+        <h2>Quick actions</h2>
+        <ul>
+          <li>
+            Route that does not exist:
+            <a href="/does-not-exist">/does-not-exist</a>
+          </li>
+        </ul>
       </section>
     </main>
   </body>
