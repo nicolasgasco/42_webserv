@@ -3,6 +3,8 @@
 
 HttpRequest::HttpRequest()
 {
+    memset(this->_buff, 0, sizeof(this->_buff));
+
     this->_err.code = -1;
 }
 
