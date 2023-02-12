@@ -5,8 +5,11 @@
 
 // TODO replace with parameter or default value
 #define BACKLOG 10
-int main()
+int main(int argc, char **argv)
 {
+	(void)argc;
+	(void)argv;
+
     AddressInfo addr_info;
 
     Socket socket(addr_info);
