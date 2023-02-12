@@ -41,8 +41,9 @@ public:
     std::string get_buff();
 
 private:
-    void _build_status_line();
-    void _build_message_body(HttpRequest &req);
+    std::string _build_status_line();
+    std::string _build_message_body(HttpRequest &req);
+    std::string _build_404_page(std::ostringstream &data_stream);
 };
 
 // TODO remove when not required anymore
