@@ -14,80 +14,21 @@
     />
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <!-- Styles -->
+    <link rel="stylesheet" href="index.css" />
   </head>
-  <style>
-    body {
-      margin: 0;
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: "Roboto", sans-serif;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      padding: 15px 10px;
-      border-bottom: 3px black solid;
-    }
-
-    .logo_42 {
-      width: 40px;
-      height: auto;
-      object-fit: contain;
-    }
-
-    main {
-      padding: 40px 25px;
-    }
-
-    .title {
-      text-align: center;
-    }
-
-    .avatar-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .avatar-container > :first-child {
-      border-radius: 50% 0 0 50%;
-    }
-
-    .avatar-container > :last-child {
-      border-radius: 0 50% 50% 0%;
-    }
-
-    .avatar {
-      width: 250px;
-      height: auto;
-      object-fit: contain;
-    }
-  </style>
   <body>
     <div class="header">
-      <img src="assets/42_logo.png" alt="42" class="logo_42" />
+      <img src="assets/42_logo.png" alt="42" class="header__logo" />
     </div>
     <main>
-      <section>
-        <h1 class="title">Welcome to our Webserv project!</h1>
-        <div class="avatar-container">
-          <img
-            src="assets/ngasco.jpeg"
-            alt="Portrait of ngasco"
-            class="avatar"
-          />
-          <img
-            src="assets/dgerwig.jpeg"
-            alt="Portrait of dgerwig"
-            class="avatar"
-          />
+      <section class="hero-section">
+        <h1 class="hero-section__title">Welcome to our Webserv project!</h1>
+        <div class="hero-section__avatar-container">
+          <img src="assets/ngasco.jpeg" alt="Portrait of ngasco" />
+          <img src="assets/dgerwig.jpeg" alt="Portrait of dgerwig" />
         </div>
+        <p>For now, we only have this page, but soon, more will come.</p>
       </section>
     </main>
   </body>
