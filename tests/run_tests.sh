@@ -9,4 +9,4 @@ do
     esac
 done
 
-clang++ -Wall -Wextra -Werror *.cpp ../src/*.cpp -o tests && ./tests $DEBUG
+clang++ *.cpp --std=c++11 ../src/*.cpp ../src/utils/*.cpp -o tests && ./tests $DEBUG

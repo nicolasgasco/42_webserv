@@ -1,6 +1,13 @@
 #pragma once
 
+#include "HttpRequest.hpp"
 #include "Socket.hpp"
+
+#include <fcntl.h>
+#include <unistd.h>
+
+// TODO change to parametrized value
+#define REC_BUFF_SIZE 3000
 
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"
@@ -11,7 +18,6 @@ private:
     int _new_sock_id;
     int _bytes_received;
     int _bytes_sent;
-    char _buff[3000];
 
 public:
     ServerConnection();
