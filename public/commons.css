@@ -1,0 +1,49 @@
+body {
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+a {
+  color: inherit;
+  font-weight: bold;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px 10px;
+  border-bottom: 3px black solid;
+}
+
+.header__logo {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Utils */
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.padded {
+  padding: 60px 25px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
