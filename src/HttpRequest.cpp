@@ -108,6 +108,9 @@ void HttpRequest::_parse_req_line(std::string line)
     if (this->_req_line.target.length() > LONGEST_URI) // 414 -Target too long
         this->_set_err(414, "URI Too Long");
 
+    if (this->has_query_params())
+        this->_parse_query_params(this->_req_line.target);
+
     /* Although the line terminator for the start-line and fields is the sequence CRLF,
        a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR. */
     char *version_char_ptr = strtok(NULL, "\n");
@@ -127,6 +130,30 @@ void HttpRequest::_parse_req_line(std::string line)
     // Recommended to support at least 8000 octets of request-line
 }
 
+void HttpRequest::_parse_query_params(std::string &target)
+{
+    size_t question_mark_sign_pos = target.find("?");
+    std::string raw_params = target.substr(question_mark_sign_pos + 1);
+
+    while (true)
+    {
+        size_t equal_sign_pos = raw_params.find("=");
+        size_t ampersand_sign_pos = raw_params.find("&");
+
+        std::string key = raw_params.substr(0, equal_sign_pos);
+        std::string value = raw_params.substr(equal_sign_pos + 1, ampersand_sign_pos - equal_sign_pos - 1);
+
+        this->_params.insert(std::pair<std::string, std::string>(key, value));
+
+        raw_params = raw_params.substr(ampersand_sign_pos + 1);
+
+        if (ampersand_sign_pos == std::string::npos)
+            break;
+    }
+
+    target = target.substr(0, question_mark_sign_pos);
+}
+
 void HttpRequest::output_status()
 {
     // TODO delete this once build is over
@@ -141,6 +168,11 @@ void HttpRequest::output_status()
 char *HttpRequest::get_buff()
 {
     return this->_buff;
+}
+
+std::map<std::string, std::string> &HttpRequest::get_params()
+{
+    return this->_params;
 }
 
 ReqLine &HttpRequest::get_req_line()
@@ -161,6 +193,11 @@ std::map<std::string, std::string> &HttpRequest::get_attrs()
 bool HttpRequest::has_error()
 {
     return this->_err.code != -1;
+}
+
+bool HttpRequest::has_query_params()
+{
+    return this->_req_line.target.find("?") != std::string::npos;
 }
 
 bool HttpRequest::is_html_req()
@@ -194,11 +231,19 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
     std::cout << "HTTP-version: " << YELLOW << "." << NC << std.get_req_line().version << YELLOW << "." << NC << std::endl;
 
     std::cout << std::endl;
-
     std::cout << "OPTIONS:" << std::endl;
 
     for (std::map<std::string, std::string>::iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
         std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
+
+    if (std.get_params().size())
+    {
+        std::cout << std::endl;
+        std::cout << "QUERY PARAMS:" << std::endl;
+
+        for (std::map<std::string, std::string>::iterator it = std.get_params().begin(); it != std.get_params().end(); ++it)
+            std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
+    }
 
     return os;
 }

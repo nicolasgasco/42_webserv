@@ -337,5 +337,93 @@ void http_request_class_tests(bool IS_DEBUG)
                 output_test_assertion("should be 400 if value is missing", is_strict_equal(http_request.gett_err().code, 400, IS_DEBUG));
             }
         }
+        {
+            std::cout << std::endl
+                      << "Query params should be parsed correctly:" << std::endl;
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET /?key=value HTTP/1.1\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                // Create reference parsed request line
+                std::map<std::string, std::string> ref;
+
+                std::pair<std::string, std::string> key_value_pair_1("key", "value");
+                ref.insert(std::pair<std::string, std::string>(key_value_pair_1));
+
+                std::cout.clear();
+                output_test_assertion("when there is one", is_strict_equal(http_request.get_params(), ref, IS_DEBUG));
+            }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET /?key1=value1&key2=value2 HTTP/1.1\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                // Create reference parsed request line
+                std::map<std::string, std::string> ref;
+
+                std::pair<std::string, std::string> key_value_pair_1("key1", "value1");
+                ref.insert(std::pair<std::string, std::string>(key_value_pair_1));
+                std::pair<std::string, std::string> key_value_pair_2("key2", "value2");
+                ref.insert(std::pair<std::string, std::string>(key_value_pair_2));
+
+                std::cout.clear();
+                output_test_assertion("when there are two", is_strict_equal(http_request.get_params(), ref, IS_DEBUG));
+            }
+            {
+                std::cout.setstate(std::ios_base::failbit);
+
+                // Configure HTTP request
+                HttpRequest http_request;
+
+                char *buff = http_request.get_buff();
+
+                std::string options_str("GET /?key1=value1&key2=value2&key3=value3 HTTP/1.1\r\n");
+
+                int i = 0;
+                for (; i < options_str.size(); ++i)
+                    buff[i] = options_str[i];
+                buff[i] = options_str[i];
+
+                http_request.parse_req();
+
+                // Create reference parsed request line
+                std::map<std::string, std::string> ref;
+
+                std::pair<std::string, std::string> key_value_pair_1("key1", "value1");
+                ref.insert(std::pair<std::string, std::string>(key_value_pair_1));
+                std::pair<std::string, std::string> key_value_pair_2("key2", "value2");
+                ref.insert(std::pair<std::string, std::string>(key_value_pair_2));
+                std::pair<std::string, std::string> key_value_pair_3("key3", "value3");
+                ref.insert(std::pair<std::string, std::string>(key_value_pair_3));
+
+                std::cout.clear();
+                output_test_assertion("when there are three", is_strict_equal(http_request.get_params(), ref, IS_DEBUG));
+            }
+        }
     }
 }

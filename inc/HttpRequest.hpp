@@ -48,6 +48,7 @@ class HttpRequest
 {
 private:
     std::map<std::string, std::string> _attrs;
+    std::map<std::string, std::string> _params;
     char _buff[BUFF_SIZE];
     ReqLine _req_line;
     ReqErr _err;
@@ -59,8 +60,10 @@ public:
     // Getters
     std::map<std::string, std::string> &get_attrs();
     char *get_buff();
-    ReqLine &get_req_line();
     ReqErr &gett_err();
+    std::map<std::string, std::string> &get_params();
+
+    ReqLine &get_req_line();
 
     // Methods
     void parse_req();
@@ -68,11 +71,13 @@ public:
 
     // Computed properties
     bool has_error();
+    bool has_query_params();
     bool is_html_req();
 
 private:
-    void _parse_req_line(std::string line);
     void _parse_attr_line(std::string line);
+    void _parse_query_params(std::string &target);
+    void _parse_req_line(std::string line);
 
     void _set_err(int code, std::string message);
 
