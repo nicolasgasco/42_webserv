@@ -6,7 +6,7 @@
 #    By: dgerwig- <dgerwig-@student.42urduli>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/02/13 19:47:07 by dgerwig-         ###   ########.fr        #
+#    Updated: 2023/02/13 20:26:28 by dgerwig-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,11 +63,8 @@ fclean: clean
 
 re:	fclean all
 
-run: $(NAME)
+run: re 
 	./webserv config/default.conf
-
-PWD:
-	pwd
 
 test:
 	make -C tests
