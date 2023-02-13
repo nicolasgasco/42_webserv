@@ -32,5 +32,6 @@
 *.app
 
 webserv
-tests
 settings.json
+tests
+!tests/
