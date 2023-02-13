@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     bool IS_DEBUG = false;
     if (argc > 1)
-        IS_DEBUG = (static_cast<std::string>(argv[1]) == "debug") ? true : false;
+        IS_DEBUG = (static_cast<std::string>(argv[1]) == "-d") ? true : false;
 
     ltrim_tests(IS_DEBUG);
     rtrim_tests(IS_DEBUG);
