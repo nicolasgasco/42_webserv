@@ -65,7 +65,22 @@
             </form>
           </li>
           <li>
-            Go to generic <a href="/error/index.html">/error</a> page (WIP)
+            <p>Choose query params values</p>
+            <form class="query-params__form">
+              <input type="text" placeholder="key" value="code" />
+              <input type="text" placeholder="value" value="403" />
+
+              <input type="text" placeholder="key" value="message" />
+              <input type="text" placeholder="value" value="Forbidden" />
+            </form>
+            <p>
+              and visit
+              <a
+                id="query-params__link"
+                href="/error/index.html?code=403&message=Forbidden"
+                >/error/index.html?code=403&message=Forbidden</a
+              >
+            </p>
           </li>
         </ul>
       </section>

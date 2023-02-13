@@ -3,7 +3,6 @@ const Http = new XMLHttpRequest();
 const methodTooLongForm = document.getElementById("method-too-long-form");
 const methodInput = document.getElementById("method-too-long-form__method");
 const targetInput = document.getElementById("method-too-long-form__target");
-
 const formMessage = document.querySelector(".method-too-long-form__message");
 
 methodTooLongForm.addEventListener("submit", function (e) {
@@ -32,4 +31,21 @@ methodTooLongForm.addEventListener("submit", function (e) {
       // There was an error
       console.warn("Something went wrong.", err);
     });
+});
+
+const queryParamsForm = document.querySelector(".query-params__form");
+queryParamsForm.addEventListener("change", function () {
+  let childrenValues = [];
+  for (child of queryParamsForm.children) {
+    childrenValues.push(child.value);
+  }
+
+  const queryParamsLink = document.getElementById("query-params__link");
+  const newTarget =
+    "/error/index.html?" +
+    `${childrenValues[0] || "key"}=${childrenValues[1] || "value"}&${
+      childrenValues[2] || "key"
+    }=${childrenValues[3] || "value"}`;
+  queryParamsLink.href = newTarget;
+  queryParamsLink.innerText = newTarget;
 });
