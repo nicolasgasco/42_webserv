@@ -6,7 +6,7 @@
 #    By: dgerwig- <dgerwig-@student.42urduli>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/02/12 19:25:20 by dgerwig-         ###   ########.fr        #
+#    Updated: 2023/02/13 19:47:07 by dgerwig-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,15 +32,6 @@ SRC			= $(wildcard $(SRC_MAIN)*.cpp) $(wildcard $(SRC_DIR)*.cpp) $(wildcard $(SR
 OBJ			= $(addprefix $(OBJ_DIR), $(notdir $(SRC:.cpp=.o)))
 OBJ_SAN		= $(addprefix $(OBJ_DIR_SAN), $(notdir $(SRC:.cpp=.o)))
 
-#SRC			= src/main.cpp \
-#			  src/AddressInfo.cpp \
-#			  src/HttpRequest.cpp \
-#			  src/ServerConnection.cpp \
-#			  src/Socket.cpp \
-#			  src/SocketConnection.cpp \
-#			  src/utils/dev_utils.cpp \
-#			  src/utils/utils.cpp
-
 all: $(NAME)
 
 $(NAME): $(OBJ) 
@@ -59,7 +50,6 @@ $(OBJ_DIR)%.o: $(SRC_DIR_UT)%.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(OBJ_DIR_SAN)
@@ -73,14 +63,14 @@ fclean: clean
 
 re:	fclean all
 
-
-
-
-
 run: $(NAME)
 	./webserv config/default.conf
 
+PWD:
+	pwd
 
+test:
+	make -C tests
 
 -include $(OBJ_DIR)/*.d
 
