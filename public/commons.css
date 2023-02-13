@@ -9,6 +9,27 @@ a {
   font-weight: bold;
 }
 
+li {
+  margin-bottom: 15px;
+}
+
+button {
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  outline: inherit;
+  border: none;
+  cursor: pointer;
+
+  padding: 8px 15px;
+}
+
+button:hover {
+  background-color: white;
+  outline: 2px black solid;
+  color: black;
+}
+
 /* Header */
 .header {
   display: flex;

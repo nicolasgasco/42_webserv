@@ -25,6 +25,8 @@
 // TODO centralize this
 #define HTTP_PROTOCOL "HTTP/1.1"
 
+#define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
+
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
 #define NC "\033[0m"
@@ -66,6 +68,7 @@ public:
 
     // Computed properties
     bool has_error();
+    bool is_html_req();
 
 private:
     void _parse_req_line(std::string line);

@@ -80,15 +80,16 @@ std::string HttpResponse::_build_message_body(HttpRequest &req)
     this->_status_line.reason = this->_err.message;
 
     // 404 - Not Found - Only for page request
-    bool is_html_req = req.get_attrs()["Accept"].find(ACCEPT_HTML) != std::string::npos;
-    if (is_html_req)
-        message_body += this->_build_404_page(data_stream);
+    if (req.is_html_req())
+        message_body += this->_build_404_page();
 
     return message_body;
 }
 
-std::string HttpResponse::_build_404_page(std::ostringstream &data_stream)
+std::string HttpResponse::_build_404_page()
 {
+    std::ostringstream data_stream;
+
     std::string message_body_404_page;
 
     std::string err_404_path = build_path(PUBLIC_PATH, ERRORS_PATH, "404.html");

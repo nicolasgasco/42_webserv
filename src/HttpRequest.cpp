@@ -163,6 +163,11 @@ bool HttpRequest::has_error()
     return this->_err.code != -1;
 }
 
+bool HttpRequest::is_html_req()
+{
+    return this->_attrs["Accept"].find(ACCEPT_HTML) != std::string::npos;
+}
+
 bool HttpRequest::_is_method_supported()
 {
     std::vector<std::string> supported_methods;

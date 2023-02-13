@@ -37,10 +37,8 @@ void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
 
     req.parse_req();
     req.output_status();
-    if (req.has_error())
-        return;
 
-    HttpResponse res(req);
+    HttpResponse res(req); 
 
     this->_bytes_sent = send(this->_new_sock_id, res.get_buff().c_str(), res.get_buff().length(), 0);
     this->_check_send_return();
