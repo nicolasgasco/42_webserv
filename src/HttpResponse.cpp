@@ -50,9 +50,8 @@ std::string HttpResponse::_build_message_body(HttpRequest &req)
 {
     std::string message_body;
 
-    std::string target = req.get_req_line().target;
-    bool is_target_root = target == "/";
-    std::string file_path = is_target_root ? build_path(PUBLIC_PATH, "index.html") : build_path(PUBLIC_PATH, target);
+    RouterService router(req);
+    std::string file_path = router.get_file_path();
 
     std::ifstream file(file_path);
     std::ostringstream data_stream;

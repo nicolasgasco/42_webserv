@@ -3,6 +3,7 @@
 // TODO remove this after build is done
 #include "dev_utils.hpp"
 #include "HttpRequest.hpp"
+#include "RouterService.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -11,7 +12,6 @@
 
 // TODO centralize this
 #define HTTP_PROTOCOL "HTTP/1.1"
-#define PUBLIC_PATH "public"
 #define ERRORS_PATH "error"
 
 #define YELLOW "\033[0;33m"
