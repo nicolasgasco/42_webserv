@@ -1,5 +1,8 @@
 body {
   margin: 0;
+}
+
+* {
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
 }
@@ -20,6 +23,7 @@ button {
   outline: inherit;
   border: none;
   cursor: pointer;
+  height: 35px;
 
   padding: 8px 15px;
 }
@@ -28,6 +32,20 @@ button:hover {
   background-color: white;
   outline: 2px black solid;
   color: black;
+}
+
+input,
+select {
+  border: 2px black solid;
+  border-radius: 0;
+  padding: 5px;
+  min-height: 35px;
+}
+
+select:focus-visible,
+input:focus-visible {
+  border-radius: 0;
+  outline: 1px grey solid;
 }
 
 /* Header */
@@ -67,4 +85,8 @@ button:hover {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+.has-error {
+  color: red;
 }
