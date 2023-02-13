@@ -13,7 +13,6 @@
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define PUBLIC_PATH "public"
 #define ERRORS_PATH "error"
-#define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
 
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
@@ -43,7 +42,7 @@ public:
 private:
     std::string _build_status_line();
     std::string _build_message_body(HttpRequest &req);
-    std::string _build_404_page(std::ostringstream &data_stream);
+    std::string _build_404_page();
 };
 
 // TODO remove when not required anymore
