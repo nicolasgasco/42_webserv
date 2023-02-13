@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>404 - Webserv</title>
+    <title>{{code}} - Webserv</title>
+    <base href="/" />
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +16,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <!-- Styles -->
-    <link rel="stylesheet" href="error/error.css" />
+    <link rel="stylesheet" href="error/index.css" />
     <link rel="stylesheet" href="commons.css" />
   </head>
   <body>
@@ -28,9 +29,13 @@
       >
     </div>
     <main class="container centered padded">
-      <!-- <h1>{{code}} - {{message}}</h1> -->
+      <h1>{{code}} - {{message}}</h1>
       <p>Better luck next time. <a href="/">Back to home</a></p>
-      <!-- <img src="assets/error/404.png" alt="" class="container__illustration" /> -->
+      <img
+        src="assets/error/error.png"
+        alt=""
+        class="container__illustration"
+      />
     </main>
   </body>
 </html>

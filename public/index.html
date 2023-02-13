@@ -44,13 +44,32 @@
           </li>
           <li>
             <form id="method-too-long-form">
-              <input type="text" value="Make an OPTIONS call" disabled />
+              <input
+                type="text"
+                placeholder="Target"
+                value="/"
+                id="method-too-long-form__target"
+              />
+              <select id="method-too-long-form__method">
+                <option value="GET">GET</option>
+                <option value="OPTIONS">OPTIONS</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="LOOOOOOOOONG">LOOOONG</option>
+              </select>
               <button type="submit">Submit</button>
+              <p>
+                Response received:
+                <span class="method-too-long-form__message"></span>
+              </p>
             </form>
+          </li>
+          <li>
+            Go to generic <a href="/error/index.html">/error</a> page (WIP)
           </li>
         </ul>
       </section>
     </main>
   </body>
-  <script src="error/error.js"></script>
+  <script src="index.js"></script>
 </html>

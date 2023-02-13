@@ -10,7 +10,6 @@ HttpResponse::HttpResponse(HttpRequest &req)
         _status_line.reason = req.gett_err().message;
 
         this->_buff = this->_build_status_line();
-        // Build generic error page
     }
     else
     {

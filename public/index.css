@@ -24,3 +24,7 @@
   height: auto;
   object-fit: contain;
 }
+
+.method-too-long-form__message {
+  color: green;
+}
