@@ -16,6 +16,7 @@ public:
     ~RouterService();
 
     std::string get_file_path(HttpRequest const &req);
+    std::string get_404_file_path() const;
 
 private:
 };
