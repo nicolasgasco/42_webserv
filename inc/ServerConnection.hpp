@@ -26,11 +26,11 @@ public:
 
     ~ServerConnection();
 
-    int get_new_sock_id();
+    int get_new_sock_id() const;
 
 private:
     void _accept_recv_send(int const &sock_id, addrinfo *addr_info);
-    void _check_accept_return();
-    void _check_recv_return();
-    void _check_send_return();
+    void _check_accept_return() const;
+    void _check_recv_return() const;
+    void _check_send_return() const;
 };

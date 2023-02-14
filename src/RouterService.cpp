@@ -8,7 +8,7 @@ RouterService::~RouterService()
 {
 }
 
-std::string RouterService::get_file_path(HttpRequest const &req)
+std::string RouterService::get_file_path(HttpRequest const &req) const
 {
     std::string target = req.get_req_line().target;
 

@@ -30,7 +30,7 @@ void SocketConnection::_bind_and_listen(int const &sock_id, AddressInfo &addr_in
     this->_check_listen_result(listen_status);
 }
 
-void SocketConnection::_check_bind_result(int const &status, int const &sock_id)
+void SocketConnection::_check_bind_result(int const &status, int const &sock_id) const
 {
     if (status == -1)
     {
@@ -45,7 +45,7 @@ void SocketConnection::_check_bind_result(int const &status, int const &sock_id)
         std::cout << YELLOW << "Socket connection established..." << NC << std::endl;
 }
 
-void SocketConnection::_check_listen_result(int const &status)
+void SocketConnection::_check_listen_result(int const &status) const
 {
     if (status == -1)
         std::cerr << "Call to listen failed: setsockopt failed: " << std::strerror(errno) << std::endl;
