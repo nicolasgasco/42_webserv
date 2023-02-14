@@ -6,7 +6,7 @@ AddressInfo::AddressInfo()
     this->_get_addr_info("http");
 }
 
-AddressInfo::AddressInfo(std::string port)
+AddressInfo::AddressInfo(std::string const &port)
 {
     this->_get_addr_info(port);
 }
@@ -21,7 +21,7 @@ struct addrinfo *AddressInfo::get_serv_info()
     return this->_serv_info;
 }
 
-void AddressInfo::_get_addr_info(std::string port)
+void AddressInfo::_get_addr_info(std::string const &port)
 {
     struct addrinfo hints = this->_fill_hints();
 
@@ -42,7 +42,7 @@ struct addrinfo AddressInfo::_fill_hints()
     return hints;
 }
 
-void AddressInfo::_check_addr_info_status(int status)
+void AddressInfo::_check_addr_info_status(int const &status)
 {
     if (status != 0)
         std::cerr << "getaddrinfo error: " << gai_strerror(status) << std::endl;

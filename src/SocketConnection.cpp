@@ -10,7 +10,7 @@ SocketConnection::SocketConnection()
     this->_bind_and_listen(sock_id, addr_info, BACKLOG_DEFAULT);
 }
 
-SocketConnection::SocketConnection(int sock_id, AddressInfo &addr_info, int backlog)
+SocketConnection::SocketConnection(int const &sock_id, AddressInfo &addr_info, int const &backlog)
 {
     this->_bind_and_listen(sock_id, addr_info, backlog);
 }
@@ -19,7 +19,7 @@ SocketConnection::~SocketConnection()
 {
 }
 
-void SocketConnection::_bind_and_listen(int sock_id, AddressInfo &addr_info, int backlog)
+void SocketConnection::_bind_and_listen(int const &sock_id, AddressInfo &addr_info, int const &backlog)
 {
     struct addrinfo *serv_info = addr_info.get_serv_info();
 
@@ -30,7 +30,7 @@ void SocketConnection::_bind_and_listen(int sock_id, AddressInfo &addr_info, int
     this->_check_listen_result(listen_status);
 }
 
-void SocketConnection::_check_bind_result(int status, int sock_id)
+void SocketConnection::_check_bind_result(int const &status, int const &sock_id)
 {
     if (status == -1)
     {
@@ -45,7 +45,7 @@ void SocketConnection::_check_bind_result(int status, int sock_id)
         std::cout << YELLOW << "Socket connection established..." << NC << std::endl;
 }
 
-void SocketConnection::_check_listen_result(int status)
+void SocketConnection::_check_listen_result(int const &status)
 {
     if (status == -1)
         std::cerr << "Call to listen failed: setsockopt failed: " << std::strerror(errno) << std::endl;
