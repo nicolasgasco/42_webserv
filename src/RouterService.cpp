@@ -17,3 +17,8 @@ std::string RouterService::get_file_path(HttpRequest const &req)
     else
         return build_path(PUBLIC_PATH, target);
 }
+
+std::string RouterService::get_404_file_path() const
+{
+    return build_path(PUBLIC_PATH, ERRORS_PATH, "404.html");
+}

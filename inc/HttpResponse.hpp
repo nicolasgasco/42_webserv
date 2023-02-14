@@ -12,7 +12,6 @@
 
 // TODO centralize this
 #define HTTP_PROTOCOL "HTTP/1.1"
-#define ERRORS_PATH "error"
 
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
@@ -30,19 +29,27 @@ class HttpResponse
 private:
     std::string _buff;
     StatusLine _status_line;
-    ReqErr _err;
 
 public:
     HttpResponse(HttpRequest const &req);
     ~HttpResponse();
 
+    // Getters
     StatusLine const &get_status_line() const;
     std::string const &get_buff() const;
 
+    // Setters
+    void set_status_line(int const &code, std::string const &reason);
+
 private:
+    void _build_error_res(HttpRequest const &req);
+    void _build_ok_res(HttpRequest const &req);
+
     std::string _build_status_line() const;
     std::string _build_message_body(HttpRequest const &req);
-    std::string _build_404_page();
+
+    std::string _build_ok_page(std::ifstream const &file);
+    std::string _build_404_page(HttpRequest const &req, RouterService const &router);
 };
 
 // TODO remove when not required anymore
