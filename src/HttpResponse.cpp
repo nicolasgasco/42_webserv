@@ -24,8 +24,12 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
 
 void HttpResponse::_build_ok_res(HttpRequest const &req)
 {
-    this->_status_line.version = HTTP_PROTOCOL;
-    this->_buff = this->_build_message_body(req);
+    RouterService router;
+    std::string file_path = router.get_file_path(req);
+
+    std::ifstream file(file_path);
+
+    this->_buff = file ? this->_build_ok_page(file) : this->_build_404_page(req, router);
     // Pre-append status line
     this->_buff.insert(0, this->_build_status_line());
 }
@@ -37,19 +41,6 @@ std::string HttpResponse::_build_status_line() const
     status_line += std::to_string(this->_status_line.code) + " ";
     status_line += this->_status_line.reason + "\r\n";
     return status_line;
-}
-
-std::string HttpResponse::_build_message_body(HttpRequest const &req)
-{
-    RouterService router;
-    std::string file_path = router.get_file_path(req);
-
-    std::ifstream file(file_path);
-
-    if (file)
-        return this->_build_ok_page(file);
-    else
-        return this->_build_404_page(req, router);
 }
 
 std::string HttpResponse::_build_ok_page(std::ifstream const &file)
