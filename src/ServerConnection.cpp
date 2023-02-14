@@ -20,7 +20,7 @@ ServerConnection::~ServerConnection()
     close(this->_new_sock_id);
 }
 
-int ServerConnection::get_new_sock_id()
+int ServerConnection::get_new_sock_id() const
 {
     return this->_new_sock_id;
 }
@@ -44,7 +44,7 @@ void ServerConnection::_accept_recv_send(int const &sock_id, addrinfo *addr_info
     this->_check_send_return();
 }
 
-void ServerConnection::_check_accept_return()
+void ServerConnection::_check_accept_return() const
 {
     if (this->_new_sock_id == -1)
         std::cerr << "Error: accept: " << std::strerror(errno) << std::endl;
@@ -53,7 +53,7 @@ void ServerConnection::_check_accept_return()
                   << "New connection accepted (" << this->_new_sock_id << ")..." << NC << std::endl;
 }
 
-void ServerConnection::_check_recv_return()
+void ServerConnection::_check_recv_return() const
 {
     if (this->_bytes_received == -1)
         std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
@@ -61,7 +61,7 @@ void ServerConnection::_check_recv_return()
         std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
 }
 
-void ServerConnection::_check_send_return()
+void ServerConnection::_check_send_return() const
 {
     if (this->_bytes_sent == -1)
         std::cerr << "Error: send: " << std::strerror(errno) << std::endl;

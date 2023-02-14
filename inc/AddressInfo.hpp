@@ -52,10 +52,10 @@ public:
     AddressInfo(std::string const &port);
     ~AddressInfo();
 
-    struct addrinfo *get_serv_info();
+    struct addrinfo *get_serv_info() const;
 
 private:
-    void _get_addr_info(std::string const &port);
+    void _fill_addr_info(std::string const &port);
     struct addrinfo _fill_hints();
-    void _check_addr_info_status(int const &status);
+    void _check_addr_info_status(int const &status) const;
 };

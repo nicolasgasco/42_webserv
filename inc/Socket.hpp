@@ -12,13 +12,13 @@ private:
 
 public:
     Socket();
-    Socket(AddressInfo &addr_info);
+    Socket(AddressInfo const &addr_info);
 
     ~Socket();
 
-    int get_socket_id();
+    int get_socket_id() const;
 
 private:
-    void _create_socket(AddressInfo &addr_info);
-    void _check_socket_id(int status);
+    void _create_socket(AddressInfo const &addr_info);
+    void _check_socket_id(int const &status) const;
 };
