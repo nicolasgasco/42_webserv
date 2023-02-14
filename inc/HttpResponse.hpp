@@ -33,14 +33,14 @@ private:
     ReqErr _err;
 
 public:
-    HttpResponse(HttpRequest &req);
+    HttpResponse(HttpRequest const &req);
     ~HttpResponse();
 
-    StatusLine get_status_line();
-    std::string get_buff();
+    StatusLine const &get_status_line() const;
+    std::string const &get_buff() const;
 
 private:
-    std::string _build_status_line();
+    std::string _build_status_line() const;
     std::string _build_message_body(HttpRequest &req);
     std::string _build_404_page();
 };

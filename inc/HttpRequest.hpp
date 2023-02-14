@@ -58,21 +58,20 @@ public:
     ~HttpRequest();
 
     // Getters
-    std::map<std::string, std::string> &get_attrs();
-    char *get_buff();
-    ReqErr &gett_err();
-    std::map<std::string, std::string> &get_params();
-
-    ReqLine &get_req_line();
+    std::map<std::string, std::string> const &get_attrs() const;
+    char const *get_buff() const;
+    ReqErr const &gett_err() const;
+    std::map<std::string, std::string> const &get_params() const;
+    ReqLine const &get_req_line() const;
 
     // Methods
     void parse_req();
     void output_status();
 
     // Computed properties
-    bool has_error();
-    bool has_query_params();
-    bool is_html_req();
+    bool has_error() const;
+    bool has_query_params() const;
+    bool is_html_req() const;
 
 private:
     void _parse_attr_line(std::string line);
@@ -82,7 +81,7 @@ private:
     void _set_err(int code, std::string message);
 
     // Computed properties
-    bool _is_method_supported();
+    bool _is_method_supported() const;
 };
 
 // TODO remove when not required anymore
