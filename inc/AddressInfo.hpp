@@ -49,13 +49,13 @@ private:
 
 public:
     AddressInfo();
-    AddressInfo(std::string port);
+    AddressInfo(std::string const &port);
     ~AddressInfo();
 
     struct addrinfo *get_serv_info();
 
 private:
-    void _get_addr_info(std::string port);
+    void _get_addr_info(std::string const &port);
     struct addrinfo _fill_hints();
-    void _check_addr_info_status(int status);
+    void _check_addr_info_status(int const &status);
 };

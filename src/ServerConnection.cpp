@@ -9,7 +9,7 @@ ServerConnection::ServerConnection()
     this->_accept_recv_send(socket.get_socket_id(), addr_info.get_serv_info());
 }
 
-ServerConnection::ServerConnection(int sock_id, addrinfo *addr_info)
+ServerConnection::ServerConnection(int const &sock_id, addrinfo *addr_info)
 {
     this->_accept_recv_send(sock_id, addr_info);
 }
@@ -25,7 +25,7 @@ int ServerConnection::get_new_sock_id()
     return this->_new_sock_id;
 }
 
-void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
+void ServerConnection::_accept_recv_send(int const &sock_id, addrinfo *addr_info)
 {
     socklen_t addr_info_size = sizeof addr_info;
     this->_new_sock_id = accept(sock_id, (struct sockaddr *)addr_info, &addr_info_size);
@@ -38,7 +38,7 @@ void ServerConnection::_accept_recv_send(int sock_id, addrinfo *addr_info)
     req.parse_req();
     req.output_status();
 
-    HttpResponse res(req); 
+    HttpResponse res(req);
 
     this->_bytes_sent = send(this->_new_sock_id, res.get_buff().c_str(), res.get_buff().length(), 0);
     this->_check_send_return();
