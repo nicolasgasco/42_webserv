@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HttpRequest.hpp"
+#include "utils.hpp"
 
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"
@@ -10,14 +11,11 @@
 
 class RouterService
 {
-private:
-    HttpRequest &_req;
-
 public:
-    RouterService(HttpRequest &req);
+    RouterService();
     ~RouterService();
 
-    std::string get_file_path();
+    std::string get_file_path(HttpRequest const &req);
 
 private:
 };

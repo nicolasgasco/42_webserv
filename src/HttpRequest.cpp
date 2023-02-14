@@ -165,47 +165,47 @@ void HttpRequest::output_status()
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
-char *HttpRequest::get_buff()
+char const *HttpRequest::get_buff() const
 {
     return this->_buff;
 }
 
-std::map<std::string, std::string> &HttpRequest::get_params()
+std::map<std::string, std::string> const &HttpRequest::get_params() const
 {
     return this->_params;
 }
 
-ReqLine &HttpRequest::get_req_line()
+ReqLine const &HttpRequest::get_req_line() const
 {
     return this->_req_line;
 }
 
-ReqErr &HttpRequest::gett_err()
+ReqErr const &HttpRequest::gett_err() const
 {
     return this->_err;
 }
 
-std::map<std::string, std::string> &HttpRequest::get_attrs()
+std::map<std::string, std::string> const &HttpRequest::get_attrs() const
 {
     return this->_attrs;
 }
 
-bool HttpRequest::has_error()
+bool HttpRequest::has_error() const
 {
     return this->_err.code != -1;
 }
 
-bool HttpRequest::has_query_params()
+bool HttpRequest::has_query_params() const
 {
     return this->_req_line.target.find("?") != std::string::npos;
 }
 
-bool HttpRequest::is_html_req()
+bool HttpRequest::is_html_req() const
 {
-    return this->_attrs["Accept"].find(ACCEPT_HTML) != std::string::npos;
+    return this->_attrs.at("Accept").find(ACCEPT_HTML) != std::string::npos;
 }
 
-bool HttpRequest::_is_method_supported()
+bool HttpRequest::_is_method_supported() const
 {
     std::vector<std::string> supported_methods;
     supported_methods.push_back("GET");
@@ -233,7 +233,7 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
     std::cout << std::endl;
     std::cout << "OPTIONS:" << std::endl;
 
-    for (std::map<std::string, std::string>::iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
+    for (std::map<std::string, std::string>::const_iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
         std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
 
     if (std.get_params().size())
@@ -241,7 +241,7 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
         std::cout << std::endl;
         std::cout << "QUERY PARAMS:" << std::endl;
 
-        for (std::map<std::string, std::string>::iterator it = std.get_params().begin(); it != std.get_params().end(); ++it)
+        for (std::map<std::string, std::string>::const_iterator it = std.get_params().begin(); it != std.get_params().end(); ++it)
             std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
     }
 

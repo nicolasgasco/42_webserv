@@ -1,6 +1,6 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(HttpRequest &req)
+HttpResponse::HttpResponse(HttpRequest const &req)
 {
     _status_line.version = HTTP_PROTOCOL;
 
@@ -27,17 +27,17 @@ HttpResponse::~HttpResponse()
 {
 }
 
-StatusLine HttpResponse::get_status_line()
+StatusLine const &HttpResponse::get_status_line() const
 {
     return this->_status_line;
 }
 
-std::string HttpResponse::get_buff()
+std::string const &HttpResponse::get_buff() const
 {
     return this->_buff;
 }
 
-std::string HttpResponse::_build_status_line()
+std::string HttpResponse::_build_status_line() const
 {
     std::string status_line;
     status_line += this->_status_line.version + " ";
@@ -46,12 +46,12 @@ std::string HttpResponse::_build_status_line()
     return status_line;
 }
 
-std::string HttpResponse::_build_message_body(HttpRequest &req)
+std::string HttpResponse::_build_message_body(HttpRequest const &req)
 {
     std::string message_body;
 
-    RouterService router(req);
-    std::string file_path = router.get_file_path();
+    RouterService router;
+    std::string file_path = router.get_file_path(req);
 
     std::ifstream file(file_path);
     std::ostringstream data_stream;
