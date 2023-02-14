@@ -50,8 +50,8 @@ std::string HttpResponse::_build_message_body(HttpRequest const &req)
 {
     std::string message_body;
 
-    RouterService router(req);
-    std::string file_path = router.get_file_path();
+    RouterService router;
+    std::string file_path = router.get_file_path(req);
 
     std::ifstream file(file_path);
     std::ostringstream data_stream;

@@ -41,7 +41,7 @@ public:
 
 private:
     std::string _build_status_line() const;
-    std::string _build_message_body(HttpRequest &req);
+    std::string _build_message_body(HttpRequest const &req);
     std::string _build_404_page();
 };
 
