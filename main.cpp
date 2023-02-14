@@ -7,8 +7,13 @@
 #define BACKLOG 10
 int main(int argc, char **argv)
 {
-	(void)argc;
 	(void)argv;
+    
+	if (argc != 2)
+	{
+		std::cout << "❌  WRONG USAGE!!!.\n⚠️   Use: ./webserv [configuration file]" << std::endl;
+        return (-1);
+	}
 
     AddressInfo addr_info;
 
