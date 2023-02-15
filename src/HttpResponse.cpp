@@ -41,53 +41,57 @@ void HttpResponse::_build_ok_res(HttpRequest const &req)
 
     std::ifstream file(file_path);
 
-    this->_buff = file ? this->_build_ok_page(file) : this->_build_404_page(req, router);
+    if (file)
+    {
+        this->set_status_line(200, "OK");
+        this->_buff = this->_build_file(file);
+    }
+    else
+    {
+        this->set_status_line(404, "Not Found");
+        this->_buff = this->_build_404_page(req, router);
+    }
+
     // Pre-append status line
     this->_buff.insert(0, this->_build_status_line());
 }
 
-std::string HttpResponse::_build_status_line() const
-{
-    std::string status_line;
-    status_line += this->_status_line.version + " ";
-    status_line += std::to_string(this->_status_line.code) + " ";
-    status_line += this->_status_line.reason + "\r\n";
-    return status_line;
-}
-
-std::string HttpResponse::_build_ok_page(std::ifstream const &file)
+std::string HttpResponse::_build_file(std::ifstream const &file)
 {
     std::string message_body;
 
     std::ostringstream data_stream;
 
     data_stream << file.rdbuf();
-    message_body += "\r\n" + data_stream.str();
 
-    this->set_status_line(200, "OK");
+    message_body += "\r\n";
+    message_body += data_stream.str();
 
     return message_body;
 }
 
 std::string HttpResponse::_build_404_page(HttpRequest const &req, RouterService const &router)
 {
-    this->set_status_line(400, "Not Found");
-
     std::string message_body_404_page;
     if (req.is_html_req())
     {
         std::ostringstream data_stream;
 
-        std::ifstream file(router.get_404_file_path());
-        if (file)
-        {
-            data_stream << file.rdbuf();
-            message_body_404_page += "\r\n" + data_stream.str();
-        }
+        std::ifstream file_404(router.get_404_file_path());
+        if (file_404)
+            message_body_404_page = this->_build_file(file_404);
         else
             std::cerr << RED << "Error: missing 404.html file" << NC << std::endl;
     }
     return message_body_404_page;
+}
+
+std::string HttpResponse::_build_status_line() const
+{
+    std::string status_line;
+    status_line += this->_status_line.version + " " + std::to_string(this->_status_line.code) + " " + this->_status_line.reason;
+    status_line += "\r\n";
+    return status_line;
 }
 
 StatusLine const &HttpResponse::get_status_line() const
