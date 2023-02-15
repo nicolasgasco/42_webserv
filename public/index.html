@@ -70,16 +70,21 @@
             </form>
           </li>
           <li>
-            <p>Choose query params values</p>
+            <p>Choose query params values:</p>
             <form class="query-params__form">
-              <input type="text" placeholder="key" value="code" />
-              <input type="text" placeholder="value" value="403" />
+              <label for="code"><b>Code:</b></label>
+              <input id="code" type="text" placeholder="value" value="403" />
 
-              <input type="text" placeholder="key" value="message" />
-              <input type="text" placeholder="value" value="Forbidden" />
+              <label for="message"><b>Message:</b></label>
+              <input
+                id="message"
+                type="text"
+                placeholder="value"
+                value="Forbidden"
+              />
             </form>
             <p>
-              and visit
+              Visit
               <a
                 id="query-params__link"
                 href="/error/index.html?code=403&message=Forbidden"

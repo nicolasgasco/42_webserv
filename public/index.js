@@ -34,18 +34,14 @@ methodTooLongForm.addEventListener("submit", function (e) {
 });
 
 const queryParamsForm = document.querySelector(".query-params__form");
-queryParamsForm.addEventListener("change", function () {
-  let childrenValues = [];
-  for (child of queryParamsForm.children) {
-    childrenValues.push(child.value);
-  }
+const codeInput = document.getElementById("code");
+const messageInput = document.getElementById("message");
 
+queryParamsForm.addEventListener("change", function () {
   const queryParamsLink = document.getElementById("query-params__link");
   const newTarget =
     "/error/index.html?" +
-    `${childrenValues[0] || "key"}=${childrenValues[1] || "value"}&${
-      childrenValues[2] || "key"
-    }=${childrenValues[3] || "value"}`;
+    `code=${codeInput.value}&message=${messageInput.value}`;
   queryParamsLink.href = newTarget;
   queryParamsLink.innerText = newTarget;
 });
