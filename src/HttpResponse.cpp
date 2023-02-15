@@ -5,7 +5,19 @@ HttpResponse::HttpResponse(HttpRequest const &req)
     if (req.has_error())
         this->_build_error_res(req);
     else
-        this->_build_ok_res(req);
+    {
+        std::string method = req.get_req_line().method;
+        if (method == "GET")
+            this->_build_ok_res(req);
+        else if (method == "POST")
+        {
+            // To be built
+        }
+        else if (method == "DELETE")
+        {
+            // To be built
+        }
+    }
 
     // TODO delete this when build is done
     std::cout << *this << std::endl
@@ -90,9 +102,9 @@ std::string const &HttpResponse::get_buff() const
 
 void HttpResponse::set_status_line(int const &code, std::string const &reason)
 {
-    this->_status_line.version = HTTP_PROTOCOL;
-    this->_status_line.code = code;
-    this->_status_line.reason = reason;
+    this->_status_line.version = std::string(HTTP_PROTOCOL);
+    this->_status_line.code = int(code);
+    this->_status_line.reason = std::string(reason);
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)
