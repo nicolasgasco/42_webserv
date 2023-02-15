@@ -5,7 +5,19 @@ HttpResponse::HttpResponse(HttpRequest const &req)
     if (req.has_error())
         this->_build_error_res(req);
     else
-        this->_build_ok_res(req);
+    {
+        std::string method = req.get_req_line().method;
+        if (method == "GET")
+            this->_build_ok_res(req);
+        else if (method == "POST")
+        {
+            // To be built
+        }
+        else if (method == "DELETE")
+        {
+            // To be built
+        }
+    }
 
     // TODO delete this when build is done
     std::cout << *this << std::endl
@@ -24,8 +36,12 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
 
 void HttpResponse::_build_ok_res(HttpRequest const &req)
 {
-    this->_status_line.version = HTTP_PROTOCOL;
-    this->_buff = this->_build_message_body(req);
+    RouterService router;
+    std::string file_path = router.get_file_path(req);
+
+    std::ifstream file(file_path);
+
+    this->_buff = file ? this->_build_ok_page(file) : this->_build_404_page(req, router);
     // Pre-append status line
     this->_buff.insert(0, this->_build_status_line());
 }
@@ -37,19 +53,6 @@ std::string HttpResponse::_build_status_line() const
     status_line += std::to_string(this->_status_line.code) + " ";
     status_line += this->_status_line.reason + "\r\n";
     return status_line;
-}
-
-std::string HttpResponse::_build_message_body(HttpRequest const &req)
-{
-    RouterService router;
-    std::string file_path = router.get_file_path(req);
-
-    std::ifstream file(file_path);
-
-    if (file)
-        return this->_build_ok_page(file);
-    else
-        return this->_build_404_page(req, router);
 }
 
 std::string HttpResponse::_build_ok_page(std::ifstream const &file)
@@ -99,9 +102,9 @@ std::string const &HttpResponse::get_buff() const
 
 void HttpResponse::set_status_line(int const &code, std::string const &reason)
 {
-    this->_status_line.version = HTTP_PROTOCOL;
-    this->_status_line.code = code;
-    this->_status_line.reason = reason;
+    this->_status_line.version = std::string(HTTP_PROTOCOL);
+    this->_status_line.code = int(code);
+    this->_status_line.reason = std::string(reason);
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)
