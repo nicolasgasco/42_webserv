@@ -202,7 +202,10 @@ bool HttpRequest::has_query_params() const
 
 bool HttpRequest::is_html_req() const
 {
-    return this->_attrs.at("Accept").find(ACCEPT_HTML) != std::string::npos;
+    bool isAcceptHtml = this->_attrs.at("Accept").find(ACCEPT_HTML) != std::string::npos;
+    bool isAcceptAny = this->_attrs.at("Accept") == "*/*";
+
+    return (isAcceptHtml || isAcceptAny);
 }
 
 bool HttpRequest::_is_method_supported() const
