@@ -45,6 +45,8 @@ private:
     void _build_error_res(HttpRequest const &req);
     void _build_ok_res(HttpRequest const &req);
 
+    void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
+
     std::string _build_status_line() const;
     std::string _build_file(std::ifstream const &file);
     std::string _build_404_page(HttpRequest const &req, RouterService const &router);

@@ -202,18 +202,29 @@ bool HttpRequest::has_query_params() const
 
 bool HttpRequest::is_html_req() const
 {
-    // TODO check how to best identify requests for documents
-    // bool isAcceptHtml = this->_attrs.at("Accept").find(ACCEPT_HTML) != std::string::npos;
-    // bool isAcceptAny = this->_attrs.at("Accept") == "*/*";
+    bool isRootTarget = this->_req_line.target == "/";
 
+    bool isAcceptAll;
     try
     {
-        return ((this->_attrs.at("Sec-Fetch-Dest") == "document") || this->_req_line.target == "/");
+        isAcceptAll = this->_attrs.at("Accept") == "*/*";
     }
     catch (const std::out_of_range &oor)
     {
-        return false;
+        isAcceptAll = false;
     }
+
+    bool isSecFetchDestDocument;
+    try
+    {
+        isSecFetchDestDocument = this->_attrs.at("Sec-Fetch-Dest") == "document";
+    }
+    catch (const std::out_of_range &oor)
+    {
+        isSecFetchDestDocument = false;
+    }
+
+    return (isSecFetchDestDocument || isRootTarget || isAcceptAll);
 }
 
 bool HttpRequest::_is_method_supported() const
