@@ -30,8 +30,28 @@ HttpResponse::~HttpResponse()
 
 void HttpResponse::_build_error_res(HttpRequest const &req)
 {
-    this->set_status_line(req.gett_err().code, req.gett_err().message);
-    this->_buff = this->_build_status_line();
+    int reqErrCode = req.gett_err().code;
+    std::string reqErrMessage = req.gett_err().message;
+
+    bool doesContainDot = req.get_req_line().target.find(".") != std::string::npos;
+    if (!doesContainDot)
+    {
+        this->set_status_line(200, "OK");
+        this->_buff = this->_build_status_line();
+
+        std::ifstream file(build_path(PUBLIC_PATH, ERRORS_PATH, "index.html"));
+
+        std::string res_file = this->_build_file(file);
+        this->_replace_var_in_page(res_file, "{{code}}", std::to_string(reqErrCode));
+        this->_replace_var_in_page(res_file, "{{message}}", reqErrMessage);
+
+        this->_buff += res_file;
+    }
+    else
+    {
+        this->set_status_line(reqErrCode, reqErrMessage);
+        this->_buff = this->_build_status_line();
+    }
 }
 
 void HttpResponse::_build_ok_res(HttpRequest const &req)
@@ -92,6 +112,19 @@ std::string HttpResponse::_build_status_line() const
     status_line += this->_status_line.version + " " + std::to_string(this->_status_line.code) + " " + this->_status_line.reason;
     status_line += "\r\n";
     return status_line;
+}
+
+void HttpResponse::_replace_var_in_page(std::string &file, std::string const var, std::string const value) const
+{
+    while (true)
+    {
+        size_t posCode = file.find(var);
+        if (posCode == std::string::npos)
+            return;
+
+        file.erase(posCode, var.length());
+        file.insert(posCode, value);
+    }
 }
 
 StatusLine const &HttpResponse::get_status_line() const
