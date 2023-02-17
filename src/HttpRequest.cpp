@@ -208,7 +208,7 @@ bool HttpRequest::is_html_req() const
 
     try
     {
-        return (this->_attrs.at("Sec-Fetch-Dest") == "document");
+        return ((this->_attrs.at("Sec-Fetch-Dest") == "document") || this->_req_line.target == "/");
     }
     catch (const std::out_of_range &oor)
     {
