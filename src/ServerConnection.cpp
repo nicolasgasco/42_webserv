@@ -1,31 +1,6 @@
 #include "ServerConnection.hpp"
 
-ServerConnection::ServerConnection()
-{
-    AddressInfo addr_info;
-
-    Socket socket(addr_info);
-
-    this->_accept_recv_send(socket.get_socket_id(), addr_info.get_serv_info());
-}
-
-ServerConnection::ServerConnection(int const &sock_id, addrinfo *addr_info)
-{
-    this->_accept_recv_send(sock_id, addr_info);
-}
-
-ServerConnection::~ServerConnection()
-{
-    std::cout << YELLOW << "Connection (" << this->_new_sock_id << ") closed..." << NC << std::endl;
-    close(this->_new_sock_id);
-}
-
-int ServerConnection::get_new_sock_id() const
-{
-    return this->_new_sock_id;
-}
-
-void ServerConnection::_accept_recv_send(int const &sock_id, addrinfo *addr_info)
+ServerConnection::ServerConnection(int const &sock_id, addrinfo *addr_info, RouterService const &router)
 {
     socklen_t addr_info_size = sizeof addr_info;
     this->_new_sock_id = accept(sock_id, (struct sockaddr *)addr_info, &addr_info_size);
@@ -38,10 +13,21 @@ void ServerConnection::_accept_recv_send(int const &sock_id, addrinfo *addr_info
     req.parse_req();
     req.output_status();
 
-    HttpResponse res(req);
+    HttpResponse res(req, router);
 
     this->_bytes_sent = send(this->_new_sock_id, res.get_buff().c_str(), res.get_buff().length(), 0);
     this->_check_send_return();
+}
+
+ServerConnection::~ServerConnection()
+{
+    std::cout << YELLOW << "Connection (" << this->_new_sock_id << ") closed..." << NC << std::endl;
+    close(this->_new_sock_id);
+}
+
+int ServerConnection::get_new_sock_id() const
+{
+    return this->_new_sock_id;
 }
 
 void ServerConnection::_check_accept_return() const

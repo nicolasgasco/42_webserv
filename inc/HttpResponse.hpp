@@ -32,7 +32,7 @@ private:
     RouterService _router;
 
 public:
-    HttpResponse(HttpRequest const &req);
+    HttpResponse(HttpRequest const &req, RouterService const &router);
     ~HttpResponse();
 
     // Getters
