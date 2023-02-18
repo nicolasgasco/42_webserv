@@ -50,7 +50,6 @@ private:
 
     std::string _build_status_line() const;
     std::string _build_file(std::ifstream const &file);
-    std::string _build_404_page(HttpRequest const &req, RouterService const &router);
 };
 
 // TODO remove when not required anymore

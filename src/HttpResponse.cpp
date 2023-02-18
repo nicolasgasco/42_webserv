@@ -65,7 +65,11 @@ void HttpResponse::_build_ok_res(HttpRequest const &req)
     else
     {
         this->set_status_line(404, "Not Found");
-        this->_buff = this->_build_404_page(req, router);
+        std::ifstream file_404(router.get_404_file_path());
+        if (file_404)
+            this->_buff = this->_build_file(file_404);
+        else
+            std::cerr << RED << "Error: missing 404.html file" << NC << std::endl;
     }
 
     // Pre-append status line
@@ -84,22 +88,6 @@ std::string HttpResponse::_build_file(std::ifstream const &file)
     message_body += data_stream.str();
 
     return message_body;
-}
-
-std::string HttpResponse::_build_404_page(HttpRequest const &req, RouterService const &router)
-{
-    std::string message_body_404_page;
-    if (req.is_html_req())
-    {
-        std::ostringstream data_stream;
-
-        std::ifstream file_404(router.get_404_file_path());
-        if (file_404)
-            message_body_404_page = this->_build_file(file_404);
-        else
-            std::cerr << RED << "Error: missing 404.html file" << NC << std::endl;
-    }
-    return message_body_404_page;
 }
 
 std::string HttpResponse::_build_status_line() const
