@@ -59,7 +59,7 @@ public:
 
     // Getters
     std::map<std::string, std::string> const &get_attrs() const;
-    char const *get_buff() const;
+    char *get_buff();
     ReqErr const &gett_err() const;
     std::map<std::string, std::string> const &get_params() const;
     ReqLine const &get_req_line() const;
