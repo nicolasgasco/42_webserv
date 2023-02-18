@@ -29,7 +29,7 @@ class HttpResponse
 private:
     std::string _buff;
     StatusLine _status_line;
-    RouterService _router;
+    RouterService const &_router;
     HttpRequest const &_req;
 
 public:

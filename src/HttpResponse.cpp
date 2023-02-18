@@ -1,9 +1,7 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router): _req(req)
+HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) : _router(router), _req(req)
 {
-    this->_router = router;
-
     if (this->_req.has_error())
         this->_build_error_res();
     else
