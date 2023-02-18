@@ -72,6 +72,11 @@ void HttpRequest::_parse_attr_line(std::string line)
 
     std::string key_str(ltrim(key_char_ptr));
     std::string value_str(trim(value_char_ptr));
+
+    // TODO check if this is really required
+    if (!value_str.length())
+        this->_set_err(400, "Bad Request");
+
     this->_attrs.insert(std::pair<std::string, std::string>(key_str, value_str));
 
     // TODO Check Obsolete line folding
