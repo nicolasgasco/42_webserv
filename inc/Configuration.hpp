@@ -7,8 +7,7 @@ class Config
 		Config();
 		~Config();
     
-		void  	load_configuration(char* config_file);
-    	void 	validate_configuration();
+		void	check_config_file(char* config_file);
 
 
 	private:
