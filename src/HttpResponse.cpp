@@ -1,16 +1,16 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router)
+HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router): _req(req)
 {
     this->_router = router;
 
-    if (req.has_error())
-        this->_build_error_res(req);
+    if (this->_req.has_error())
+        this->_build_error_res();
     else
     {
-        std::string method = req.get_req_line().method;
+        std::string method = this->_req.get_req_line().method;
         if (method == "GET")
-            this->_build_ok_res(req);
+            this->_build_ok_res();
         else if (method == "POST")
         {
             // To be built
@@ -30,16 +30,16 @@ HttpResponse::~HttpResponse()
 {
 }
 
-void HttpResponse::_build_error_res(HttpRequest const &req)
+void HttpResponse::_build_error_res()
 {
-    int reqErrCode = req.gett_err().code;
-    std::string reqErrMessage = req.gett_err().message;
+    int reqErrCode = this->_req.gett_err().code;
+    std::string reqErrMessage = this->_req.gett_err().message;
 
     this->set_status_line(reqErrCode, reqErrMessage);
     this->_buff = this->_build_status_line();
 
     // TODO check if it's possible to always send HTML
-    if (req.is_html_req())
+    if (this->_req.is_html_req())
     {
         std::ifstream file(this->_router.get_def_err_file_path());
 
@@ -51,9 +51,9 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
     }
 }
 
-void HttpResponse::_build_ok_res(HttpRequest const &req)
+void HttpResponse::_build_ok_res()
 {
-    std::string file_path = this->_router.get_file_path(req);
+    std::string file_path = this->_router.get_file_path(this->_req);
 
     std::ifstream file(file_path);
 

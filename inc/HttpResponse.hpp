@@ -30,6 +30,7 @@ private:
     std::string _buff;
     StatusLine _status_line;
     RouterService _router;
+    HttpRequest const &_req;
 
 public:
     HttpResponse(HttpRequest const &req, RouterService const &router);
@@ -43,8 +44,8 @@ public:
     void set_status_line(int const &code, std::string const &reason);
 
 private:
-    void _build_error_res(HttpRequest const &req);
-    void _build_ok_res(HttpRequest const &req);
+    void _build_error_res();
+    void _build_ok_res();
 
     void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
 
