@@ -40,7 +40,7 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
     if (req.is_html_req())
     {
 
-        std::ifstream file(build_path(PUBLIC_PATH, ERRORS_PATH, "index.html"));
+        std::ifstream file(build_path(PUBLIC_PATH, ERRORS_PATH, DEF_ERR_PAGE));
 
         std::string res_file = this->_build_file(file);
         this->_replace_var_in_page(res_file, "{{code}}", std::to_string(reqErrCode));
