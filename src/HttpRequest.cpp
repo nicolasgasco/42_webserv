@@ -34,16 +34,12 @@ void HttpRequest::parse_req()
             break;
         }
     }
-    if (this->has_error())
-        return;
 
     // A recipient that receives whitespace between the start-line and the first header field
     // MUST either reject the message as invalid or consume each whitespace-preceded line
     // without further processing of it
     while (std::getline(buff_stream, line))
     {
-        if (this->has_error())
-            return;
         if (str_isspace(line))
         {
             if (this->_attrs.size())
@@ -72,10 +68,7 @@ void HttpRequest::_parse_attr_line(std::string line)
     char *value_char_ptr = strtok(NULL, "\n\r");
 
     if (!key_char_ptr || !value_char_ptr)
-    {
         this->_set_err(400, "Bad Request");
-        return;
-    }
 
     std::string key_str(ltrim(key_char_ptr));
     std::string value_str(trim(value_char_ptr));
@@ -97,10 +90,7 @@ void HttpRequest::_parse_req_line(std::string line)
 
     char *target_char_ptr = strtok(NULL, WHITESPACES);
     if (!target_char_ptr) // 400 - Malformed request line
-    {
         this->_set_err(400, "Bad Request");
-        return;
-    }
 
     std::string target_str(target_char_ptr);
     this->_req_line.target = trim(target_str);
@@ -115,10 +105,7 @@ void HttpRequest::_parse_req_line(std::string line)
        a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR. */
     char *version_char_ptr = strtok(NULL, "\n");
     if (!version_char_ptr) // 400 - Malformed request line
-    {
         this->_set_err(400, "Bad Request");
-        return;
-    }
 
     std::string version_str(version_char_ptr);
     this->_req_line.version = trim(version_str);
