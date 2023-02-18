@@ -33,8 +33,7 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
     int reqErrCode = req.gett_err().code;
     std::string reqErrMessage = req.gett_err().message;
 
-    bool doesContainDot = req.get_req_line().target.find(".") != std::string::npos;
-    if (!doesContainDot)
+    if (req.is_html_req())
     {
         this->set_status_line(200, "OK");
         this->_buff = this->_build_status_line();
