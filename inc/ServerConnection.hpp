@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RouterService.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "Socket.hpp"
@@ -22,14 +23,14 @@ private:
 
 public:
     ServerConnection();
-    ServerConnection(int const &sock_id, addrinfo *addr_info);
+    ServerConnection(int const &sock_id, addrinfo *addr_info, RouterService const &router);
 
     ~ServerConnection();
 
     int get_new_sock_id() const;
 
 private:
-    void _accept_recv_send(int const &sock_id, addrinfo *addr_info);
+    void _accept_recv_send(int const &sock_id, addrinfo *addr_info, RouterService const &router);
     void _check_accept_return() const;
     void _check_recv_return() const;
     void _check_send_return() const;

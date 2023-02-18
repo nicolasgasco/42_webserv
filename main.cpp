@@ -1,4 +1,5 @@
 #include "AddressInfo.hpp"
+#include "RouterService.hpp"
 #include "Socket.hpp"
 #include "SocketConnection.hpp"
 #include "ServerConnection.hpp"
@@ -11,13 +12,16 @@ int main(int argc, char **argv)
 	if (argc > 2)
 	{
 		std::cout << "❌  WRONG USAGE!!!.\n⚠️   Use: ./webserv [configuration file]" << std::endl;
-        return (-1);
+		return (-1);
 	}
 	else
 	{
-		try 
+		try
 		{
-			Config	config;
+			// Todo check if Config and RouterService should be long lived
+			Config config;
+			RouterService router;
+
 			if (argc == 1)
 			{
 				char *config_file_path = (char *) "./config/default.conf";
@@ -26,17 +30,17 @@ int main(int argc, char **argv)
 			else
 				config.check_config_file(argv[1]);
 
-    		AddressInfo addr_info;
+			AddressInfo addr_info;
 
-    		Socket socket(addr_info);
+			Socket socket(addr_info);
 
-    		SocketConnection sock_connection(socket.get_socket_id(), addr_info, BACKLOG);
+			SocketConnection sock_connection(socket.get_socket_id(), addr_info, BACKLOG);
 
-    		// TODO include this loop in a Server class?
-    		while (true)
-    		{
-        		ServerConnection serv_connection(socket.get_socket_id(), addr_info.get_serv_info());
-    		}
+			// TODO include this loop in a Server class?
+			while (true)
+			{
+				ServerConnection serv_connection(socket.get_socket_id(), addr_info.get_serv_info(), router);
+			}
 		}
 		catch (const std::exception &e)
 		{
