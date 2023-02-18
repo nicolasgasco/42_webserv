@@ -19,10 +19,7 @@ void	Config::check_config_file(char* config_file)
         exit(0);
 	}
 	std::cout << "🟢  SUCCESS Opening and reading config_file" << std::endl;
-}
-
-void  	Config::check_config_file(char* config_file) 
-{
+	
 	std::ifstream input_data;
 	std::string text;
 	std::vector <std::string> text_vector;

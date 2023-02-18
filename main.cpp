@@ -8,7 +8,7 @@
 #define BACKLOG 10
 int main(int argc, char **argv)
 {
-	if (argc != 2)
+	if (argc > 2)
 	{
 		std::cout << "❌  WRONG USAGE!!!.\n⚠️   Use: ./webserv [configuration file]" << std::endl;
         return (-1);
@@ -18,7 +18,13 @@ int main(int argc, char **argv)
 		try 
 		{
 			Config	config;
-			config.check_config_file(argv[1]);
+			if (argc == 1)
+			{
+				char *config_file_path = (char *) "./config/default.conf";
+				config.check_config_file(config_file_path);
+			}
+			else
+				config.check_config_file(argv[1]);
 
     		AddressInfo addr_info;
 
