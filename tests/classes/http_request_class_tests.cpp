@@ -136,7 +136,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 char *buff = http_request.get_buff();
 
-                std::string options_str("/ HTTP/1.1\r\n");
+                std::string options_str("GET /\r\n");
 
                 int i = 0;
                 for (; i < options_str.size(); ++i)
@@ -156,7 +156,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 char *buff = http_request.get_buff();
 
-                std::string options_str("/\r\n");
+                std::string options_str("GET\r\n");
 
                 int i = 0;
                 for (; i < options_str.size(); ++i)

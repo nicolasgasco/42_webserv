@@ -68,7 +68,10 @@ void HttpRequest::_parse_attr_line(std::string line)
     char *value_char_ptr = strtok(NULL, "\n\r");
 
     if (!key_char_ptr || !value_char_ptr)
+    {
         this->_set_err(400, "Bad Request");
+        return;
+    }
 
     std::string key_str(ltrim(key_char_ptr));
     std::string value_str(trim(value_char_ptr));
@@ -95,7 +98,10 @@ void HttpRequest::_parse_req_line(std::string line)
 
     char *target_char_ptr = strtok(NULL, WHITESPACES);
     if (!target_char_ptr) // 400 - Malformed request line
+    {
         this->_set_err(400, "Bad Request");
+        return;
+    }
 
     std::string target_str(target_char_ptr);
     this->_req_line.target = trim(target_str);
@@ -110,7 +116,10 @@ void HttpRequest::_parse_req_line(std::string line)
        a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR. */
     char *version_char_ptr = strtok(NULL, "\n");
     if (!version_char_ptr) // 400 - Malformed request line
+    {
         this->_set_err(400, "Bad Request");
+        return;
+    }
 
     std::string version_str(version_char_ptr);
     this->_req_line.version = trim(version_str);
@@ -157,7 +166,7 @@ void HttpRequest::output_status()
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
-char const *HttpRequest::get_buff() const
+char *HttpRequest::get_buff()
 {
     return this->_buff;
 }
