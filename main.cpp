@@ -8,8 +8,6 @@
 #define BACKLOG 10
 int main(int argc, char **argv)
 {
-	(void)argv;
-    
 	if (argc != 2)
 	{
 		std::cout << "❌  WRONG USAGE!!!.\n⚠️   Use: ./webserv [configuration file]" << std::endl;
@@ -20,7 +18,7 @@ int main(int argc, char **argv)
 		try 
 		{
 			Config	config;
-			config.load_configuration(argv[1]);
+			config.check_config_file(argv[1]);
 
     		AddressInfo addr_info;
 
@@ -36,7 +34,7 @@ int main(int argc, char **argv)
 		}
 		catch (const std::exception &e)
 		{
-			std::cerr << "🔴  Failed " << e.what()	<< std::endl;
+			std::cerr << "🔴  Failed -> " << e.what()	<< std::endl;
 			return (-1);
 		}
 	}
