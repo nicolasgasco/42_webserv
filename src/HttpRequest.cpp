@@ -77,9 +77,9 @@ void HttpRequest::_parse_attr_line(std::string line)
         return;
     }
 
-    std::string key_str(key_char_ptr);
-    std::string value_str(value_char_ptr);
-    this->_attrs.insert(std::pair<std::string, std::string>(ltrim(key_str), trim(value_str)));
+    std::string key_str(ltrim(key_char_ptr));
+    std::string value_str(trim(value_char_ptr));
+    this->_attrs.insert(std::pair<std::string, std::string>(key_str, value_str));
 
     // TODO Check Obsolete line folding
 }
