@@ -33,10 +33,12 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
     int reqErrCode = req.gett_err().code;
     std::string reqErrMessage = req.gett_err().message;
 
+    this->set_status_line(reqErrCode, reqErrMessage);
+    this->_buff = this->_build_status_line();
+
+    // TODO check if it's possible to always send HTML
     if (req.is_html_req())
     {
-        this->set_status_line(200, "OK");
-        this->_buff = this->_build_status_line();
 
         std::ifstream file(build_path(PUBLIC_PATH, ERRORS_PATH, "index.html"));
 
@@ -45,11 +47,6 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
         this->_replace_var_in_page(res_file, "{{message}}", reqErrMessage);
 
         this->_buff += res_file;
-    }
-    else
-    {
-        this->set_status_line(reqErrCode, reqErrMessage);
-        this->_buff = this->_build_status_line();
     }
 }
 
