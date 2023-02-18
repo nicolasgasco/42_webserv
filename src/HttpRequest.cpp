@@ -61,26 +61,18 @@ void HttpRequest::_parse_attr_line(std::string line)
 {
     // A server MUST reject, with a response status code of 400 (Bad Request)
     // any received request message that contains whitespace between a header field name and colon
-    if (line.find(" :") != std::string::npos)
+    bool is_space_before_colon = line.find(" :") != std::string::npos;
+    if (is_space_before_colon)
         this->_set_err(400, "Bad Request");
 
-    char *key_char_ptr = strtok(const_cast<char *>(line.c_str()), ":");
-    char *value_char_ptr = strtok(NULL, "\n\r");
+    size_t colon_delim = line.find(":");
+    std::string key = ltrim(line.substr(0, colon_delim));
+    std::string value = trim(line.substr(colon_delim + 1));
 
-    if (!key_char_ptr || !value_char_ptr)
-    {
-        this->_set_err(400, "Bad Request");
-        return;
-    }
-
-    std::string key_str(ltrim(key_char_ptr));
-    std::string value_str(trim(value_char_ptr));
-
-    // TODO check if this is really required
-    if (!value_str.length())
+    if (key.empty() || value.empty())
         this->_set_err(400, "Bad Request");
 
-    this->_attrs.insert(std::pair<std::string, std::string>(key_str, value_str));
+    this->_attrs.insert(std::pair<std::string, std::string>(key, value));
 
     // TODO Check Obsolete line folding
 }
