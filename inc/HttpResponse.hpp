@@ -12,7 +12,6 @@
 
 // TODO centralize this
 #define HTTP_PROTOCOL "HTTP/1.1"
-#define DEF_ERR_PAGE "default.html"
 
 #define YELLOW "\033[0;33m"
 #define RED "\033[0;31m"
@@ -30,6 +29,7 @@ class HttpResponse
 private:
     std::string _buff;
     StatusLine _status_line;
+    RouterService _router;
 
 public:
     HttpResponse(HttpRequest const &req);
