@@ -2,6 +2,8 @@
 
 HttpResponse::HttpResponse(HttpRequest const &req)
 {
+    this->_router = RouterService();
+
     if (req.has_error())
         this->_build_error_res(req);
     else
@@ -39,8 +41,7 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
     // TODO check if it's possible to always send HTML
     if (req.is_html_req())
     {
-
-        std::ifstream file(build_path(PUBLIC_PATH, ERRORS_PATH, DEF_ERR_PAGE));
+        std::ifstream file(this->_router.get_def_err_file_path());
 
         std::string res_file = this->_build_file(file);
         this->_replace_var_in_page(res_file, "{{code}}", std::to_string(reqErrCode));
@@ -52,8 +53,7 @@ void HttpResponse::_build_error_res(HttpRequest const &req)
 
 void HttpResponse::_build_ok_res(HttpRequest const &req)
 {
-    RouterService router;
-    std::string file_path = router.get_file_path(req);
+    std::string file_path = this->_router.get_file_path(req);
 
     std::ifstream file(file_path);
 
@@ -65,7 +65,7 @@ void HttpResponse::_build_ok_res(HttpRequest const &req)
     else
     {
         this->set_status_line(404, "Not Found");
-        std::ifstream file_404(router.get_404_file_path());
+        std::ifstream file_404(this->_router.get_404_file_path());
         if (file_404)
             this->_buff = this->_build_file(file_404);
         else
