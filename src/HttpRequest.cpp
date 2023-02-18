@@ -191,15 +191,7 @@ bool HttpRequest::is_html_req() const
 {
     bool isRootTarget = this->_req_line.target == "/";
 
-    bool isAcceptAll;
-    try
-    {
-        isAcceptAll = this->_attrs.at("Accept") == "*/*";
-    }
-    catch (const std::out_of_range &oor)
-    {
-        isAcceptAll = false;
-    }
+    // TODO investigate if Accept */* is required
 
     bool isSecFetchDestDocument;
     try
@@ -211,7 +203,7 @@ bool HttpRequest::is_html_req() const
         isSecFetchDestDocument = false;
     }
 
-    return (isSecFetchDestDocument || isRootTarget || isAcceptAll);
+    return (isSecFetchDestDocument || isRootTarget);
 }
 
 bool HttpRequest::_is_method_supported() const
