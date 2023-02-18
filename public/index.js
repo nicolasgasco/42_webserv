@@ -1,5 +1,4 @@
-const Http = new XMLHttpRequest();
-
+// Malforme request mock
 const methodTooLongForm = document.getElementById("method-too-long-form");
 const methodInput = document.getElementById("method-too-long-form__method");
 const targetInput = document.getElementById("method-too-long-form__target");
@@ -33,6 +32,7 @@ methodTooLongForm.addEventListener("submit", function (e) {
     });
 });
 
+// Query params
 const queryParamsForm = document.querySelector(".query-params__form");
 const codeInput = document.getElementById("code");
 const messageInput = document.getElementById("message");
