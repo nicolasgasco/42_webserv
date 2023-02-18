@@ -218,8 +218,11 @@ bool HttpRequest::_is_method_supported() const
 
 void HttpRequest::_set_err(int code, std::string message)
 {
-    this->_err.code = code;
-    this->_err.message = message;
+    if (this->_err.code == -1)
+    {
+        this->_err.code = code;
+        this->_err.message = message;
+    }
 }
 
 std::ostream &operator<<(std::ostream &os, HttpRequest &std)
