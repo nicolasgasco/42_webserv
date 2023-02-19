@@ -3,8 +3,6 @@
 
 HttpRequest::HttpRequest()
 {
-    memset(this->_buff, 0, sizeof(this->_buff));
-
     this->_err.code = -1;
 }
 
@@ -184,7 +182,7 @@ void HttpRequest::output_status()
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
-char *HttpRequest::get_buff()
+std::string const &HttpRequest::get_buff()
 {
     return this->_buff;
 }
@@ -246,6 +244,11 @@ bool HttpRequest::_is_method_supported() const
     supported_methods.push_back("DELETE");
 
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
+}
+
+void HttpRequest::set_buff(char const *buff)
+{
+    this->_buff = buff;
 }
 
 void HttpRequest::_set_err(int const &code, std::string const &message)

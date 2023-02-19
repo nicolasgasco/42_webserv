@@ -17,13 +17,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-                std::string req_line("GET / HTTP/1.1\r\n");
-                int i = 0;
-                for (; i < req_line.size(); ++i)
-                    buff[i] = req_line[i];
-                buff[i] = req_line[i];
+                http_request.set_buff("GET / HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -41,13 +35,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-                std::string req_line("\r\n\r\nGET / HTTP/1.1\r\n");
-                int i = 0;
-                for (; i < req_line.size(); ++i)
-                    buff[i] = req_line[i];
-                buff[i] = req_line[i];
+                http_request.set_buff("\r\n\r\nGET / HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -65,13 +53,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-                std::string req_line("GET\t / \v HTTP/1.1\n");
-                int i = 0;
-                for (; i < req_line.size(); ++i)
-                    buff[i] = req_line[i];
-                buff[i] = req_line[i];
+                http_request.set_buff("GET\t / \v HTTP/1.1\n");
 
                 http_request.parse_req();
 
@@ -93,15 +75,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("DELETEE / HTTP/1.1\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("DELETEE / HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -113,15 +87,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_ HTTP/1.1\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_ HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -133,15 +99,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET /\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET /\r\n");
 
                 http_request.parse_req();
 
@@ -153,15 +111,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET\r\n");
 
                 http_request.parse_req();
 
@@ -173,15 +123,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("PATCH / HTTP/1.1\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("PATCH / HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -197,15 +139,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET / HTTP/1.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc \r\nCache-Control: max-age=0\r\nConnection: keep-alive \r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET / HTTP/1.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc \r\nCache-Control: max-age=0\r\nConnection: keep-alive \r\n");
 
                 http_request.parse_req();
 
@@ -227,15 +161,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET / HTTP/1.1\r\n\r\n\r\n\r\n\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc\r\nCache-Control: max-age=0\r\nConnection: keep-alive\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET / HTTP/1.1\r\n\r\n\r\n\r\n\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exc\r\nCache-Control: max-age=0\r\nConnection: keep-alive\r\n");
 
                 http_request.parse_req();
 
@@ -261,15 +187,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET / HTTP/1.1\r\n Cache-Control : max-age=0\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET / HTTP/1.1\r\n Cache-Control : max-age=0\r\n");
 
                 http_request.parse_req();
 
@@ -281,15 +199,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET / HTTP/1.1\r\n Cache-Control: max-age=0\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET / HTTP/1.1\r\n Cache-Control: max-age=0\r\n");
 
                 http_request.parse_req();
 
@@ -301,15 +211,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET / HTTP/1.1\r\n: max-age=0\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET / HTTP/1.1\r\n: max-age=0\r\n");
 
                 http_request.parse_req();
 
@@ -321,15 +223,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET / HTTP/1.1\r\n Cache-Control:\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET / HTTP/1.1\r\n Cache-Control:\r\n");
 
                 http_request.parse_req();
 
@@ -345,15 +239,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET /?key=value HTTP/1.1\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET /?key=value HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -371,15 +257,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET /?key1=value1&key2=value2 HTTP/1.1\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET /?key1=value1&key2=value2 HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
@@ -399,15 +277,7 @@ void http_request_class_tests(bool IS_DEBUG)
 
                 // Configure HTTP request
                 HttpRequest http_request;
-
-                char *buff = http_request.get_buff();
-
-                std::string options_str("GET /?key1=value1&key2=value2&key3=value3 HTTP/1.1\r\n");
-
-                int i = 0;
-                for (; i < options_str.size(); ++i)
-                    buff[i] = options_str[i];
-                buff[i] = options_str[i];
+                http_request.set_buff("GET /?key1=value1&key2=value2&key3=value3 HTTP/1.1\r\n");
 
                 http_request.parse_req();
 
