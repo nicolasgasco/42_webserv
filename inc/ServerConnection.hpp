@@ -22,14 +22,15 @@ private:
     int _bytes_sent;
 
 public:
-    ServerConnection(int const &sock_id, addrinfo *addr_info, RouterService const &router);
-
+    ServerConnection();
     ~ServerConnection();
 
-    int get_new_sock_id() const;
+    void accept_connection(int const &sock_id, addrinfo *addr_info);
+    void handle_connection(RouterService const &router);
+
+    int const &get_new_sock_id() const;
 
 private:
-    void _check_accept_return() const;
-    void _check_recv_return() const;
-    void _check_send_return() const;
+    void _receive_req(HttpRequest &req);
+    void _send_res(HttpRequest &req, RouterService const &router);
 };

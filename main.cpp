@@ -39,12 +39,15 @@ int main(int argc, char **argv)
 			// TODO include this loop in a Server class?
 			while (true)
 			{
-				ServerConnection serv_connection(socket.get_socket_id(), addr_info.get_serv_info(), router);
+				ServerConnection serv_connection;
+
+				serv_connection.accept_connection(socket.get_socket_id(), addr_info.get_serv_info());
+				serv_connection.handle_connection(router);
 			}
 		}
 		catch (const std::exception &e)
 		{
-			std::cerr << "🔴  Failed -> " << e.what()	<< std::endl;
+			std::cerr << "🔴  Failed -> " << e.what() << std::endl;
 			return (-1);
 		}
 	}
