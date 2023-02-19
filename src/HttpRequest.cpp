@@ -1,7 +1,7 @@
 #include "HttpRequest.hpp"
 #include <fstream> // std::ifstream
 
-HttpRequest::HttpRequest()
+HttpRequest::HttpRequest(): _req_complete(true)
 {
     this->_err.code = -1;
 }
@@ -207,6 +207,18 @@ std::map<std::string, std::string> const &HttpRequest::get_attrs() const
     return this->_attrs;
 }
 
+int HttpRequest::get_content_length() const
+{
+    std::string content_length = this->_attrs.at("Content-Length");
+    std::cout << "porcodio " << content_length << std::endl;
+    return (std::atoi(content_length.c_str()));
+}
+
+bool HttpRequest::get_req_complete() const
+{
+    return this->_req_complete;
+}
+
 bool HttpRequest::has_error() const
 {
     return this->_err.code != -1;
@@ -248,7 +260,15 @@ bool HttpRequest::_is_method_supported() const
 
 void HttpRequest::set_buff(char const *buff)
 {
-    this->_buff = buff;
+    if (this->_buff.empty())
+        this->_buff = buff;
+    else
+        this->_buff += buff;
+}
+
+void HttpRequest::set_req_complete(bool value)
+{
+    this->_req_complete = value;
 }
 
 void HttpRequest::_set_err(int const &code, std::string const &message)

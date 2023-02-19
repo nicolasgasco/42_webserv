@@ -49,6 +49,7 @@ private:
     std::string _buff;
     ReqLine _req_line;
     ReqErr _err;
+    bool _req_complete;
 
 public:
     HttpRequest();
@@ -60,9 +61,12 @@ public:
     ReqErr const &gett_err() const;
     std::map<std::string, std::string> const &get_params() const;
     ReqLine const &get_req_line() const;
+    int get_content_length() const;
+    bool get_req_complete() const;
 
     // Setters
     void set_buff(char const *buff);
+    void set_req_complete(bool value);
 
     // Methods
     void parse_req();

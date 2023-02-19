@@ -1,6 +1,6 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) : _router(router), _req(req)
+HttpResponse::HttpResponse(HttpRequest &req, RouterService const &router) : _router(router), _req(req)
 {
     if (this->_req.has_error())
         this->_build_error_res();
@@ -12,6 +12,8 @@ HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) 
         else if (method == "POST")
         {
             // To be built
+            std::cout << "POST request" << std::endl;
+            this->_build_post_request();
         }
         else if (method == "DELETE")
         {
@@ -22,6 +24,37 @@ HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) 
     // TODO delete this when build is done
     std::cout << *this << std::endl
               << std::endl;
+}
+
+void HttpResponse::_build_post_request()
+{
+    std::string buff = this->_req.get_buff();
+
+    std::cout << "Len is " << buff.length() << std::endl;
+
+    std::string content_type = this->_req.get_attrs().at("Content-Type");
+    std::string boundary = content_type.substr(content_type.find("=") + 1);
+    std::cout << "boundary is " << boundary << std::endl;
+
+    size_t firstBoundaryPos = buff.find(boundary);
+    std::cout << "First boundary is " << firstBoundaryPos << std::endl;
+    std::string right = buff.substr(firstBoundaryPos + boundary.length());
+
+    std::string filename = right.substr(right.find("filename=\"") + 10);
+    filename = filename.substr(0, filename.find("\""));
+    std::cout << "Filename " << filename << "." << std::endl;
+
+    size_t secondBoundaryPos = right.find(boundary);
+    std::cout << "Second boundary is " << secondBoundaryPos << std::endl;
+
+    std::string three = right.substr(secondBoundaryPos + boundary.length());
+    three = three.substr(three.find("\r\n\r\n") + 4);
+    three = three.substr(0, three.find(boundary) - 2);
+    std::cout << "Cazzo >" << three << "<" << std::endl;
+
+    std::ofstream target_file(filename);
+    target_file << three;
+    target_file.close();
 }
 
 HttpResponse::~HttpResponse()

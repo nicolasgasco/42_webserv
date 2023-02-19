@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 // TODO change to parametrized value
-#define REC_BUFF_SIZE 3000
+#define REC_BUFF_SIZE 300000
 
 #define YELLOW "\033[0;33m"
 #define NC "\033[0m"

@@ -44,6 +44,25 @@ void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
     else
         std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
 
+    std::string buff_str(buff);
+    if (buff_str.find("boundary=") != std::string::npos)
+    {
+        if (buff_str.find("--\r\n") != std::string::npos)
+        {
+            std::cout << "Request is complete" << std::endl;
+        }
+        else
+        {
+            char buff2[REC_BUFF_SIZE];
+            this->_bytes_received = recv(this->_new_sock_id, (void *)buff2, REC_BUFF_SIZE, 0);
+            std::cout << "Request is not complete" << buff2 << "." << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "There is not boundary" << std::endl;
+    }
+
     req.set_buff(buff);
 
     req.parse_req();

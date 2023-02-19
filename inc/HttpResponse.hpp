@@ -30,10 +30,10 @@ private:
     std::string _buff;
     StatusLine _status_line;
     RouterService const &_router;
-    HttpRequest const &_req;
+    HttpRequest &_req;
 
 public:
-    HttpResponse(HttpRequest const &req, RouterService const &router);
+    HttpResponse(HttpRequest &req, RouterService const &router);
     ~HttpResponse();
 
     // Getters
@@ -46,6 +46,7 @@ public:
 private:
     void _build_error_res();
     void _build_ok_res();
+    void _build_post_request();
 
     void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
 
