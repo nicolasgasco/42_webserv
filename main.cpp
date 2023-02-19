@@ -1,12 +1,17 @@
 #include "AddressInfo.hpp"
+#include "Configuration.hpp"
+#include "HttpRequest.hpp"
 #include "RouterService.hpp"
 #include "Socket.hpp"
 #include "SocketConnection.hpp"
 #include "ServerConnection.hpp"
-#include "Configuration.hpp"
+
+#include <sys/select.h>
 
 // TODO replace with parameter or default value
 #define BACKLOG 10
+#define MAX_FD 10
+
 int main(int argc, char **argv)
 {
 	if (argc > 2)
@@ -33,16 +38,43 @@ int main(int argc, char **argv)
 			AddressInfo addr_info;
 
 			Socket socket(addr_info);
+			int server_socket = socket.get_socket_id();
 
-			SocketConnection sock_connection(socket.get_socket_id(), addr_info, BACKLOG);
+			SocketConnection sock_connection(server_socket, addr_info, BACKLOG);
+
+			fd_set ready_fds, current_fds;
+			FD_ZERO(&ready_fds);
+			FD_ZERO(&current_fds);
+			FD_SET(server_socket, &current_fds);
 
 			// TODO include this loop in a Server class?
 			while (true)
 			{
-				ServerConnection serv_connection(router);
+				ready_fds = current_fds;
 
-				int client_fd = serv_connection.accept_connection(socket.get_socket_id(), addr_info.get_serv_info());
-				serv_connection.handle_connection(client_fd);
+				if (select(MAX_FD, &ready_fds, NULL, NULL, NULL) < 0)
+					std::cerr << std::strerror(errno) << std::endl;
+
+				for (int i = 0; i < MAX_FD; ++i)
+				{
+					bool isFdReady = FD_ISSET(i, &ready_fds);
+					if (isFdReady)
+					{
+						ServerConnection serv_connection(router);
+
+						bool isFdServer = i == server_socket;
+						if (isFdServer)
+						{
+							int client_fd = serv_connection.accept_connection(i, addr_info.get_serv_info());
+							FD_SET(client_fd, &current_fds);
+						}
+						else
+						{
+							serv_connection.handle_connection(i);
+							FD_CLR(i, &current_fds);
+						}
+					}
+				}
 			}
 		}
 		catch (const std::exception &e)

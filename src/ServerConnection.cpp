@@ -6,8 +6,6 @@ ServerConnection::ServerConnection(RouterService const &router) : _router(router
 
 ServerConnection::~ServerConnection()
 {
-    std::cout << YELLOW << "Connection (" << this->_new_sock_id << ") closed..." << NC << std::endl;
-    close(this->_new_sock_id);
 }
 
 int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *addr_info)
@@ -27,15 +25,19 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
 void ServerConnection::handle_connection(int const &client_fd)
 {
     HttpRequest req;
-
     this->_receive_req(client_fd, req);
-
     this->_send_res(client_fd, req);
+
+    close(client_fd);
+    std::cout << YELLOW << "Connection (" << client_fd << ") closed..." << NC << std::endl;
 }
 
 void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
 {
     char buff[REC_BUFF_SIZE];
+    for (int i = 0; i < REC_BUFF_SIZE; ++i)
+        buff[i] = 0;
+
     this->_bytes_received = recv(client_fd, (void *)buff, REC_BUFF_SIZE, 0);
     if (this->_bytes_received == -1)
         std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
