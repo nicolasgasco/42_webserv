@@ -219,21 +219,21 @@ bool HttpRequest::has_query_params() const
 
 bool HttpRequest::is_html_req() const
 {
-    bool isRootTarget = this->_req_line.target == "/";
+    bool is_root_target = this->_req_line.target == "/";
 
     // TODO investigate if Accept */* is required
 
-    bool isSecFetchDestDocument;
+    bool is_sec_fetch_dest_document;
     try
     {
-        isSecFetchDestDocument = this->_attrs.at("Sec-Fetch-Dest") == "document";
+        is_sec_fetch_dest_document = this->_attrs.at("Sec-Fetch-Dest") == "document";
     }
     catch (const std::out_of_range &oor)
     {
-        isSecFetchDestDocument = false;
+        is_sec_fetch_dest_document = false;
     }
 
-    return (isSecFetchDestDocument || isRootTarget);
+    return (is_sec_fetch_dest_document || is_root_target);
 }
 
 bool HttpRequest::_is_method_supported() const
