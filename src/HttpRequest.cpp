@@ -77,50 +77,76 @@ void HttpRequest::_parse_attr_line(std::string line)
     // TODO Check Obsolete line folding
 }
 
-void HttpRequest::_parse_req_line(std::string line)
+void HttpRequest::_parse_req_line(std::string &line)
+{
+    this->_parse_method(line);
+
+    this->_parse_target(line);
+
+    if (this->has_query_params())
+        this->_parse_query_params(this->_req_line.target);
+
+    this->_parse_version(line);
+}
+
+void HttpRequest::_parse_method(std::string &line)
 {
     /* Recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the CRLF terminator,
        treat any form of whitespace as the SP separator while ignoring preceding or trailing whitespace */
-    std::string method_str = strtok(const_cast<char *>(line.c_str()), WHITESPACES);
-    this->_req_line.method = trim(method_str);
+    size_t first_whitespace = line.find_first_of(WHITESPACES);
+    std::string method = line.substr(0, first_whitespace);
+
+    this->_req_line.method = trim(method);
 
     bool is_method_too_long = this->_req_line.method.length() > std::string(LONGEST_METHOD).length();
     if (is_method_too_long || !this->_is_method_supported()) // 501 - Method is too long or not supported
         this->_set_err(501, "Not Implemented");
 
-    char *target_char_ptr = strtok(NULL, WHITESPACES);
-    if (!target_char_ptr) // 400 - Malformed request line
+    line = ltrim(line.substr(first_whitespace));
+}
+
+void HttpRequest::_parse_target(std::string &line)
+{
+    try
     {
-        this->_set_err(400, "Bad Request");
+        size_t first_whitespace = line.find_first_of(WHITESPACES);
+        std::string target = line.substr(0, first_whitespace);
+
+        this->_req_line.target = target;
+
+        if (this->_req_line.target.empty())
+            this->_set_err(400, "Bad Request");
+
+        if (this->_req_line.target.length() > LONGEST_URI)
+            this->_set_err(414, "URI Too Long");
+
+        line = ltrim(line.substr(first_whitespace));
+    }
+    catch (const std::out_of_range &e)
+    {
         return;
     }
+}
 
-    std::string target_str(target_char_ptr);
-    this->_req_line.target = trim(target_str);
-
-    if (this->_req_line.target.length() > LONGEST_URI) // 414 -Target too long
-        this->_set_err(414, "URI Too Long");
-
-    if (this->has_query_params())
-        this->_parse_query_params(this->_req_line.target);
-
+void HttpRequest::_parse_version(std::string &line)
+{
     /* Although the line terminator for the start-line and fields is the sequence CRLF,
        a recipient MAY recognize a single LF as a line terminator and ignore any preceding CR. */
-    char *version_char_ptr = strtok(NULL, "\n");
-    if (!version_char_ptr) // 400 - Malformed request line
+    try
     {
-        this->_set_err(400, "Bad Request");
+        size_t first_newline = line.find("\n");
+
+        std::string version = line.substr(0, first_newline);
+
+        this->_req_line.version = trim(version);
+
+        if (this->_req_line.version.empty() || this->_req_line.version != HTTP_PROTOCOL)
+            this->_set_err(400, "Bad Request");
+    }
+    catch (const std::out_of_range &e)
+    {
         return;
     }
-
-    std::string version_str(version_char_ptr);
-    this->_req_line.version = trim(version_str);
-
-    if (this->_req_line.version != HTTP_PROTOCOL) // 400 - Wrong HTTP protocol version
-        this->_set_err(400, "Bad Request");
-
-    // TODO
-    // Recommended to support at least 8000 octets of request-line
 }
 
 void HttpRequest::_parse_query_params(std::string &target)

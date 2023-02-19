@@ -76,7 +76,10 @@ public:
 private:
     void _parse_attr_line(std::string line);
     void _parse_query_params(std::string &target);
-    void _parse_req_line(std::string line);
+    void _parse_req_line(std::string &line);
+    void _parse_method(std::string &line);
+    void _parse_target(std::string &line);
+    void _parse_version(std::string &line);
 
     void _set_err(int code, std::string message);
 
