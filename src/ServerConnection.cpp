@@ -1,6 +1,6 @@
 #include "ServerConnection.hpp"
 
-ServerConnection::ServerConnection()
+ServerConnection::ServerConnection(RouterService const &router) : _router(router)
 {
 }
 
@@ -24,13 +24,13 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
     return this->_new_sock_id;
 }
 
-void ServerConnection::handle_connection(int const &client_fd, RouterService const &router)
+void ServerConnection::handle_connection(int const &client_fd)
 {
     HttpRequest req;
 
     this->_receive_req(client_fd, req);
 
-    this->_send_res(client_fd, req, router);
+    this->_send_res(client_fd, req);
 }
 
 void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
@@ -48,9 +48,9 @@ void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
     req.output_status();
 }
 
-void ServerConnection::_send_res(int const &client_fd, HttpRequest &req, RouterService const &router)
+void ServerConnection::_send_res(int const &client_fd, HttpRequest &req)
 {
-    HttpResponse res(req, router);
+    HttpResponse res(req, this->_router);
 
     this->_bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), 0);
     if (this->_bytes_sent == -1)
