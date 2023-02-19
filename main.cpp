@@ -10,7 +10,7 @@
 
 // TODO replace with parameter or default value
 #define BACKLOG 10
-#define MAX_FD 10
+#define MIN_FD 3
 
 int main(int argc, char **argv)
 {
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 				if (select(max_fd + 1, &ready_fds, NULL, NULL, NULL) < 0)
 					std::cerr << std::strerror(errno) << std::endl;
 
-				for (int i = 0; i <= max_fd; ++i)
+				for (int i = MIN_FD; i <= max_fd; ++i)
 				{
 					bool isFdReady = FD_ISSET(i, &ready_fds);
 					if (isFdReady)
