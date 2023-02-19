@@ -25,12 +25,12 @@ public:
     ServerConnection();
     ~ServerConnection();
 
-    void accept_connection(int const &sock_id, addrinfo *addr_info);
-    void handle_connection(RouterService const &router);
+    int const &accept_connection(int const &sock_id, addrinfo *addr_info);
+    void handle_connection(int const &client_fd, RouterService const &router);
 
     int const &get_new_sock_id() const;
 
 private:
-    void _receive_req(HttpRequest &req);
-    void _send_res(HttpRequest &req, RouterService const &router);
+    void _receive_req(int const &client_fd, HttpRequest &req);
+    void _send_res(int const &client_fd, HttpRequest &req, RouterService const &router);
 };

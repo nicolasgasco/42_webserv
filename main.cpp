@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
 			if (argc == 1)
 			{
-				char *config_file_path = (char *) "./config/default.conf";
+				char *config_file_path = (char *)"./config/default.conf";
 				config.check_config_file(config_file_path);
 			}
 			else
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
 			{
 				ServerConnection serv_connection;
 
-				serv_connection.accept_connection(socket.get_socket_id(), addr_info.get_serv_info());
-				serv_connection.handle_connection(router);
+				int client_fd = serv_connection.accept_connection(socket.get_socket_id(), addr_info.get_serv_info());
+				serv_connection.handle_connection(client_fd, router);
 			}
 		}
 		catch (const std::exception &e)

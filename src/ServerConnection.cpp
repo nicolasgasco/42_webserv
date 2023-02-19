@@ -10,7 +10,7 @@ ServerConnection::~ServerConnection()
     close(this->_new_sock_id);
 }
 
-void ServerConnection::accept_connection(int const &sock_id, addrinfo *addr_info)
+int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *addr_info)
 {
     socklen_t addr_info_size = sizeof addr_info;
     this->_new_sock_id = accept(sock_id, (struct sockaddr *)addr_info, &addr_info_size);
@@ -20,21 +20,23 @@ void ServerConnection::accept_connection(int const &sock_id, addrinfo *addr_info
     else
         std::cout << YELLOW << std::endl
                   << "New connection accepted (" << this->_new_sock_id << ")..." << NC << std::endl;
+
+    return this->_new_sock_id;
 }
 
-void ServerConnection::handle_connection(RouterService const &router)
+void ServerConnection::handle_connection(int const &client_fd, RouterService const &router)
 {
     HttpRequest req;
 
-    this->_receive_req(req);
+    this->_receive_req(client_fd, req);
 
-    this->_send_res(req, router);
+    this->_send_res(client_fd, req, router);
 }
 
-void ServerConnection::_receive_req(HttpRequest &req)
+void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
 {
     char buff[REC_BUFF_SIZE];
-    this->_bytes_received = recv(this->_new_sock_id, (void *)buff, REC_BUFF_SIZE, 0);
+    this->_bytes_received = recv(client_fd, (void *)buff, REC_BUFF_SIZE, 0);
     if (this->_bytes_received == -1)
         std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
     else
@@ -46,11 +48,11 @@ void ServerConnection::_receive_req(HttpRequest &req)
     req.output_status();
 }
 
-void ServerConnection::_send_res(HttpRequest &req, RouterService const &router)
+void ServerConnection::_send_res(int const &client_fd, HttpRequest &req, RouterService const &router)
 {
     HttpResponse res(req, router);
 
-    this->_bytes_sent = send(this->_new_sock_id, res.get_buff().c_str(), res.get_buff().length(), 0);
+    this->_bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), 0);
     if (this->_bytes_sent == -1)
         std::cerr << "Error: send: " << std::strerror(errno) << std::endl;
     else
