@@ -7,8 +7,12 @@ ServerConnection::ServerConnection(int const &sock_id, addrinfo *addr_info, Rout
     this->_check_accept_return();
 
     HttpRequest req;
-    this->_bytes_received = recv(this->_new_sock_id, (void *)req.get_buff(), REC_BUFF_SIZE, 0);
+
+    char buff[REC_BUFF_SIZE];
+    this->_bytes_received = recv(this->_new_sock_id, (void *)buff, REC_BUFF_SIZE, 0);
     this->_check_recv_return();
+
+    req.set_buff(buff);
 
     req.parse_req();
     req.output_status();

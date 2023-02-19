@@ -10,9 +10,6 @@
 // TODO remove this after build is done
 #include "dev_utils.hpp"
 
-// TODO change with parameter
-#define BUFF_SIZE 3000
-
 #define WHITESPACES " \t\v\f\r\n"
 
 // TODO refactor this with something more scalable
@@ -49,7 +46,7 @@ class HttpRequest
 private:
     std::map<std::string, std::string> _attrs;
     std::map<std::string, std::string> _params;
-    char _buff[BUFF_SIZE];
+    std::string _buff;
     ReqLine _req_line;
     ReqErr _err;
 
@@ -59,10 +56,13 @@ public:
 
     // Getters
     std::map<std::string, std::string> const &get_attrs() const;
-    char *get_buff();
+    std::string const &get_buff();
     ReqErr const &gett_err() const;
     std::map<std::string, std::string> const &get_params() const;
     ReqLine const &get_req_line() const;
+
+    // Setters
+    void set_buff(char const *buff);
 
     // Methods
     void parse_req();
