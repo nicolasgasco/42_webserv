@@ -74,14 +74,14 @@ public:
     bool is_html_req() const;
 
 private:
-    void _parse_attr_line(std::string line);
+    void _parse_attr_line(std::string const &line);
     void _parse_query_params(std::string &target);
     void _parse_req_line(std::string &line);
     void _parse_method(std::string &line);
     void _parse_target(std::string &line);
     void _parse_version(std::string &line);
 
-    void _set_err(int code, std::string message);
+    void _set_err(int const &code, std::string const &message);
 
     // Computed properties
     bool _is_method_supported() const;

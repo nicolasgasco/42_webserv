@@ -57,7 +57,7 @@ void HttpRequest::parse_req()
 }
 
 // E.g. GET / HTTP/1.1
-void HttpRequest::_parse_attr_line(std::string line)
+void HttpRequest::_parse_attr_line(std::string const &line)
 {
     // A server MUST reject, with a response status code of 400 (Bad Request)
     // any received request message that contains whitespace between a header field name and colon
@@ -248,7 +248,7 @@ bool HttpRequest::_is_method_supported() const
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
 
-void HttpRequest::_set_err(int code, std::string message)
+void HttpRequest::_set_err(int const &code, std::string const &message)
 {
     if (this->_err.code == -1)
     {
