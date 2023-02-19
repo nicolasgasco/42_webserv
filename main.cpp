@@ -46,16 +46,17 @@ int main(int argc, char **argv)
 			FD_ZERO(&ready_fds);
 			FD_ZERO(&current_fds);
 			FD_SET(server_socket, &current_fds);
+			int max_fd = server_socket;
 
 			// TODO include this loop in a Server class?
 			while (true)
 			{
 				ready_fds = current_fds;
 
-				if (select(MAX_FD, &ready_fds, NULL, NULL, NULL) < 0)
+				if (select(max_fd + 1, &ready_fds, NULL, NULL, NULL) < 0)
 					std::cerr << std::strerror(errno) << std::endl;
 
-				for (int i = 0; i < MAX_FD; ++i)
+				for (int i = 0; i <= max_fd; ++i)
 				{
 					bool isFdReady = FD_ISSET(i, &ready_fds);
 					if (isFdReady)
@@ -67,6 +68,8 @@ int main(int argc, char **argv)
 						{
 							int client_fd = serv_connection.accept_connection(i, addr_info.get_serv_info());
 							FD_SET(client_fd, &current_fds);
+
+							max_fd = (client_fd > max_fd) ? client_fd : max_fd;
 						}
 						else
 						{
