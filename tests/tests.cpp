@@ -4,6 +4,7 @@
 #include "classes/socket_class_tests.cpp"
 #include "classes/socket_connection_class_tests.cpp"
 #include "classes/http_request_class_tests.cpp"
+#include "classes/http_response_class_tests.cpp"
 #include "utils/ltrim_tests.cpp"
 #include "utils/rtrim_tests.cpp"
 #include "utils/trim_tests.cpp"
@@ -28,4 +29,5 @@ int main(int argc, char *argv[])
     socket_class_tests(IS_DEBUG);
     socket_connection_class_tests(IS_DEBUG);
     http_request_class_tests(IS_DEBUG);
+    http_response_class_tests(IS_DEBUG);
 }
