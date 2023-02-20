@@ -45,8 +45,11 @@ void HttpResponse::_build_error_res()
         this->_replace_var_in_page(res_file, "{{code}}", std::to_string(reqErrCode));
         this->_replace_var_in_page(res_file, "{{message}}", reqErrMessage);
 
+        this->_buff += this->_build_headers(res_file.length() - 2);
         this->_buff += res_file;
+        return;
     }
+    this->_buff += this->_build_headers(0);
 }
 
 void HttpResponse::_build_ok_res()
@@ -63,12 +66,19 @@ void HttpResponse::_build_ok_res()
     else
     {
         this->set_status_line(404, "Not Found");
-        std::ifstream file_404(this->_router.get_404_file_path());
-        if (file_404)
-            this->_buff = this->_build_file(file_404);
-        else
-            std::cerr << RED << "Error: missing 404.html file" << NC << std::endl;
+        if (this->_req.is_html_req())
+        {
+            std::ifstream file_404(this->_router.get_404_file_path());
+            if (file_404)
+                this->_buff = this->_build_file(file_404);
+            else
+                std::cerr << RED << "Error: missing 404.html file" << NC << std::endl;
+        }
     }
+
+    // Pre-append headers
+    size_t body_size = this->_buff.size();
+    this->_buff.insert(0, this->_build_headers(body_size ? body_size - CRLF_LEN : 0));
 
     // Pre-append status line
     this->_buff.insert(0, this->_build_status_line());
@@ -94,6 +104,21 @@ std::string HttpResponse::_build_status_line() const
     status_line += this->_status_line.version + " " + std::to_string(this->_status_line.code) + " " + this->_status_line.reason;
     status_line += "\r\n";
     return status_line;
+}
+
+std::string HttpResponse::_build_headers(int const &content_len) const
+{
+    std::string headers;
+
+    std::string date = "Date: " + get_gmt_time() + "\r\n";
+    std::string server = "Server: " + std::string(DEFAULT_SERVER_NAME) + "/1.0" + "\r\n";
+    std::string content_length = "Content-Length: " + std::to_string(content_len) + "\r\n";
+
+    headers += date;
+    headers += server;
+    headers += content_length;
+
+    return headers;
 }
 
 void HttpResponse::_replace_var_in_page(std::string &file, std::string const var, std::string const value) const
@@ -124,6 +149,11 @@ void HttpResponse::set_status_line(int const &code, std::string const &reason)
     this->_status_line.version = std::string(HTTP_PROTOCOL);
     this->_status_line.code = int(code);
     this->_status_line.reason = std::string(reason);
+}
+
+std::string HttpResponse::test_build_headers(int const &content_len) const
+{
+    return this->_build_headers(content_len);
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)
