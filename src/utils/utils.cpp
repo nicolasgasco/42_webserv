@@ -83,3 +83,23 @@ std::string build_path(std::string const &frag1, std::string const &frag2, std::
     result += frag3;
     return result;
 }
+
+/**
+ * Returns a string with current GMT time.
+ *
+ * @returns Current GMT time formatted for HTTP header.
+ */
+std::string const get_gmt_time()
+{
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[100];
+
+    time(&rawtime);
+    timeinfo = gmtime(&rawtime);
+
+    // E.g. Wed, 21 Oct 2015 07:28:00 GMT
+    strftime(buffer, sizeof(buffer), "%a, %d %b %G %T GMT", timeinfo);
+
+    return std::string(buffer);
+}

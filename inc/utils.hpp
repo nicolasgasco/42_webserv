@@ -11,3 +11,5 @@ bool str_ends_with(std::string const &value, std::string const &ending);
 
 std::string build_path(std::string const &frag1, std::string const &frag2);
 std::string build_path(std::string const &frag1, std::string const &frag2, std::string const &frag3);
+
+std::string const get_gmt_time();
