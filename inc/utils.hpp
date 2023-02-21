@@ -13,3 +13,4 @@ std::string build_path(std::string const &frag1, std::string const &frag2);
 std::string build_path(std::string const &frag1, std::string const &frag2, std::string const &frag3);
 
 std::string const get_gmt_time();
+std::string const get_mime_type(std::string target);

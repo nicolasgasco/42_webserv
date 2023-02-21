@@ -103,3 +103,36 @@ std::string const get_gmt_time()
 
     return std::string(buffer);
 }
+
+/**
+ * Returns the MIME type of a file from a URI.
+ *
+ * @param target Request URI.
+ * @returns MIME type extract for target or NULL.
+ */
+std::string const get_mime_type(std::string target)
+{
+    std::string result;
+
+    // Images
+    if (target.find(".png") != std::string::npos)
+        return "image/x-png";
+    else if (target.find(".jpeg") != std::string::npos)
+        return "image/jpeg";
+    else if (target.find(".ico") != std::string::npos)
+        return "image/x-icon";
+    else if (target.find(".svg") != std::string::npos)
+        return "image/svg+xml";
+    else if (target.find(".bmp") != std::string::npos)
+        return "image/x-MS-bmp";
+    else if (target.find(".gif") != std::string::npos)
+        return "image/gif";
+
+    if (target.find(".css") != std::string::npos)
+        return "text/css";
+
+    if (target.find(".js") != std::string::npos)
+        return "application/x-javascript";
+
+    return result;
+}
