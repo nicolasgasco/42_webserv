@@ -49,11 +49,12 @@ private:
     void _build_error_res();
     void _build_ok_res();
 
-    void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
-
     std::string _build_status_line() const;
     std::string _build_headers(int const &content_len) const;
     std::string _build_file(std::ifstream const &file);
+
+    void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
+    std::string const _get_content_type(std::string target) const;
 
 public:
     // For testing purposes only
