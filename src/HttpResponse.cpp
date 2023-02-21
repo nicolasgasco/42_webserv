@@ -113,12 +113,12 @@ std::string HttpResponse::_build_headers(int const &content_len) const
     std::string date = "Date: " + get_gmt_time() + "\r\n";
     std::string server = "Server: " + std::string(DEFAULT_SERVER_NAME) + "/1.0" + "\r\n";
     std::string content_length = "Content-Length: " + std::to_string(content_len) + "\r\n";
-    std::string content_type = this->_get_content_type(this->_req.get_req_line().target);
+    // std::string content_type = this->_get_content_type(this->_req.get_req_line().target);
 
     headers += date;
     headers += server;
     headers += content_length;
-    headers += content_type;
+    // headers += content_type;
 
     return headers;
 }
@@ -138,15 +138,13 @@ void HttpResponse::_replace_var_in_page(std::string &file, std::string const var
 
 std::string const HttpResponse::_get_content_type(std::string target) const
 {
-    std::string content_type = "Content-Type: ";
-    std::string mime_type = get_mime_type(target);
+    std::string content_type;
 
+    std::string mime_type = get_mime_type(target);
     if (mime_type.length())
-        content_type += mime_type + "\r\n";
+        content_type = "Content-Type: " + mime_type + "\r\n";
     else if (this->_req.is_html_req())
-        content_type += "text/html\r\n";
-    else
-        content_type = "";
+        content_type = "Content-Type: text/html; charset=UTF-8\r\n";
 
     return content_type;
 }
