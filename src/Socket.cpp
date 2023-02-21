@@ -26,6 +26,7 @@ void Socket::_create_socket(AddressInfo const &addr_info)
     addrinfo *addr_info_res = addr_info.get_serv_info();
 
     this->_id = socket(addr_info_res->ai_family, addr_info_res->ai_socktype, addr_info_res->ai_protocol);
+    fcntl(this->_id, F_SETFL, O_NONBLOCK);
 
     this->_check_socket_id(this->_id);
 }

@@ -12,6 +12,7 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
 {
     socklen_t addr_info_size = sizeof addr_info;
     this->_new_sock_id = accept(sock_id, (struct sockaddr *)addr_info, &addr_info_size);
+    fcntl(this->_new_sock_id, F_SETFL, O_NONBLOCK);
 
     if (this->_new_sock_id == -1)
         std::cerr << "Error: accept: " << std::strerror(errno) << std::endl;
