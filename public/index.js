@@ -45,3 +45,18 @@ queryParamsForm.addEventListener("change", function () {
   queryParamsLink.href = newTarget;
   queryParamsLink.innerText = newTarget;
 });
+
+// Heavy video
+let heavyVideoButton = document.getElementById("heavy-video-button");
+let heavyVideoContainer = document.getElementById("heavy-video");
+heavyVideoButton.addEventListener("click", function () {
+  if (heavyVideoContainer.innerHTML) {
+    heavyVideoContainer.innerHTML = null;
+  } else {
+    heavyVideoContainer.innerHTML = `
+      <video width="320" height="240" controls>
+        <source src="assets/heavy_video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+      </video>`;
+  }
+});
