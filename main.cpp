@@ -48,12 +48,16 @@ int main(int argc, char **argv)
 			FD_SET(server_socket, &current_fds);
 			int max_fd = server_socket;
 
+			struct timeval timeout;
+			timeout.tv_sec = SERVER_TIMEOUT;
+			timeout.tv_usec = 0;
+
 			// TODO include this loop in a Server class?
 			while (true)
 			{
 				ready_fds = current_fds;
 
-				if (select(max_fd + 1, &ready_fds, NULL, NULL, NULL) < 0)
+				if (select(max_fd + 1, &ready_fds, NULL, NULL, &timeout) < 0)
 					std::cerr << std::strerror(errno) << std::endl;
 
 				for (int i = MIN_FD; i <= max_fd; ++i)

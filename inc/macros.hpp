@@ -8,6 +8,7 @@
 #define LONGEST_URI 124         // Replace with computed value
 #define PUBLIC_PATH "public"
 #define REC_BUFF_SIZE 3000 // TODO change to parametrized values
+#define SERVER_TIMEOUT 30
 #define WHITESPACES " \t\v\f\r\n"
 
 // Output colors
