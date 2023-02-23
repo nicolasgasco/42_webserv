@@ -1,9 +1,10 @@
 #pragma once
 
-#include "RouterService.hpp"
+#include "CgiService.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "macros.hpp"
+#include "RouterService.hpp"
 #include "Socket.hpp"
 
 #include <fcntl.h>
@@ -13,12 +14,13 @@ class ServerConnection
 {
 private:
     RouterService const &_router;
+    CgiService const &_cgi;
     int _new_sock_id;
     int _bytes_received;
     int _bytes_sent;
 
 public:
-    ServerConnection(RouterService const &router);
+    ServerConnection(RouterService const &router, CgiService const &cgi);
     ~ServerConnection();
 
     int const &accept_connection(int const &sock_id, addrinfo *addr_info);

@@ -1,6 +1,6 @@
 #include "ServerConnection.hpp"
 
-ServerConnection::ServerConnection(RouterService const &router) : _router(router)
+ServerConnection::ServerConnection(RouterService const &router, CgiService const &cgi) : _router(router), _cgi(cgi)
 {
 }
 
@@ -53,7 +53,7 @@ void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
 
 void ServerConnection::_send_res(int const &client_fd, HttpRequest &req)
 {
-    HttpResponse res(req, this->_router);
+    HttpResponse res(req, this->_router, this->_cgi);
 
     this->_bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), 0);
     if (this->_bytes_sent == -1)

@@ -1,4 +1,5 @@
 #include "AddressInfo.hpp"
+#include "CgiService.hpp"
 #include "Configuration.hpp"
 #include "HttpRequest.hpp"
 #include "RouterService.hpp"
@@ -26,6 +27,7 @@ int main(int argc, char **argv)
 			// Todo check if Config and RouterService should be long lived
 			Config config;
 			RouterService router;
+			CgiService cgi;
 
 			if (argc == 1)
 			{
@@ -65,7 +67,7 @@ int main(int argc, char **argv)
 					bool isFdReady = FD_ISSET(i, &ready_fds);
 					if (isFdReady)
 					{
-						ServerConnection serv_connection(router);
+						ServerConnection serv_connection(router, cgi);
 
 						bool isFdServer = i == server_socket;
 						if (isFdServer)
