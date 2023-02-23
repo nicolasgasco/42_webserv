@@ -38,7 +38,7 @@ public:
 
 private:
     void _build_error_res();
-    void _build_get_res();
+    void _build_ok_res();
 
     std::string _build_status_line() const;
     std::string _build_headers(int const &content_len) const;
