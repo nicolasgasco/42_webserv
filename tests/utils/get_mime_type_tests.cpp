@@ -37,6 +37,9 @@ void get_mime_type_tests(bool IS_DEBUG)
                 output_test_assertion("with .js file", is_strict_equal(get_mime_type("chrome-extension://fmkadmapgofadopljbjfkapdkoienihi/build/installHook.js"), std::string("application/x-javascript"), IS_DEBUG));
             }
             {
+                output_test_assertion("with html file", is_strict_equal(get_mime_type("http://127.0.0.1/nested"), std::string(""), IS_DEBUG));
+            }
+            {
                 output_test_assertion("with unknown extension", is_strict_equal(get_mime_type("http://127.0.0.1/index.unknown"), std::string(""), IS_DEBUG));
             }
         }

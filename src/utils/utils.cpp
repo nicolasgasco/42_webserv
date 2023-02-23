@@ -129,7 +129,7 @@ std::string const get_mime_type(std::string target)
         return "image/gif";
 
     if (target.find(".css") != std::string::npos)
-        return "text/css; charset=utf-8";
+        return "text/css";
 
     if (target.find(".js") != std::string::npos)
         return "application/x-javascript";
