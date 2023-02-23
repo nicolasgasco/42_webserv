@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CgiService.hpp"
 #include "dev_utils.hpp" // TODO remove this after build is done
 #include "HttpRequest.hpp"
 #include "macros.hpp"
@@ -24,9 +25,10 @@ private:
     StatusLine _status_line;
     RouterService const &_router;
     HttpRequest const &_req;
+    CgiService const &_cgi;
 
 public:
-    HttpResponse(HttpRequest const &req, RouterService const &router);
+    HttpResponse(HttpRequest const &req, RouterService const &router, CgiService const &cgi);
     ~HttpResponse();
 
     // Getters

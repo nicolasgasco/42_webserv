@@ -1,6 +1,6 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) : _router(router), _req(req)
+HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router, CgiService const &cgi) : _router(router), _req(req), _cgi(cgi)
 {
     if (this->_req.has_error())
         this->_build_error_res();
@@ -59,23 +59,39 @@ void HttpResponse::_build_get_res()
     int content_len = 0;
     std::string res_body;
 
-    std::string file_path = this->_router.get_file_path(this->_req);
-    std::ifstream file(file_path);
-
-    if (file)
+    if (this->_req.is_dir_req())
     {
         this->set_status_line(200, "OK");
-        res_body = this->_build_file(file);
+
+        std::string ls_output = this->_cgi.build_dir_content(this->_req.get_req_line().target);
+        std::replace(ls_output.begin(), ls_output.end(), '\n', ',');
+
+        std::ifstream file_dir_content(this->_router.get_dir_content_file_path());
+        res_body = this->_build_file(file_dir_content);
+        this->_replace_var_in_page(res_body, "{{dir_content}}", ls_output);
+
         content_len = res_body.length() - CRLF_LEN;
     }
     else
     {
-        this->set_status_line(404, "Not Found");
-        if (this->_req.is_html_req())
+        std::string file_path = this->_router.get_file_path(this->_req);
+        std::ifstream file(file_path);
+
+        if (file)
         {
-            std::ifstream file_404(this->_router.get_404_file_path());
-            res_body = this->_build_file(file_404);
+            this->set_status_line(200, "OK");
+            res_body = this->_build_file(file);
             content_len = res_body.length() - CRLF_LEN;
+        }
+        else
+        {
+            this->set_status_line(404, "Not Found");
+            if (this->_req.is_html_req())
+            {
+                std::ifstream file_404(this->_router.get_404_file_path());
+                res_body = this->_build_file(file_404);
+                content_len = res_body.length() - CRLF_LEN;
+            }
         }
     }
 

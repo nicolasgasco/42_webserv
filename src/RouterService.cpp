@@ -28,3 +28,8 @@ std::string const RouterService::get_def_err_file_path() const
 {
     return build_path(PUBLIC_PATH, ERRORS_PATH, "default.html");
 }
+
+std::string const RouterService::get_dir_content_file_path() const
+{
+    return build_path(PUBLIC_PATH, DIR_PATH, "index.html");
+}
