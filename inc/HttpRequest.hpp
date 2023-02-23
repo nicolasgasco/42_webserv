@@ -54,6 +54,8 @@ public:
     bool has_error() const;
     bool has_query_params() const;
     bool is_html_req() const;
+    bool is_dir_req() const;
+    bool is_cgi_req() const;
 
 private:
     void _parse_attr_line(std::string const &line);

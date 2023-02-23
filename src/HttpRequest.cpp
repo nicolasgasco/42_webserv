@@ -236,6 +236,16 @@ bool HttpRequest::is_html_req() const
     return (is_sec_fetch_dest_document || is_root_target);
 }
 
+bool HttpRequest::is_cgi_req() const
+{
+    return (this->_req_line.target.find("cgi_bin/") != std::string::npos);
+}
+
+bool HttpRequest::is_dir_req() const
+{
+    return (this->_req_line.target.back() == '/' && this->_req_line.target.length() != 1);
+}
+
 bool HttpRequest::_is_method_supported() const
 {
     std::vector<std::string> supported_methods;
