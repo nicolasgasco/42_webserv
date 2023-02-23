@@ -4,9 +4,6 @@
 
 #include <fcntl.h>
 
-#define YELLOW "\033[0;33m"
-#define NC "\033[0m"
-
 class Socket
 {
 private:

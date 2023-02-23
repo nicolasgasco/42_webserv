@@ -5,8 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 
-#define YELLOW "\033[0;33m"
-#define NC "\033[0m"
+#include "macros.hpp"
 
 // Structs for reference
 //

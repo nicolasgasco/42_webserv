@@ -3,12 +3,8 @@
 #include <sys/socket.h>
 
 #include "AddressInfo.hpp"
+#include "macros.hpp"
 #include "Socket.hpp"
-
-#define BACKLOG_DEFAULT 10
-
-#define YELLOW "\033[0;33m"
-#define NC "\033[0m"
 
 class SocketConnection
 {
