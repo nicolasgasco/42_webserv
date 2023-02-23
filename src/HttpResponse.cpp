@@ -8,14 +8,16 @@ HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) 
     {
         std::string method = this->_req.get_req_line().method;
         if (method == "GET")
-            this->_build_ok_res();
+        {
+            this->_build_get_res();
+        }
         else if (method == "POST")
         {
-            // To be built
+            // To be built with CGI
         }
         else if (method == "DELETE")
         {
-            // To be built
+            // To be built with CGI
         }
     }
 
@@ -30,38 +32,41 @@ HttpResponse::~HttpResponse()
 
 void HttpResponse::_build_error_res()
 {
-    int reqErrCode = this->_req.gett_err().code;
-    std::string reqErrMessage = this->_req.gett_err().message;
+    this->set_status_line(this->_req.gett_err().code, this->_req.gett_err().message);
 
-    this->set_status_line(reqErrCode, reqErrMessage);
-    this->_buff = this->_build_status_line();
+    int content_len = 0;
+    std::string res_body;
 
-    // TODO check if it's possible to always send HTML
     if (this->_req.is_html_req())
     {
         std::ifstream file(this->_router.get_def_err_file_path());
 
-        std::string res_file = this->_build_file(file);
-        this->_replace_var_in_page(res_file, "{{code}}", std::to_string(reqErrCode));
-        this->_replace_var_in_page(res_file, "{{message}}", reqErrMessage);
+        std::string err_page = this->_build_file(file);
+        this->_replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
+        this->_replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
 
-        this->_buff += this->_build_headers(res_file.length() - 2);
-        this->_buff += res_file;
-        return;
+        res_body = err_page;
+        content_len = err_page.length() - CRLF_LEN;
     }
-    this->_buff += this->_build_headers(0);
+
+    this->_buff = this->_build_status_line();
+    this->_buff += this->_build_headers(content_len);
+    this->_buff += res_body;
 }
 
-void HttpResponse::_build_ok_res()
+void HttpResponse::_build_get_res()
 {
-    std::string file_path = this->_router.get_file_path(this->_req);
+    int content_len = 0;
+    std::string res_body;
 
+    std::string file_path = this->_router.get_file_path(this->_req);
     std::ifstream file(file_path);
 
     if (file)
     {
         this->set_status_line(200, "OK");
-        this->_buff = this->_build_file(file);
+        res_body = this->_build_file(file);
+        content_len = res_body.length() - CRLF_LEN;
     }
     else
     {
@@ -69,19 +74,14 @@ void HttpResponse::_build_ok_res()
         if (this->_req.is_html_req())
         {
             std::ifstream file_404(this->_router.get_404_file_path());
-            if (file_404)
-                this->_buff = this->_build_file(file_404);
-            else
-                std::cerr << RED << "Error: missing 404.html file" << NC << std::endl;
+            res_body = this->_build_file(file_404);
+            content_len = res_body.length() - CRLF_LEN;
         }
     }
 
-    // Pre-append headers
-    size_t body_size = this->_buff.size();
-    this->_buff.insert(0, this->_build_headers(body_size ? body_size - CRLF_LEN : 0));
-
-    // Pre-append status line
-    this->_buff.insert(0, this->_build_status_line());
+    this->_buff = this->_build_status_line();
+    this->_buff += this->_build_headers(content_len);
+    this->_buff += res_body;
 }
 
 std::string HttpResponse::_build_file(std::ifstream const &file)
