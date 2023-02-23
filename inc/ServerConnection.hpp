@@ -3,16 +3,11 @@
 #include "RouterService.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+#include "macros.hpp"
 #include "Socket.hpp"
 
 #include <fcntl.h>
 #include <unistd.h>
-
-// TODO change to parametrized value
-#define REC_BUFF_SIZE 3000
-
-#define YELLOW "\033[0;33m"
-#define NC "\033[0m"
 
 class ServerConnection
 {

@@ -1,23 +1,14 @@
 #pragma once
 
-// TODO remove this after build is done
-#include "dev_utils.hpp"
+#include "dev_utils.hpp" // TODO remove this after build is done
 #include "HttpRequest.hpp"
+#include "macros.hpp"
 #include "RouterService.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-
-// TODO centralize this
-#define HTTP_PROTOCOL "HTTP/1.1"
-#define DEFAULT_SERVER_NAME "Die Veteranen"
-#define CRLF_LEN 2
-
-#define YELLOW "\033[0;33m"
-#define RED "\033[0;31m"
-#define NC "\033[0m"
 
 struct StatusLine
 {

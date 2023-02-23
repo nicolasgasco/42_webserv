@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string>
 
-#define GREY "\033[30;1m"
-#define NC "\033[0m"
+#include "macros.hpp"
 
 void cout_explicit_whitespaces(std::string str);
