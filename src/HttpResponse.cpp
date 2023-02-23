@@ -144,7 +144,7 @@ std::string const HttpResponse::_get_content_type(std::string target) const
     if (mime_type.length())
         content_type = "Content-Type: " + mime_type + "\r\n";
     else if (this->_req.is_html_req())
-        content_type = "Content-Type: text/html; charset=UTF-8\r\n";
+        content_type = "Content-Type: text/html\r\n";
 
     return content_type;
 }
