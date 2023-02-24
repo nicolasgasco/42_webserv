@@ -6,7 +6,7 @@
 #    By: dgerwig- <dgerwig-@student.42urduli>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/02/13 20:26:28 by dgerwig-         ###   ########.fr        #
+#    Updated: 2023/02/18 18:24:03 by dgerwig-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,11 +63,32 @@ fclean: clean
 
 re:	fclean all
 
+san: $(NAME_SAN)
+
+$(NAME_SAN): $(OBJ_SAN) 
+	$(CC) $(CFLAGS_SAN) $(OBJ_SAN) -o $(NAME_SAN)
+	@echo $(C_GREEN)"✅ CREATED: $(NAME_SAN)    // Compiled with: $(CC) $(CFLAGS_SAN) //\n"$(C_RESET)
+
+$(OBJ_DIR_SAN)%.o: $(SRC_MAIN)%.cpp 
+	@mkdir -p $(OBJ_DIR_SAN)
+	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR_SAN)%.o: $(SRC_DIR)%.cpp 
+	@mkdir -p $(OBJ_DIR_SAN)
+	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR_SAN)%.o: $(SRC_DIR_UT)%.cpp 
+	@mkdir -p $(OBJ_DIR_SAN)
+	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
+
 run: re 
-	./webserv config/default.conf
+	./webserv config/init.conf
+
+run-san: fclean san 
+	./webserv_san config/init.conf
 
 test:
-	make -C tests
+	make -C tests run
 
 -include $(OBJ_DIR)/*.d
 

@@ -6,7 +6,7 @@
 #    By: dgerwig- <dgerwig-@student.42urduli>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/02/13 20:26:58 by dgerwig-         ###   ########.fr        #
+#    Updated: 2023/02/18 18:23:29 by dgerwig-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,13 +59,8 @@ fclean: clean
 
 re:	fclean all
 
-
-
-
-
 run: re 
-	bash run_tests.sh
-
+	./tests
 
 -include $(OBJ_DIR)/*.d
 

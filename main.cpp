@@ -31,11 +31,17 @@ int main(int argc, char **argv)
 
 			if (argc == 1)
 			{
-				char *config_file_path = (char *)"./config/default.conf";
-				config.check_config_file(config_file_path);
+				char *config_file_path = (char *) "./config/default.conf";
+				config.process_config_file(config_file_path);
 			}
 			else
-				config.check_config_file(argv[1]);
+			{
+				config.process_config_file(argv[1]);
+			}
+			
+			Webserver webserver;
+			webserver.load_config_file(argv[1]);
+			webserver.print_config_data();
 
 			AddressInfo addr_info;
 
