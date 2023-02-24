@@ -63,13 +63,7 @@ void HttpResponse::_build_get_res()
     {
         this->set_status_line(200, "OK");
 
-        std::string ls_output = this->_cgi.build_dir_content(this->_req.get_req_line().target);
-        std::replace(ls_output.begin(), ls_output.end(), '\n', ',');
-
-        std::ifstream file_dir_content(this->_router.get_dir_content_file_path());
-        res_body = this->_build_file(file_dir_content);
-        this->_replace_var_in_page(res_body, "{{dir_content}}", ls_output);
-
+        res_body = this->_cgi.build_dir_content(this->_req.get_req_line().target);
         content_len = res_body.length() - CRLF_LEN;
     }
     else

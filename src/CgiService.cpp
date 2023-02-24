@@ -27,22 +27,21 @@ std::string const CgiService::build_dir_content(std::string const &target) const
         close(fds[PIPE_READ]);
         close(fds[PIPE_WRITE]);
 
-        std::string path = "./public" + target;
-        char *args[] = {const_cast<char *>("/bin/ls"), const_cast<char *>(path.c_str()), NULL};
+        char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>("./cgi_bin/output_dir_content.py"), NULL};
 
-        if (execve("/bin/ls", args, NULL))
-            std::cerr << "Error: execve" << std::endl;
-    }
-    else
-    {
-        close(fds[PIPE_WRITE]);
-        char buff[CGI_BUF_LEN] = {0};
+        std::string path = "PATH_INFO=./public" + target;
+        char *envp[] = {const_cast<char *>(path.c_str()), NULL};
 
-        read(fds[PIPE_READ], buff, CGI_BUF_LEN);
-        close(fds[PIPE_READ]);
-
-        result = std::string(buff);
+        if (execve("/usr/bin/python3", args, envp))
+            std::cerr << "Error: execve: " << strerror(errno) << std::endl;
     }
 
-    return result;
+    close(fds[PIPE_WRITE]);
+
+    char buff[CGI_BUF_LEN] = {0};
+    read(fds[PIPE_READ], buff, CGI_BUF_LEN);
+
+    close(fds[PIPE_READ]);
+
+    return std::string(buff);
 }
