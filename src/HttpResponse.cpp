@@ -3,6 +3,7 @@
 HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) : _router(router), _req(req)
 {
     this->_http = HttpService();
+    this->_cgi = CgiService();
 
     if (this->_req.has_error())
         this->_build_error_res();
@@ -18,9 +19,7 @@ HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) 
             // To be built with CGI
         }
         else if (method == "DELETE")
-        {
-            // To be built with CGI
-        }
+            this->_build_delete_res();
     }
 
     // TODO delete this when build is done
@@ -58,7 +57,6 @@ void HttpResponse::_build_error_res()
 
 void HttpResponse::_build_get_res()
 {
-    CgiService cgi;
 
     int content_len = 0;
     std::string res_body;
@@ -67,7 +65,7 @@ void HttpResponse::_build_get_res()
     {
         this->set_status_line(200, "OK");
 
-        res_body = cgi.build_dir_content(this->_req.get_req_line().target);
+        res_body = this->_cgi.build_dir_content(this->_req.get_req_line().target);
         content_len = res_body.length() - CRLF_LEN;
     }
     else if (this->_req.is_cgi_req())
@@ -82,7 +80,7 @@ void HttpResponse::_build_get_res()
             char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(file_path.c_str()), NULL};
             std::string path = "PATH_INFO=" + std::string(GALLERY_STORAGE_PATH);
             char *envp[] = {const_cast<char *>(path.c_str()), NULL};
-            res_body = cgi.build_cgi_output(args, envp);
+            res_body = this->_cgi.build_cgi_output(args, envp);
 
             content_len = res_body.length() - CRLF_LEN;
         }
@@ -116,6 +114,25 @@ void HttpResponse::_build_get_res()
             }
         }
     }
+
+    this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+    this->_buff += this->_http.build_headers(content_len);
+    this->_buff += res_body;
+}
+
+void HttpResponse::_build_delete_res()
+{
+    int content_len = 0;
+    std::string res_body;
+
+    this->set_status_line(200, "OK");
+
+    char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("./cgi_bin/delete_file.py"), NULL};
+    std::string path = "PATH_INFO=" + std::string(PUBLIC_PATH) + std::string(this->_req.get_req_line().target);
+    char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+
+    res_body = this->_cgi.build_cgi_output(args, envp);
+    content_len = res_body.length() - CRLF_LEN;
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len);
