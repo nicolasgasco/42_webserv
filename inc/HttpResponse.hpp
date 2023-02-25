@@ -25,10 +25,9 @@ private:
     StatusLine _status_line;
     RouterService const &_router;
     HttpRequest const &_req;
-    CgiService const &_cgi;
 
 public:
-    HttpResponse(HttpRequest const &req, RouterService const &router, CgiService const &cgi);
+    HttpResponse(HttpRequest const &req, RouterService const &router);
     ~HttpResponse();
 
     // Getters
