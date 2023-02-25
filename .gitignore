@@ -32,6 +32,9 @@
 *.app
 
 webserv
+webserv_san
 settings.json
 tests
 !tests/
+obj/
+obj_san/

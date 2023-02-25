@@ -1,5 +1,5 @@
-#include "Configuration.hpp"
-#include "Parser.hpp"
+#include "Config.hpp"
+#include "Parser_config_file.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -9,14 +9,14 @@ Config::Config() {}
 
 Config::~Config() {}
 
-void	Config::check_config_file(char* config_file)
+void	Config::process_config_file(char *config_file)
 {
    	std::ifstream file;
     file.open(config_file);
 	if (!file.is_open())
 	{
 		std::cout << "🔴  FAILURE Opening or reading config_file" << std::endl;
-        exit(0);
+		std::exit(0);
 	}
 	std::cout << "🟢  SUCCESS Opening and reading config_file" << std::endl;
 	
@@ -35,4 +35,3 @@ void	Config::check_config_file(char* config_file)
 	words = parser_config_file(text_vector);
 	check_words_config_file(text_vector);
 }
-
