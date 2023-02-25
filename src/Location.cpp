@@ -33,7 +33,8 @@ void Location::create_location(vector_iterator it, vector_iterator end)
     }
 }
 
-int     Location::identify_location_value(const std::string &str){
+int     Location::identify_location_value(const std::string &str)
+{
     if (str.find("root") != std::string::npos)
         return root_;
     else if (str.find("accepted_method") != std::string::npos)
@@ -46,7 +47,6 @@ int     Location::identify_location_value(const std::string &str){
         return max_body_size_;
 	return failed_;
 }
-
 
 void    Location::configure_location(const std::string &str)
 {

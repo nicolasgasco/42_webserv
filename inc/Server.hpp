@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Parser_config_file.hpp"
 #include "Location.hpp"
 
 #include <iostream>
-#include <vector>
 
 class Server
 {
 	public:
     	Server();
     	~Server();
+		
+		friend class Webserver;
     
 		void	create_server(std::vector<std::string> &server_config);
     	void	reset_server();
@@ -34,21 +34,21 @@ class Server
     	void    configure_error_page(const std::string &str);
     	void    failed_element(const std::string &str);
 
-    	int                     get_port();
-    	std::string             get_host();
-    	std::string             get_server_name();
-    	std::string             get_error_page();
-    	std::string             get_cgi_file_ext();
-    	std::vector<Location>   get_location_blocks();
+    	std::vector<std::string>	get_port();
+    	std::string             	get_host();
+    	std::string             	get_server_name();
+    	std::string             	get_error_page();
+    	std::string             	get_cgi_file_ext();
+    	std::vector<Location>   	get_location_blocks();
 
     	typedef     std::vector<std::string>::iterator vector_iterator;
     	typedef     void (Server::*configure)(const std::string &);
-
+		
 	private:
-    	int                     _port;
-    	std::string             _host;
-    	std::string             _server_name;
-    	std::string             _error_page;
-    	std::string             _cgi_file_ext;
-    	std::vector<Location>	_location_blocks;
+		std::vector<std::string>	_port;
+    	std::string         	    _host;
+    	std::string         	    _server_name;
+    	std::string        		    _error_page;
+    	std::string             	_cgi_file_ext;
+    	std::vector<Location>		_location_blocks;
 };
