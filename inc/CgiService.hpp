@@ -13,4 +13,5 @@ public:
     ~CgiService();
 
     std::string const build_dir_content(std::string const &target) const;
+    std::string const build_cgi_output(char *const *args, char *const *envp) const;
 };

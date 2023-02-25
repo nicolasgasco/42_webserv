@@ -10,8 +10,16 @@ CgiService::~CgiService()
 
 std::string const CgiService::build_dir_content(std::string const &target) const
 {
-    std::string result;
+    char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>("./cgi_bin/output_dir_content.py"), NULL};
 
+    std::string path = "PATH_INFO=./public" + target;
+    char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+
+    return this->build_cgi_output(args, envp);
+}
+
+std::string const CgiService::build_cgi_output(char *const *args, char *const *envp) const
+{
     int fds[2];
     if (pipe(fds) == -1)
         std::cerr << "Error: pipe" << std::endl;
@@ -27,12 +35,7 @@ std::string const CgiService::build_dir_content(std::string const &target) const
         close(fds[PIPE_READ]);
         close(fds[PIPE_WRITE]);
 
-        char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>("./cgi_bin/output_dir_content.py"), NULL};
-
-        std::string path = "PATH_INFO=./public" + target;
-        char *envp[] = {const_cast<char *>(path.c_str()), NULL};
-
-        if (execve("/usr/bin/python3", args, envp))
+        if (execve(args[0], args, envp))
             std::cerr << "Error: execve: " << strerror(errno) << std::endl;
     }
 
