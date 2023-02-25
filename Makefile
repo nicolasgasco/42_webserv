@@ -21,6 +21,7 @@ CFLAGS_SAN 	= -Wall -Werror -Wextra -g3 -std=c++98 -MD -fsanitize=address
 SRC_MAIN	= ./
 SRC_DIR		= src/
 SRC_DIR_UT	= src/utils/
+SRC_DIR_SE  = src/services/
 INC_DIR		= inc/
 OBJ_DIR		= obj/
 OBJ_DIR_SAN	= obj_san/
@@ -28,7 +29,7 @@ OBJ_DIR_SAN	= obj_san/
 HEADERS		= ./$(INC_DIR) 
 INCLUDES	= $(addprefix -I, $(HEADERS))
 
-SRC			= $(wildcard $(SRC_MAIN)*.cpp) $(wildcard $(SRC_DIR)*.cpp) $(wildcard $(SRC_DIR_UT)*.cpp)  
+SRC			= $(wildcard $(SRC_MAIN)*.cpp) $(wildcard $(SRC_DIR)*.cpp) $(wildcard $(SRC_DIR_UT)*.cpp) $(wildcard $(SRC_DIR_SE)*.cpp)
 OBJ			= $(addprefix $(OBJ_DIR), $(notdir $(SRC:.cpp=.o)))
 OBJ_SAN		= $(addprefix $(OBJ_DIR_SAN), $(notdir $(SRC:.cpp=.o)))
 
@@ -47,6 +48,10 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR_UT)%.cpp 
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR)%.o: $(SRC_DIR_SE)%.cpp 
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -78,6 +83,10 @@ $(OBJ_DIR_SAN)%.o: $(SRC_DIR)%.cpp
 	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR_SAN)%.o: $(SRC_DIR_UT)%.cpp 
+	@mkdir -p $(OBJ_DIR_SAN)
+	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR_SAN)%.o: $(SRC_DIR_SE)%.cpp 
 	@mkdir -p $(OBJ_DIR_SAN)
 	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
 
