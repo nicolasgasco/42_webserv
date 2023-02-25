@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 Server::Server() : 
-		_port(0), 
+		_port(), 
 		_host(), 
 		_server_name(), 
 		_error_page(), 
@@ -43,7 +43,7 @@ void Server::create_server(std::vector <std::string>& server_config)
 
 void    Server::reset_server()
 {
-    _port = 0;
+    _port.clear();
     _host.clear();
     _server_name.clear();
     _error_page.clear();
@@ -70,7 +70,7 @@ int     Server::identify_server_value(const std::string &str)
 
 void    Server::configure_port(const std::string &str)
 {
-	_port = parser_num(str);
+	_port = parser_vec(str);
 }
 
 void    Server::configure_host(const std::string &str)
@@ -98,7 +98,7 @@ void    Server::failed_element(const std::string &str)
 	parser_fail(str);
 }
 
-int	Server::get_port()
+std::vector<std::string> Server::get_port()
 {
 	return _port;
 }

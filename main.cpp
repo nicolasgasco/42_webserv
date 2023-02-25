@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 			Webserver webserver;
 			webserver.load_config_file(argv[1]);
 			webserver.print_config_data();
+			webserver.inspect_config_data();
 
 			AddressInfo addr_info;
 
@@ -94,7 +95,7 @@ int main(int argc, char **argv)
 		catch (const std::exception &e)
 		{
 			std::cerr << "🔴  Failed -> " << e.what() << std::endl;
-			return (-1);
+			std::exit(0);
 		}
 	}
 	return (0);
