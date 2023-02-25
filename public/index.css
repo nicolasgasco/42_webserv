@@ -9,6 +9,7 @@
   justify-content: center;
   align-items: center;
   gap: 15px;
+  margin-bottom: 40px;
 }
 
 .hero-section__avatar-container > :first-child {
@@ -23,6 +24,16 @@
   width: 250px;
   height: auto;
   object-fit: contain;
+}
+
+.hero-section__navigation {
+  width: 600px;
+  padding: 20px 30px;
+  outline: 2px black solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
 }
 
 .method-too-long-form__message {
