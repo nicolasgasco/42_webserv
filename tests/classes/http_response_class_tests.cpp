@@ -17,8 +17,7 @@ void http_response_class_tests(bool IS_DEBUG)
 
                 HttpRequest req;
                 RouterService router;
-                CgiService cgi;
-                HttpResponse res(req, router, cgi);
+                HttpResponse res(req, router);
 
                 std::string ref;
 
