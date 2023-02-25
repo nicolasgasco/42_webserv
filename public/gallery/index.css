@@ -14,3 +14,15 @@
   height: 200px;
   object-fit: cover;
 }
+
+#pictures-container li {
+  position: relative;
+  margin-bottom: 0;
+}
+
+#delete-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+}
