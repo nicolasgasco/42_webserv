@@ -1,0 +1,15 @@
+#pictures-container > ul {
+  list-style-type: none;
+  max-width: 875px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+#pictures-container img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}

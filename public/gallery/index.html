@@ -16,7 +16,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <!-- Styles -->
-    <link rel="stylesheet" href="error/index.css" />
+    <link rel="stylesheet" href="gallery/index.css" />
     <link rel="stylesheet" href="commons.css" />
   </head>
   <body>
@@ -29,7 +29,10 @@
       >
     </div>
     <main class="container centered padded">
-      <h1>Upload a picture</h1>
+      <h1>Gallery page</h1>
+      <h2>Your uploaded pictures</h2>
+      <div id="pictures-container"></div>
+      <h2>Upload a picture</h2>
       <p>Chose a file from your system.</p>
       <form action="/gallery" method="post" enctype="multipart/form-data">
         <input type="file" name="image" accept="image/*" />
@@ -37,5 +40,5 @@
       </form>
     </main>
   </body>
-  <script src="error/index.js"></script>
+  <script src="gallery/index.js"></script>
 </html>
