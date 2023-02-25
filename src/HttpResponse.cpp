@@ -66,6 +66,30 @@ void HttpResponse::_build_get_res()
         res_body = this->_cgi.build_dir_content(this->_req.get_req_line().target);
         content_len = res_body.length() - CRLF_LEN;
     }
+    else if (this->_req.is_cgi_req())
+    {
+        std::string file_path = this->_router.get_file_path(this->_req);
+        std::ifstream file(file_path);
+
+        if (file)
+        {
+            this->set_status_line(200, "OK");
+
+            char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(file_path.c_str()), NULL};
+            std::string path = "PATH_INFO=" + std::string(GALLERY_STORAGE_PATH);
+            char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+            res_body = this->_cgi.build_cgi_output(args, envp);
+
+            content_len = res_body.length() - CRLF_LEN;
+        }
+        else
+        {
+            this->set_status_line(404, "Not Found");
+            std::ifstream file_404(this->_router.get_404_file_path());
+            res_body = this->_build_file(file_404);
+            content_len = res_body.length() - CRLF_LEN;
+        }
+    }
     else
     {
         std::string file_path = this->_router.get_file_path(this->_req);
