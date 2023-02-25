@@ -13,7 +13,9 @@ std::string const RouterService::get_file_path(HttpRequest const &req) const
     std::string target = req.get_req_line().target;
 
     bool does_contain_dot = target.find(".") != std::string::npos;
-    if (req.is_html_req() && !does_contain_dot)
+    if (req.is_cgi_req())
+        return build_path(".", target);
+    else if (req.is_html_req() && !does_contain_dot)
         return build_path(PUBLIC_PATH, target, "index.html");
     else
         return build_path(PUBLIC_PATH, target);
