@@ -136,3 +136,23 @@ std::string const get_mime_type(std::string target)
 
     return result;
 }
+
+/**
+ * Scans for template variable and replace it with value.
+ *
+ * @param file File where the variable is.
+ * @param var Name of the variable.
+ * @param value Value to be injected.
+ */
+void replace_var_in_page(std::string &file, std::string const var, std::string const value)
+{
+    while (true)
+    {
+        size_t posCode = file.find(var);
+        if (posCode == std::string::npos)
+            return;
+
+        file.erase(posCode, var.length());
+        file.insert(posCode, value);
+    }
+}

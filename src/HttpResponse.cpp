@@ -42,8 +42,8 @@ void HttpResponse::_build_error_res()
         std::ifstream file(this->_router.get_def_err_file_path());
 
         std::string err_page = this->_build_file(file);
-        this->_replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
-        this->_replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
+        replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
+        replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
 
         res_body = err_page;
         content_len = err_page.length() - CRLF_LEN;
@@ -157,19 +157,6 @@ std::string HttpResponse::_build_headers(int const &content_len) const
     // headers += content_type;
 
     return headers;
-}
-
-void HttpResponse::_replace_var_in_page(std::string &file, std::string const var, std::string const value) const
-{
-    while (true)
-    {
-        size_t posCode = file.find(var);
-        if (posCode == std::string::npos)
-            return;
-
-        file.erase(posCode, var.length());
-        file.insert(posCode, value);
-    }
 }
 
 std::string const HttpResponse::_get_content_type(std::string target) const
