@@ -2,6 +2,8 @@
 
 HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) : _router(router), _req(req)
 {
+    this->_http = HttpService();
+
     if (this->_req.has_error())
         this->_build_error_res();
     else
@@ -41,7 +43,7 @@ void HttpResponse::_build_error_res()
     {
         std::ifstream file(this->_router.get_def_err_file_path());
 
-        std::string err_page = this->_build_file(file);
+        std::string err_page = this->_http.build_file(file);
         replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
         replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
 
@@ -49,8 +51,8 @@ void HttpResponse::_build_error_res()
         content_len = err_page.length() - CRLF_LEN;
     }
 
-    this->_buff = this->_build_status_line();
-    this->_buff += this->_build_headers(content_len);
+    this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+    this->_buff += this->_http.build_headers(content_len);
     this->_buff += res_body;
 }
 
@@ -88,7 +90,7 @@ void HttpResponse::_build_get_res()
         {
             this->set_status_line(404, "Not Found");
             std::ifstream file_404(this->_router.get_404_file_path());
-            res_body = this->_build_file(file_404);
+            res_body = this->_http.build_file(file_404);
             content_len = res_body.length() - CRLF_LEN;
         }
     }
@@ -100,7 +102,7 @@ void HttpResponse::_build_get_res()
         if (file)
         {
             this->set_status_line(200, "OK");
-            res_body = this->_build_file(file);
+            res_body = this->_http.build_file(file);
             content_len = res_body.length() - CRLF_LEN;
         }
         else
@@ -109,54 +111,15 @@ void HttpResponse::_build_get_res()
             if (this->_req.is_html_req())
             {
                 std::ifstream file_404(this->_router.get_404_file_path());
-                res_body = this->_build_file(file_404);
+                res_body = this->_http.build_file(file_404);
                 content_len = res_body.length() - CRLF_LEN;
             }
         }
     }
 
-    this->_buff = this->_build_status_line();
-    this->_buff += this->_build_headers(content_len);
+    this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+    this->_buff += this->_http.build_headers(content_len);
     this->_buff += res_body;
-}
-
-std::string HttpResponse::_build_file(std::ifstream const &file)
-{
-    std::string message_body;
-
-    std::ostringstream data_stream;
-
-    data_stream << file.rdbuf();
-
-    message_body += "\r\n";
-    message_body += data_stream.str();
-
-    return message_body;
-}
-
-std::string HttpResponse::_build_status_line() const
-{
-    std::string status_line;
-    status_line += this->_status_line.version + " " + std::to_string(this->_status_line.code) + " " + this->_status_line.reason;
-    status_line += "\r\n";
-    return status_line;
-}
-
-std::string HttpResponse::_build_headers(int const &content_len) const
-{
-    std::string headers;
-
-    std::string date = "Date: " + get_gmt_time() + "\r\n";
-    std::string server = "Server: " + std::string(DEFAULT_SERVER_NAME) + "/1.0" + "\r\n";
-    std::string content_length = "Content-Length: " + std::to_string(content_len) + "\r\n";
-    // std::string content_type = this->_get_content_type(this->_req.get_req_line().target);
-
-    headers += date;
-    headers += server;
-    headers += content_length;
-    // headers += content_type;
-
-    return headers;
 }
 
 std::string const HttpResponse::_get_content_type(std::string target) const
@@ -191,7 +154,7 @@ void HttpResponse::set_status_line(int const &code, std::string const &reason)
 
 std::string HttpResponse::test_build_headers(int const &content_len) const
 {
-    return this->_build_headers(content_len);
+    return this->_http.build_headers(content_len);
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)
