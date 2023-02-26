@@ -124,15 +124,27 @@ void HttpResponse::_build_delete_res()
 {
     int content_len = 0;
     std::string res_body;
+    std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
 
-    this->set_status_line(200, "OK");
+    bool is_allowed_path = target.find(GALLERY_STORAGE_PATH) != std::string::npos;
+    if (!is_allowed_path)
+        this->set_status_line(401, "Not authorized");
+    else
+    {
 
-    char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("./cgi_bin/delete_file.py"), NULL};
-    std::string path = "PATH_INFO=" + std::string(PUBLIC_PATH) + std::string(this->_req.get_req_line().target);
-    char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("./cgi_bin/delete_file.py"), NULL};
+        std::string path = "PATH_INFO=" + target;
+        char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+        std::string cgi_output = this->_cgi.build_cgi_output(args, envp);
 
-    res_body = this->_cgi.build_cgi_output(args, envp);
-    content_len = res_body.length() - CRLF_LEN;
+        if (cgi_output.find("404") != std::string::npos)
+            this->set_status_line(404, "Not Found");
+        else
+            this->set_status_line(200, "OK");
+
+        res_body = cgi_output;
+        content_len = res_body.length() - CRLF_LEN;
+    }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len);

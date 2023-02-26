@@ -12,7 +12,11 @@ methodTooLongForm.addEventListener("submit", function (e) {
   })
     .then(function (response) {
       // The API call was successful!
-      console.log(response.status, response.statusText, !response.ok);
+      console.log({
+        status: response.status,
+        res: response.statusText,
+        isOK: response.ok,
+      });
       if (!response.ok) {
         formMessage.classList.add("has-error");
       } else {

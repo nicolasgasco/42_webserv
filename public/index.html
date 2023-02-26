@@ -50,10 +50,6 @@
             </p>
           </li>
           <li>
-            <p>Image that doesn't exist:</p>
-            <img src="/ciao.jpeg" />
-          </li>
-          <li>
             <form id="method-too-long-form">
               <input
                 type="text"
@@ -63,6 +59,7 @@
               />
               <select id="method-too-long-form__method">
                 <option value="GET">GET</option>
+                <option value="DELETE">DELETE</option>
                 <option value="OPTIONS">OPTIONS</option>
                 <option value="PUT">PUT</option>
                 <option value="PATCH">PATCH</option>
@@ -72,6 +69,10 @@
               <p>
                 Response received:
                 <span class="method-too-long-form__message"></span>
+              </p>
+              <p>
+                *For <b>DELETE</b> all deletable pictures are in the
+                <a href="/gallery/pictures/">/gallery/pictures/</a> folder
               </p>
             </form>
           </li>

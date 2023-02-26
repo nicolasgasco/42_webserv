@@ -9,7 +9,7 @@ print('\n')
 path = os.getenv("PATH_INFO")
 
 files_in_dir = [
-    f'{path.removeprefix("./public/")}/{f}' for f in listdir(path) if isfile(join(path, f))]
+    f'{path.removeprefix("public/")}/{f}' for f in listdir(path) if isfile(join(path, f))]
 
 result = {"value": files_in_dir}
 
