@@ -32,9 +32,8 @@ void AddressInfo::_fill_addr_info(std::string const &port)
 
 struct addrinfo AddressInfo::_fill_hints()
 {
-    struct addrinfo hints;
+    struct addrinfo hints = {0, 0, 0, 0, 0, 0, 0, 0};
 
-    memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;     // works both for IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM; // TCP
     hints.ai_flags = AI_PASSIVE;     // IP automatically filled
