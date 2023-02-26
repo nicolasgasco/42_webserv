@@ -6,7 +6,7 @@
 #define DEFAULT_SERVER_NAME "Die Veteranen"
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"
-#define GALLERY_STORAGE_PATH "./public/gallery/pictures"
+#define GALLERY_STORAGE_PATH "public/gallery/pictures"
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define LONGEST_METHOD "DELETE" // Replace with computed value
 #define LONGEST_URI 124         // Replace with computed value
