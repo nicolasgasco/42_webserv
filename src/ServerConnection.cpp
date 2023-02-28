@@ -35,20 +35,54 @@ void ServerConnection::handle_connection(int const &client_fd)
 
 void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
 {
-    char buff[REC_BUFF_SIZE];
-    for (int i = 0; i < REC_BUFF_SIZE; ++i)
-        buff[i] = 0;
 
-    this->_bytes_received = recv(client_fd, (void *)buff, REC_BUFF_SIZE, 0);
+    std::vector<char> buff(REC_BUFF_SIZE, 0);
+    this->_bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
     if (this->_bytes_received == -1)
         std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
     else
         std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
 
-    req.set_buff(buff);
-
+    req.set_buff(buff.data());
     req.parse_req();
+
+    this->_parse_body(buff, req, client_fd);
+
     req.output_status();
+}
+
+void ServerConnection::_parse_body(std::vector<char> &buff, HttpRequest &req, int client_fd)
+{
+    try
+    {
+        int content_length = std::stoi(req.get_attrs().at("Content-Length"));
+        std::string content_type = req.get_attrs().at("Content-Type");
+
+        if (content_length <= 0 || content_type.empty())
+            return;
+
+        // Set first part of request only if necessary
+        req.set_body(buff);
+
+        while (content_length)
+        {
+            std::vector<char> buff(REC_BUFF_SIZE, 0);
+            int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, MSG_DONTWAIT);
+            this->_bytes_received += bytes_received;
+            if (bytes_received == -1)
+            {
+                std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
+                break;
+            }
+            else
+                std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
+
+            req.set_body(buff);
+        }
+    }
+    catch (const std::out_of_range &e)
+    {
+    }
 }
 
 void ServerConnection::_send_res(int const &client_fd, HttpRequest &req)

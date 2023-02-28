@@ -28,5 +28,6 @@ public:
 
 private:
     void _receive_req(int const &client_fd, HttpRequest &req);
+    void _parse_body(std::vector<char> &buff, HttpRequest &req, int client_fd);
     void _send_res(int const &client_fd, HttpRequest &req);
 };

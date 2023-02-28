@@ -182,9 +182,19 @@ void HttpRequest::output_status()
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
-std::string const &HttpRequest::get_buff()
+std::vector<char> HttpRequest::get_body() const
+{
+    return this->_body;
+}
+
+std::string const &HttpRequest::get_buff() const
 {
     return this->_buff;
+}
+
+std::string const &HttpRequest::get_file_name() const
+{
+    return this->_file_name;
 }
 
 std::map<std::string, std::string> const &HttpRequest::get_params() const
@@ -259,6 +269,14 @@ bool HttpRequest::_is_method_supported() const
 void HttpRequest::set_buff(char const *buff)
 {
     this->_buff = buff;
+}
+
+void HttpRequest::set_body(std::vector<char> buff)
+{
+    if (this->_body.empty())
+        this->_body = buff;
+    else
+        this->_body.insert(this->_body.end(), buff.begin(), buff.end());
 }
 
 void HttpRequest::_set_err(int const &code, std::string const &message)
