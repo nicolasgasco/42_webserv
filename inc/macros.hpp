@@ -14,7 +14,7 @@
 #define PIPE_WRITE 1
 #define PUBLIC_PATH "public"
 #define PYTHON3_PATH "/usr/bin/python3"
-#define REC_BUFF_SIZE 3000 // TODO change to parametrized values
+#define REC_BUFF_SIZE 30000 // TODO change to parametrized values
 #define SERVER_TIMEOUT 30
 #define WHITESPACES " \t\v\f\r\n"
 

@@ -11,13 +11,9 @@ HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) 
     {
         std::string method = this->_req.get_req_line().method;
         if (method == "GET")
-        {
             this->_build_get_res();
-        }
         else if (method == "POST")
-        {
-            // To be built with CGI
-        }
+            this->_build_post_res();
         else if (method == "DELETE")
             this->_build_delete_res();
     }
@@ -118,6 +114,36 @@ void HttpResponse::_build_get_res()
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len);
     this->_buff += res_body;
+}
+
+void HttpResponse::_build_post_res()
+{
+    std::vector<char> buff = this->_req.get_body();
+
+    std::vector<char>::iterator start;
+    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - 4); ++it)
+    {
+        if (*it == '\r' && *(it + 1) == '\n' && *(it + 2) == '\r' && *(it + 3) == '\n')
+            start = it + 4;
+    }
+    buff.erase(buff.begin(), start);
+
+    std::vector<char>::iterator end;
+    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - 4); ++it)
+    {
+        if (*it == '-' && *(it + 1) == '-' && *(it + 2) == '-' && *(it + 3) == '-')
+        {
+            end = it;
+            break;
+        }
+    }
+    buff.erase(end, buff.end());
+
+    // TODO change file name
+    std::stringstream file(build_path(GALLERY_STORAGE_PATH, "example.jpg"));
+    std::ofstream img(file.str().c_str(), std::ios::binary);
+    img.write(buff.data(), this->_req.get_body().size());
+    img.close();
 }
 
 void HttpResponse::_build_delete_res()

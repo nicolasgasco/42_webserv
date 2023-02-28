@@ -28,7 +28,9 @@ class HttpRequest
 private:
     std::map<std::string, std::string> _attrs;
     std::map<std::string, std::string> _params;
+    std::vector<char> _body;
     std::string _buff;
+    std::string _file_name;
     ReqLine _req_line;
     ReqErr _err;
 
@@ -38,13 +40,16 @@ public:
 
     // Getters
     std::map<std::string, std::string> const &get_attrs() const;
-    std::string const &get_buff();
+    std::vector<char> get_body() const;
+    std::string const &get_buff() const;
     ReqErr const &gett_err() const;
+    std::string const &get_file_name() const;
     std::map<std::string, std::string> const &get_params() const;
     ReqLine const &get_req_line() const;
 
     // Setters
     void set_buff(char const *buff);
+    void set_body(std::vector<char>);
 
     // Methods
     void parse_req();
