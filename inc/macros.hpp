@@ -16,6 +16,7 @@
 #define PYTHON3_PATH "/usr/bin/python3"
 #define REC_BUFF_SIZE 30000 // TODO change to parametrized values
 #define SERVER_TIMEOUT 30
+#define GALLERY_SUCCESS_TEMPLATE_PATH "public/gallery/upload/success.html"
 #define WHITESPACES " \t\v\f\r\n"
 
 // Output colors
