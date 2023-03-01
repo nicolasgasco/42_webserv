@@ -118,34 +118,63 @@ void HttpResponse::_build_get_res()
 
 void HttpResponse::_build_post_res()
 {
-    std::vector<char> buff = this->_req.get_body();
-
-    std::vector<char>::iterator start;
-    std::string search_pattern = "\r\n\r\n";
-    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
-    {
-        if (find_in_vec(search_pattern, it))
-            start = it + 4;
-    }
-    buff.erase(buff.begin(), start);
-
-    std::vector<char>::iterator end;
-    search_pattern = "------WebKitFormBoundary";
-    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
-    {
-        if (find_in_vec(search_pattern, it))
-        {
-            end = it;
-            break;
-        }
-    }
-    buff.erase(end, buff.end());
+    int content_len = 0;
+    std::string res_body;
 
     std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
-    std::stringstream file(file_path);
-    std::ofstream img(file.str().c_str(), std::ios::binary);
-    img.write(buff.data(), this->_req.get_body().size());
-    img.close();
+    std::ifstream f(file_path.c_str());
+    if (f.good())
+    {
+        this->set_status_line(400, "Bad Request");
+
+        std::ifstream file(this->_router.get_def_err_file_path());
+
+        std::string err_page = this->_http.build_file(file);
+        replace_var_in_page(err_page, "{{code}}", "400");
+        replace_var_in_page(err_page, "{{message}}", "Bad Request");
+
+        res_body = err_page;
+        content_len = err_page.length() - CRLF_LEN;
+    }
+    else
+    {
+        std::vector<char> buff = this->_req.get_body();
+
+        std::vector<char>::iterator start;
+        std::string search_pattern = "\r\n\r\n";
+        for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
+        {
+            if (find_in_vec(search_pattern, it))
+                start = it + 4;
+        }
+        buff.erase(buff.begin(), start);
+
+        std::vector<char>::iterator end;
+        search_pattern = "------WebKitFormBoundary";
+        for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
+        {
+            if (find_in_vec(search_pattern, it))
+            {
+                end = it;
+                break;
+            }
+        }
+        buff.erase(end, buff.end());
+
+        std::stringstream file(file_path);
+        std::ofstream img(file.str().c_str(), std::ios::binary);
+        img.write(buff.data(), buff.size());
+        img.close();
+
+        this->set_status_line(200, "OK");
+        std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
+        res_body = this->_http.build_file(res_file);
+        content_len = res_body.length() - CRLF_LEN;
+    }
+
+    this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+    this->_buff += this->_http.build_headers(content_len);
+    this->_buff += res_body;
 }
 
 void HttpResponse::_build_delete_res()
