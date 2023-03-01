@@ -90,3 +90,9 @@ input:focus-visible {
 .has-error {
   color: red;
 }
+
+.illustration--big {
+  max-width: 1000px;
+  height: auto;
+  object-fit: contain;
+}
