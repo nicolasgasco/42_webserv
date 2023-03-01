@@ -52,6 +52,7 @@ public:
     void set_body(std::vector<char>);
 
     // Methods
+    void parse_post_req_body();
     void parse_post_req_file_name(std::string const &buff);
     void parse_req();
     void output_status();
