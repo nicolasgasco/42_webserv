@@ -156,3 +156,24 @@ void replace_var_in_page(std::string &file, std::string const var, std::string c
         file.insert(posCode, value);
     }
 }
+
+/**
+ * Returns true if a specified pattern is found in a vector of chars.
+ *
+ * @param pattern String representing the pattern to be searched.
+ * @param it Iterator representing the position from where the search start
+ * @returns True if pattern is found, false otherwise.
+ */
+bool find_in_vec(std::string const &pattern, std::vector<char>::iterator it)
+{
+    if (pattern.length() == 0)
+        return false;
+
+    for (size_t i = 0; i < pattern.length(); i++)
+    {
+        if (*it != pattern[i])
+            return false;
+        it++;
+    }
+    return true;
+}
