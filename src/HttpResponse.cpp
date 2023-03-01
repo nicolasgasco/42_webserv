@@ -121,17 +121,19 @@ void HttpResponse::_build_post_res()
     std::vector<char> buff = this->_req.get_body();
 
     std::vector<char>::iterator start;
-    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - 4); ++it)
+    std::string search_pattern = "\r\n\r\n";
+    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
     {
-        if (*it == '\r' && *(it + 1) == '\n' && *(it + 2) == '\r' && *(it + 3) == '\n')
+        if (find_in_vec(search_pattern, it))
             start = it + 4;
     }
     buff.erase(buff.begin(), start);
 
     std::vector<char>::iterator end;
-    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - 4); ++it)
+    search_pattern = "------WebKitFormBoundary";
+    for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
     {
-        if (*it == '-' && *(it + 1) == '-' && *(it + 2) == '-' && *(it + 3) == '-')
+        if (find_in_vec(search_pattern, it))
         {
             end = it;
             break;
