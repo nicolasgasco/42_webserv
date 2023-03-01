@@ -138,32 +138,9 @@ void HttpResponse::_build_post_res()
     }
     else
     {
-        std::vector<char> buff = this->_req.get_body();
-
-        std::vector<char>::iterator start;
-        std::string search_pattern = "\r\n\r\n";
-        for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
-        {
-            if (find_in_vec(search_pattern, it))
-                start = it + 4;
-        }
-        buff.erase(buff.begin(), start);
-
-        std::vector<char>::iterator end;
-        search_pattern = "------WebKitFormBoundary";
-        for (std::vector<char>::iterator it = buff.begin(); it != (buff.end() - search_pattern.length()); ++it)
-        {
-            if (find_in_vec(search_pattern, it))
-            {
-                end = it;
-                break;
-            }
-        }
-        buff.erase(end, buff.end());
-
         std::stringstream file(file_path);
         std::ofstream img(file.str().c_str(), std::ios::binary);
-        img.write(buff.data(), buff.size());
+        img.write(this->_req.get_body().data(), this->_req.get_body().size());
         img.close();
 
         this->set_status_line(200, "OK");

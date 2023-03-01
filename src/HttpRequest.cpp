@@ -171,6 +171,35 @@ void HttpRequest::_parse_query_params(std::string &target)
     target = target.substr(0, question_mark_sign_pos);
 }
 
+void HttpRequest::parse_post_req_body()
+{
+    std::vector<char> body = this->_body;
+
+    std::vector<char>::iterator start;
+    std::string search_pattern = "\r\n\r\n";
+    for (std::vector<char>::iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    {
+        if (find_in_vec(search_pattern, it))
+            start = it + 4;
+    }
+    body.erase(body.begin(), start);
+
+    std::vector<char>::iterator end;
+    search_pattern = "------WebKitFormBoundary";
+    for (std::vector<char>::iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    {
+        if (find_in_vec(search_pattern, it))
+        {
+            end = it;
+            break;
+        }
+    }
+    body.erase(end, body.end());
+
+    this->_body.clear();
+    this->_body = body;
+}
+
 void HttpRequest::parse_post_req_file_name(std::string const &buff)
 {
     std::string delim = "filename=\"";
