@@ -39,6 +39,7 @@ public:
 
     // Setters
     void set_status_line(int const &code, std::string const &reason);
+    void set_buff(std::string const &buff);
 
 private:
     void _build_error_res();
