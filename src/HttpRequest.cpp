@@ -171,6 +171,16 @@ void HttpRequest::_parse_query_params(std::string &target)
     target = target.substr(0, question_mark_sign_pos);
 }
 
+void HttpRequest::parse_post_req_file_name(std::string const &buff)
+{
+    std::string delim = "filename=\"";
+
+    std::string file_name = buff.substr(buff.find(delim) + delim.length());
+    file_name = file_name.substr(0, file_name.find("\""));
+
+    this->_post_req_file_name = file_name;
+}
+
 void HttpRequest::output_status()
 {
     // TODO delete this once build is over
@@ -192,9 +202,9 @@ std::string const &HttpRequest::get_buff() const
     return this->_buff;
 }
 
-std::string const &HttpRequest::get_file_name() const
+std::string const &HttpRequest::get_post_req_file_name() const
 {
-    return this->_file_name;
+    return this->_post_req_file_name;
 }
 
 std::map<std::string, std::string> const &HttpRequest::get_params() const

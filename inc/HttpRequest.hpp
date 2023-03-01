@@ -30,7 +30,7 @@ private:
     std::map<std::string, std::string> _params;
     std::vector<char> _body;
     std::string _buff;
-    std::string _file_name;
+    std::string _post_req_file_name;
     ReqLine _req_line;
     ReqErr _err;
 
@@ -43,8 +43,8 @@ public:
     std::vector<char> get_body() const;
     std::string const &get_buff() const;
     ReqErr const &gett_err() const;
-    std::string const &get_file_name() const;
     std::map<std::string, std::string> const &get_params() const;
+    std::string const &get_post_req_file_name() const;
     ReqLine const &get_req_line() const;
 
     // Setters
@@ -52,6 +52,7 @@ public:
     void set_body(std::vector<char>);
 
     // Methods
+    void parse_post_req_file_name(std::string const &buff);
     void parse_req();
     void output_status();
 
