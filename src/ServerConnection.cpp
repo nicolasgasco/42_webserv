@@ -79,6 +79,7 @@ void ServerConnection::_parse_body(std::vector<char> &buff, HttpRequest &req, in
 
             req.set_body(buff);
         }
+        req.parse_post_req_file_name(req.get_buff());
     }
     catch (const std::out_of_range &e)
     {

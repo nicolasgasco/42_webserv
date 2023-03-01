@@ -139,8 +139,8 @@ void HttpResponse::_build_post_res()
     }
     buff.erase(end, buff.end());
 
-    // TODO change file name
-    std::stringstream file(build_path(GALLERY_STORAGE_PATH, "example.jpg"));
+    std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
+    std::stringstream file(file_path);
     std::ofstream img(file.str().c_str(), std::ios::binary);
     img.write(buff.data(), this->_req.get_body().size());
     img.close();
