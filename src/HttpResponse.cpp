@@ -215,6 +215,11 @@ void HttpResponse::set_status_line(int const &code, std::string const &reason)
     this->_status_line.reason = std::string(reason);
 }
 
+void HttpResponse::set_buff(std::string const &buff)
+{
+    this->_buff = buff;
+}
+
 std::string HttpResponse::test_build_headers(int const &content_len) const
 {
     return this->_http.build_headers(content_len);

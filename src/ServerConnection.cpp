@@ -91,11 +91,27 @@ void ServerConnection::_send_res(int const &client_fd, HttpRequest &req)
 {
     HttpResponse res(req, this->_router);
 
-    this->_bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), 0);
-    if (this->_bytes_sent == -1)
-        std::cerr << "Error: send: " << std::strerror(errno) << std::endl;
-    else
-        std::cout << YELLOW << "Bytes sent: " << this->_bytes_sent << NC << std::endl;
+    while (true)
+    {
+        int bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), 0);
+
+        if (bytes_sent == -1)
+            std::cerr << "Error: send" << std::endl;
+        else if (bytes_sent == 0)
+            break;
+        else
+            std::cout << YELLOW << "Bytes sent: " << bytes_sent << NC << std::endl;
+
+        this->_bytes_sent += bytes_sent;
+
+        if (res.get_buff().length() == (size_t)bytes_sent)
+            break;
+        else if (res.get_buff().length() > (size_t)bytes_sent)
+        {
+            std::string remaining_buff = res.get_buff().substr(bytes_sent);
+            res.set_buff(remaining_buff);
+        }
+    }
 }
 
 int const &ServerConnection::get_new_sock_id() const
