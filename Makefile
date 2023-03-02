@@ -6,7 +6,7 @@
 #    By: dgerwig- <dgerwig-@student.42urduli>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/03/02 19:59:20 by dgerwig-         ###   ########.fr        #
+#    Updated: 2023/03/02 20:13:08 by dgerwig-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -93,8 +93,8 @@ $(OBJ_DIR_SAN)%.o: $(SRC_DIR_SE)%.cpp
 run: re 
 	# TODO Delete when build is done
 	# Copy all assets from backup so that they can be deleted
-	#rm -rf public/gallery/pictures/*
-	#cp -a public/gallery/backup/. public/gallery/pictures
+	rm -rf public/gallery/pictures/*
+	cp -a public/gallery/backup/. public/gallery/pictures
 	./webserv config/init.conf
 
 run-san: fclean san 
