@@ -61,7 +61,13 @@ void HttpResponse::_build_get_res()
     {
         this->set_status_line(200, "OK");
 
-        res_body = this->_cgi.build_dir_content(this->_req.get_req_line().target);
+        std::string cgi_script_path = build_path(PUBLIC_PATH, "cgi_bin", "output_dir_content.py");
+        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
+        std::string target = this->_req.get_req_line().target;
+        std::string path = "PATH_INFO=./" + build_path(PUBLIC_PATH, target);
+        char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+        res_body = this->_cgi.build_cgi_output(args, envp);
+
         content_len = res_body.length() - CRLF_LEN;
     }
     else if (this->_req.is_cgi_req())
