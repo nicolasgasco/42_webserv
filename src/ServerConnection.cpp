@@ -40,6 +40,10 @@ void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
     this->_bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
     if (this->_bytes_received == -1)
         std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
+    else if (this->_bytes_received == 0)
+    {
+        // TODO check how to do in this case
+    }
     else
         std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
 
