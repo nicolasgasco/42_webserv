@@ -6,6 +6,7 @@
 #include "ServerConnection.hpp"
 #include "Config.hpp"
 #include "Webserver.hpp"
+#include "Server.hpp"
 
 #include <sys/select.h>
 
@@ -43,50 +44,55 @@ int main(int argc, char **argv)
 			webserver.print_config_data();
 			webserver.inspect_config_data();
 
-			AddressInfo addr_info;
-
-			Socket socket(addr_info);
-			int server_socket = socket.get_socket_id();
-
-			SocketConnection sock_connection(server_socket, addr_info, BACKLOG);
-
-			fd_set ready_fds, current_fds;
-			FD_ZERO(&ready_fds);
-			FD_ZERO(&current_fds);
-			FD_SET(server_socket, &current_fds);
-			int max_fd = server_socket;
-
-			struct timeval timeout;
-			timeout.tv_sec = SERVER_TIMEOUT;
-			timeout.tv_usec = 0;
-
-			// TODO include this loop in a Server class?
-			while (true)
+			std::string port;
+			while (webserver.bind_socket(&port) != "")
 			{
-				ready_fds = current_fds;
+				AddressInfo addr_info(port);
 
-				if (select(max_fd + 1, &ready_fds, NULL, NULL, &timeout) < 0)
-					std::cerr << std::strerror(errno) << std::endl;
+				Socket socket(addr_info);
 
-				for (int i = MIN_FD; i <= max_fd; ++i)
+				int server_socket = socket.get_socket_id();
+
+				SocketConnection sock_connection(server_socket, addr_info, BACKLOG);
+
+				fd_set ready_fds, current_fds;
+				FD_ZERO(&ready_fds);
+				FD_ZERO(&current_fds);
+				FD_SET(server_socket, &current_fds);
+				int max_fd = server_socket;
+
+				struct timeval timeout;
+				timeout.tv_sec = SERVER_TIMEOUT;
+				timeout.tv_usec = 0;
+
+				// TODO include this loop in a Server class?
+				while (true)
 				{
-					bool isFdReady = FD_ISSET(i, &ready_fds);
-					if (isFdReady)
+					ready_fds = current_fds;
+
+					if (select(max_fd + 1, &ready_fds, NULL, NULL, &timeout) < 0)
+						std::cerr << std::strerror(errno) << std::endl;
+
+					for (int i = MIN_FD; i <= max_fd; ++i)
 					{
-						ServerConnection serv_connection(router);
-
-						bool isFdServer = i == server_socket;
-						if (isFdServer)
+						bool isFdReady = FD_ISSET(i, &ready_fds);
+						if (isFdReady)
 						{
-							int client_fd = serv_connection.accept_connection(i, addr_info.get_serv_info());
-							FD_SET(client_fd, &current_fds);
+							ServerConnection serv_connection(router);
 
-							max_fd = (client_fd > max_fd) ? client_fd : max_fd;
-						}
-						else
-						{
-							serv_connection.handle_connection(i);
-							FD_CLR(i, &current_fds);
+							bool isFdServer = i == server_socket;
+							if (isFdServer)
+							{
+								int client_fd = serv_connection.accept_connection(i, addr_info.get_serv_info());
+								FD_SET(client_fd, &current_fds);
+
+								max_fd = (client_fd > max_fd) ? client_fd : max_fd;
+							}
+							else
+							{
+								serv_connection.handle_connection(i);
+								FD_CLR(i, &current_fds);
+							}
 						}
 					}
 				}

@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "Location.hpp"
 #include "Parser_config_file.hpp"
+#include "AddressInfo.hpp"
 
 #include <fstream>
 
@@ -12,7 +13,7 @@ Webserver::Webserver() :
 
 Webserver::~Webserver() {}
 
-void    Webserver::load_config_file(char *config_file)
+void	Webserver::load_config_file(char *config_file)
 {
 	std::ifstream 				input_data;
 	std::string 				text;
@@ -131,4 +132,22 @@ void    Webserver::inspect_config_data()
 			}
 		}
 	}
+}
+
+
+std::string  	Webserver::bind_socket(std::string *port)  
+{
+    for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
+	{
+        Server srv_data = *it;
+        std::vector<std::string> port_data = srv_data.get_port();
+
+		for (std::vector<std::string>::iterator it1 = port_data.begin(); it1 != port_data.end(); it1++)
+		{
+			*port = *it1;
+			std::cout << "port config_file  " << *port << std::endl;
+			return(*port);
+		}
+	}
+	return (0);
 }
