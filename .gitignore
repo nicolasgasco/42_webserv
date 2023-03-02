@@ -38,3 +38,4 @@ tests
 !tests/
 obj/
 obj_san/
+public/gallery/pictures/*
