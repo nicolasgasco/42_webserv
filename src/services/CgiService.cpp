@@ -10,7 +10,7 @@ CgiService::~CgiService()
 
 std::string const CgiService::build_dir_content(std::string const &target) const
 {
-    char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>("./cgi_bin/output_dir_content.py"), NULL};
+    char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>("public/cgi_bin/output_dir_content.py"), NULL};
 
     std::string path = "PATH_INFO=./public" + target;
     char *envp[] = {const_cast<char *>(path.c_str()), NULL};

@@ -166,7 +166,7 @@ void HttpResponse::_build_delete_res()
     else
     {
 
-        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("./cgi_bin/delete_file.py"), NULL};
+        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("public/cgi_bin/delete_file.py"), NULL};
         std::string path = "PATH_INFO=" + target;
         char *envp[] = {const_cast<char *>(path.c_str()), NULL};
         std::string cgi_output = this->_cgi.build_cgi_output(args, envp);

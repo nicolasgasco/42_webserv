@@ -1,7 +1,6 @@
 #define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
 #define BACKLOG_DEFAULT 10
 #define CGI_BUF_LEN 20000
-#define CGI_PATH "cgi_bin"
 #define CRLF_LEN 2
 #define DEFAULT_SERVER_NAME "Die Veteranen"
 #define DIR_PATH "dir"
