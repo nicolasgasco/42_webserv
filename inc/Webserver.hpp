@@ -12,6 +12,7 @@ class Webserver
     	void    print_config_data();
 		void	inspect_config_data();
 		std::string	bind_socket(std::string *port);
+		std::string get_server_name(std::string *server_name);
 
 	private:
     	std::vector<Server>     _server;

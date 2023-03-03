@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+class Webserver;
+
 class Server
 {
 	public:

@@ -3,6 +3,7 @@
 #include "Location.hpp"
 #include "Parser_config_file.hpp"
 #include "AddressInfo.hpp"
+#include "HttpService.hpp"
 
 #include <fstream>
 
@@ -53,6 +54,8 @@ void Webserver::print_config_data()
         std::cout << "\n";
         std::cout << "Host > " << srv_data.get_host() << std::endl;
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
+		std::string def_ser_name = srv_data.get_server_name();
+		std::cout << "              " << def_ser_name << std::endl;
         std::cout << "Error page > " << srv_data.get_error_page() << std::endl;
         std::cout << "CGI files > " << srv_data.get_cgi_file_ext() << std::endl;
 
@@ -145,9 +148,21 @@ std::string  	Webserver::bind_socket(std::string *port)
 		for (std::vector<std::string>::iterator it1 = port_data.begin(); it1 != port_data.end(); it1++)
 		{
 			*port = *it1;
-			std::cout << "port config_file  " << *port << std::endl;
+			std::cout << "port [config_file]  " << *port << std::endl;
 			return(*port);
 		}
 	}
 	return (0);
+}
+
+
+std::string  	Webserver::get_server_name(std::string *server_name)  
+{
+    for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
+	{
+        Server srv_data = *it;
+        *server_name = srv_data.get_server_name();
+		std::cout << "server_name [config_file]  " << *server_name << std::endl;
+	}
+	return(*server_name);
 }

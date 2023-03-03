@@ -12,7 +12,7 @@ Server::Server() :
 
 Server::~Server() {}
 
-void Server::create_server(std::vector <std::string>& server_config)
+void Server::create_server(std::vector <std::string> &server_config)
 {
 	Location	location;
     configure configure_array[6] = 
