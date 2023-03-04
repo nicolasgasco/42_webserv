@@ -1,6 +1,6 @@
 #include "ServerConnection.hpp"
 
-ServerConnection::ServerConnection(RouterService const &router) : _router(router)
+ServerConnection::ServerConnection()
 {
 }
 
@@ -23,102 +23,105 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
     return this->_new_sock_id;
 }
 
-void ServerConnection::handle_connection(int const &client_fd)
-{
-    HttpRequest req;
-    this->_receive_req(client_fd, req);
-    this->_send_res(client_fd, req);
-
-    close(client_fd);
-    std::cout << YELLOW << "Connection (" << client_fd << ") closed..." << NC << std::endl;
-}
-
-void ServerConnection::_receive_req(int const &client_fd, HttpRequest &req)
+void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
 {
 
-    std::vector<char> buff(REC_BUFF_SIZE, 0);
-    this->_bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
-    if (this->_bytes_received == -1)
-        std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
-    else if (this->_bytes_received == 0)
+    if (req.has_body())
     {
-        // TODO check how to do in this case
-    }
-    else
-        std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
-
-    req.set_buff(buff.data());
-    req.parse_req();
-
-    this->_parse_body(buff, req, client_fd);
-
-    req.output_status();
-}
-
-void ServerConnection::_parse_body(std::vector<char> &buff, HttpRequest &req, int client_fd)
-{
-    try
-    {
-        int content_length = std::stoi(req.get_attrs().at("Content-Length"));
-        std::string content_type = req.get_attrs().at("Content-Type");
-
-        if (content_length <= 0 || content_type.empty())
+        std::vector<char> buff(REC_BUFF_SIZE, 0);
+        int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
+        if (bytes_received == -1)
+        {
+            this->_read_done = true;
             return;
+        }
+        else if (bytes_received == 0)
+        {
+            this->_read_done = true;
+            return;
+        }
+        else
+            std::cout << YELLOW << "Bytes received: " << bytes_received << NC << std::endl;
+        this->_bytes_received += bytes_received;
 
-        // Set first part of request only if necessary
         req.set_body(buff);
 
-        while (content_length)
+        if (bytes_received < REC_BUFF_SIZE)
         {
-            std::vector<char> buff(REC_BUFF_SIZE, 0);
-            int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, MSG_DONTWAIT);
-            this->_bytes_received += bytes_received;
-            if (bytes_received == -1)
-            {
-                std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
-                break;
-            }
-            else
-                std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
-
-            req.set_body(buff);
+            this->_read_done = true;
+            req.parse_post_req_body();
+            req.parse_post_req_file_name(req.get_buff());
         }
-        req.parse_post_req_body();
-        req.parse_post_req_file_name(req.get_buff());
     }
-    catch (const std::out_of_range &e)
+    else
     {
+        std::vector<char> buff(REC_BUFF_SIZE, 0);
+        int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
+        if (bytes_received == -1)
+            std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
+        else if (bytes_received == 0)
+        {
+            // TODO check what to do in this case
+        }
+        else
+            std::cout << YELLOW << "Bytes received: " << this->_bytes_received << NC << std::endl;
+        this->_bytes_received += bytes_received;
+
+        req.set_buff(buff.data());
+        req.set_body(buff);
+
+        req.parse_req();
+
+        this->_read_done = req.has_body() ? false : true;
     }
 }
 
-void ServerConnection::_send_res(int const &client_fd, HttpRequest &req)
+void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
 {
-    HttpResponse res(req, this->_router);
+    int bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), MSG_DONTWAIT);
 
-    while (true)
+    if (bytes_sent == -1)
+        std::cerr << "Error: send" << std::endl;
+    else if (bytes_sent == 0)
     {
-        int bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), 0);
+        // TODO Check what to do in this case
+    }
+    else
+        std::cout << YELLOW << "Bytes sent: " << bytes_sent << NC << std::endl;
 
-        if (bytes_sent == -1)
-            std::cerr << "Error: send" << std::endl;
-        else if (bytes_sent == 0)
-            break;
-        else
-            std::cout << YELLOW << "Bytes sent: " << bytes_sent << NC << std::endl;
+    this->_bytes_sent += bytes_sent;
 
-        this->_bytes_sent += bytes_sent;
+    if (res.get_buff().length() == (size_t)bytes_sent)
+        this->_sent_done = true;
+    else if (res.get_buff().length() > (size_t)bytes_sent)
+    {
+        this->_sent_done = false;
 
-        if (res.get_buff().length() == (size_t)bytes_sent)
-            break;
-        else if (res.get_buff().length() > (size_t)bytes_sent)
-        {
-            std::string remaining_buff = res.get_buff().substr(bytes_sent);
-            res.set_buff(remaining_buff);
-        }
+        std::string remaining_buff = res.get_buff().substr(bytes_sent);
+        res.set_buff(remaining_buff);
     }
 }
 
 int const &ServerConnection::get_new_sock_id() const
 {
     return this->_new_sock_id;
+}
+
+bool ServerConnection::get_send_done() const
+{
+    return this->_sent_done;
+}
+
+bool ServerConnection::get_read_done() const
+{
+    return this->_read_done;
+}
+
+void ServerConnection::reset()
+{
+    this->_new_sock_id = 0;
+    this->_bytes_received = 0;
+    this->_bytes_sent = 0;
+    this->_sent_done = false;
+    this->_read_done = false;
 }

@@ -52,6 +52,8 @@ void HttpRequest::parse_req()
     // TODO determine if message body is expected by reading header
     // If so, read as stream until amount of octets is depleted
     // Either Content-Length or Transfer-Encoding
+
+    this->output_status();
 }
 
 // E.g. GET / HTTP/1.1
@@ -256,6 +258,23 @@ std::map<std::string, std::string> const &HttpRequest::get_attrs() const
     return this->_attrs;
 }
 
+bool HttpRequest::has_body() const
+{
+    try
+    {
+        int content_length = std::stoi(this->_attrs.at("Content-Length"));
+        std::string content_type = this->_attrs.at("Content-Type");
+
+        if (content_length <= 0 || content_type.empty())
+            return false;
+        return true;
+    }
+    catch (const std::out_of_range &e)
+    {
+        return false;
+    }
+}
+
 bool HttpRequest::has_error() const
 {
     return this->_err.code != -1;
@@ -325,6 +344,22 @@ void HttpRequest::_set_err(int const &code, std::string const &message)
         this->_err.code = code;
         this->_err.message = message;
     }
+}
+
+void HttpRequest::reset()
+{
+    this->_attrs.clear();
+    this->_params.clear();
+    this->_body.clear();
+    this->_buff.clear();
+    this->_post_req_file_name.clear();
+
+    this->_req_line.method.clear();
+    this->_req_line.target.clear();
+    this->_req_line.version.clear();
+
+    this->_err.code = -1;
+    this->_err.message.clear();
 }
 
 std::ostream &operator<<(std::ostream &os, HttpRequest &std)

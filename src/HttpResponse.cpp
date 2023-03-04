@@ -1,7 +1,16 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) : _router(router), _req(req)
+HttpResponse::HttpResponse(RouterService const &router) : _router(router)
 {
+}
+
+HttpResponse::~HttpResponse()
+{
+}
+
+void HttpResponse::build_response(HttpRequest req)
+{
+    this->_req = req;
     this->_http = HttpService();
     this->_cgi = CgiService();
 
@@ -21,10 +30,6 @@ HttpResponse::HttpResponse(HttpRequest const &req, RouterService const &router) 
     // TODO delete this when build is done
     std::cout << *this << std::endl
               << std::endl;
-}
-
-HttpResponse::~HttpResponse()
-{
 }
 
 void HttpResponse::_build_error_res()
@@ -224,6 +229,15 @@ void HttpResponse::set_status_line(int const &code, std::string const &reason)
 void HttpResponse::set_buff(std::string const &buff)
 {
     this->_buff = buff;
+}
+
+void HttpResponse::reset()
+{
+    this->_buff.clear();
+
+    this->_status_line.version.clear();
+    this->_status_line.code = -1;
+    this->_status_line.reason.clear();
 }
 
 std::string HttpResponse::test_build_headers(int const &content_len) const
