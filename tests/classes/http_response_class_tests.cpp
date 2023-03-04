@@ -17,7 +17,7 @@ void http_response_class_tests(bool IS_DEBUG)
 
                 HttpRequest req;
                 RouterService router;
-                HttpResponse res(req, router);
+                HttpResponse res(router);
 
                 std::string ref;
 
