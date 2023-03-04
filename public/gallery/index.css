@@ -23,7 +23,7 @@
   margin-bottom: 0;
 }
 
-#delete-button {
+.delete-button {
   position: absolute;
   top: 0;
   right: 0;
