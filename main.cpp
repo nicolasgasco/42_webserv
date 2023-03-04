@@ -45,61 +45,94 @@ int main(int argc, char **argv)
 			webserver.inspect_config_data();
 
 			std::string port;
-			while (webserver.bind_socket(&port) != "")
+			webserver.bind_socket(&port);
+
+			// TODO fix this
+			// while (webserver.bind_socket(&port) != "")
+			// {
+			std::string server_name;
+			webserver.get_server_name(&server_name);
+
+			AddressInfo addr_info(port);
+
+			Socket socket(addr_info);
+			int server_socket = socket.get_socket_id();
+
+			SocketConnection sock_connection(server_socket, addr_info, BACKLOG);
+
+			fd_set read_fds, read_fds_cpy, write_fds, write_fds_cpy;
+			FD_ZERO(&read_fds);
+			FD_ZERO(&read_fds_cpy);
+			FD_ZERO(&write_fds);
+			FD_ZERO(&write_fds_cpy);
+			FD_SET(server_socket, &read_fds_cpy);
+			int max_fd = server_socket;
+
+			struct timeval timeout;
+			timeout.tv_sec = SERVER_TIMEOUT;
+			timeout.tv_usec = 0;
+
+			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
+			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
+			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router));
+
+			while (true)
 			{
-				std::string server_name;
-				webserver.get_server_name(&server_name);
+				FD_ZERO(&read_fds);
+				FD_ZERO(&write_fds);
 
-				AddressInfo addr_info(port);
-	
-				Socket socket(addr_info);
+				read_fds = read_fds_cpy;
+				write_fds = write_fds_cpy;
 
-				int server_socket = socket.get_socket_id();
+				if (select(max_fd + 1, &read_fds, &write_fds, NULL, &timeout) < 0)
+					std::cerr << std::strerror(errno) << std::endl;
 
-				SocketConnection sock_connection(server_socket, addr_info, BACKLOG);
-
-				fd_set ready_fds, current_fds;
-				FD_ZERO(&ready_fds);
-				FD_ZERO(&current_fds);
-				FD_SET(server_socket, &current_fds);
-				int max_fd = server_socket;
-
-				struct timeval timeout;
-				timeout.tv_sec = SERVER_TIMEOUT;
-				timeout.tv_usec = 0;
-
-				// TODO include this loop in a Server class?
-				while (true)
+				for (int i = 0; i <= max_fd; ++i)
 				{
-					ready_fds = current_fds;
-
-					if (select(max_fd + 1, &ready_fds, NULL, NULL, &timeout) < 0)
-						std::cerr << std::strerror(errno) << std::endl;
-
-					for (int i = MIN_FD; i <= max_fd; ++i)
+					if (FD_ISSET(i, &read_fds))
 					{
-						bool isFdReady = FD_ISSET(i, &ready_fds);
-						if (isFdReady)
+						if (i == server_socket)
 						{
-							ServerConnection serv_connection(router);
+							int client_fd = connections.at(i).accept_connection(i, addr_info.get_serv_info());
+							FD_SET(client_fd, &read_fds_cpy);
 
-							bool isFdServer = i == server_socket;
-							if (isFdServer)
+							if (client_fd > max_fd)
 							{
-								int client_fd = serv_connection.accept_connection(i, addr_info.get_serv_info());
-								FD_SET(client_fd, &current_fds);
+								max_fd = client_fd;
 
-								max_fd = (client_fd > max_fd) ? client_fd : max_fd;
+								connections.push_back(ServerConnection());
+								requests.push_back(HttpRequest());
+								responses.push_back(HttpResponse(router));
 							}
-							else
+						}
+						else
+						{
+							connections.at(i).receive_req(i, requests.at(i));
+
+							if (connections.at(i).get_read_done())
 							{
-								serv_connection.handle_connection(i);
-								FD_CLR(i, &current_fds);
+								responses.at(i).build_response(requests.at(i));
+								FD_CLR(i, &read_fds_cpy);
+								FD_SET(i, &write_fds_cpy);
 							}
 						}
 					}
+					else if (FD_ISSET(i, &write_fds))
+					{
+						connections.at(i).send_res(i, responses.at(i));
+						if (connections.at(i).get_send_done())
+						{
+							FD_CLR(i, &write_fds_cpy);
+							close(i);
+							requests.at(i).reset();
+							responses.at(i).reset();
+							connections.at(i).reset();
+						}
+						// TODO add redirections here
+					}
 				}
 			}
+			// }
 		}
 		catch (const std::exception &e)
 		{

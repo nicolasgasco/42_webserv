@@ -56,8 +56,10 @@ public:
     void parse_post_req_file_name(std::string const &buff);
     void parse_req();
     void output_status();
+    void reset();
 
     // Computed properties
+    bool has_body() const;
     bool has_error() const;
     bool has_query_params() const;
     bool is_html_req() const;
