@@ -24,7 +24,7 @@ def format_directory(dir):
 
 
 # Format each file in list for HTML template
-public_dir_path = dir_path.removeprefix("./public")
+public_dir_path = dir_path.replace("./public", "")
 formatted_files_in_dir = list(
     map(lambda item: f'<li><a href="{public_dir_path}{format_directory(item)}">{format_directory(item)}</a></li>', files_in_dir))
 
