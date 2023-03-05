@@ -10,7 +10,7 @@ path = os.getenv("PATH_INFO")
 
 # Get href for each file
 pictures_href_list = [
-    f'{path.removeprefix("public/")}/{f}' for f in listdir(path) if isfile(join(path, f))]
+    f'{path.replace("public/", "")}/{f}' for f in listdir(path) if isfile(join(path, f))]
 
 if len(pictures_href_list) == 0:
     formatted_pictures_list = "<div class='container centered'><img src='assets/error/empty.png' alt='Pictures list is empty' width='900' /></div>"
