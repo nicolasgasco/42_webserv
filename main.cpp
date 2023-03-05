@@ -10,10 +10,6 @@
 
 #include <sys/select.h>
 
-// TODO replace with parameter or default value
-#define BACKLOG 10
-#define MIN_FD 3
-
 int main(int argc, char **argv)
 {
 	if (argc > 2)
@@ -58,7 +54,7 @@ int main(int argc, char **argv)
 			Socket socket(addr_info);
 			int server_socket = socket.get_socket_id();
 
-			SocketConnection sock_connection(server_socket, addr_info, BACKLOG);
+			SocketConnection sock_connection(server_socket, addr_info, BACKLOG_DEFAULT);
 
 			fd_set read_fds, read_fds_cpy, write_fds, write_fds_cpy;
 			FD_ZERO(&read_fds);
@@ -84,7 +80,7 @@ int main(int argc, char **argv)
 				if (select(max_fd + 1, &read_fds, &write_fds, NULL, &timeout) < 0)
 					std::cerr << std::strerror(errno) << std::endl;
 
-				for (int i = 0; i <= max_fd; ++i)
+				for (int i = MIN_FD; i <= max_fd; ++i)
 				{
 					if (FD_ISSET(i, &read_fds))
 					{

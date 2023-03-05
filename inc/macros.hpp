@@ -11,6 +11,7 @@
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define LONGEST_METHOD "DELETE" // Replace with computed value
 #define LONGEST_URI 124         // Replace with computed value
+#define MIN_FD 4
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 #define PUBLIC_PATH "public"
