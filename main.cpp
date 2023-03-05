@@ -78,9 +78,6 @@ int main(int argc, char **argv)
 
 			while (true)
 			{
-				FD_ZERO(&read_fds);
-				FD_ZERO(&write_fds);
-
 				read_fds = read_fds_cpy;
 				write_fds = write_fds_cpy;
 
