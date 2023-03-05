@@ -8,6 +8,13 @@ ServerConnection::~ServerConnection()
 {
 }
 
+/**
+ * Accept new connection for socket.
+ *
+ * @param sock_id Fd or socket.
+ * @param addr_info Struct with connection info.
+ * @returns Fd of new connection.
+ */
 int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *addr_info)
 {
     socklen_t addr_info_size = sizeof addr_info;
@@ -26,6 +33,13 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
     return this->_new_sock_id;
 }
 
+/**
+ * Reads from socket when a request is received.
+ * Request can be with body (e.g. POST) or without a body.
+ *
+ * @param client_fd Fd where the request is sent.
+ * @param req Req object where the request is stored.
+ */
 void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
 {
     std::vector<char> buff(REC_BUFF_SIZE, 0);
@@ -84,6 +98,12 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
     }
 }
 
+/**
+ * Sends a response to socket.
+ *
+ * @param client_fd Fd where the request is sent.
+ * @param res Res object where the response is stored.
+ */
 void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
 {
     int bytes_sent = send(client_fd, res.get_buff().c_str(), res.get_buff().length(), MSG_DONTWAIT);
@@ -128,6 +148,10 @@ bool ServerConnection::get_read_done() const
     return this->_read_done;
 }
 
+/**
+ * Resets state of connection.
+ * Connections are long-lived in main.
+ */
 void ServerConnection::reset()
 {
     this->_new_sock_id = 0;
