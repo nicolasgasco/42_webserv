@@ -4,9 +4,7 @@ Location::Location() :
 	_location(), 
 	_root(), 
 	_accepted_method(0), 
-	_index(),
-	_autoindex(false), 
-	_max_body_size(0) 
+	_index()
 {
 }
 
@@ -14,13 +12,11 @@ Location::~Location() {}
 
 void Location::create_location(vector_iterator it, vector_iterator end)
 {
-    configure configure_array[6] =
+    configure configure_array[4] =
 	{
 		&Location::configure_root,
       	&Location::configure_accepted_method,
      	&Location::configure_index,
-      	&Location::configure_autoindex,
-   	    &Location::configure_max_body_size,
  	    &Location::failed_element
 	};
     reset_location();
@@ -33,18 +29,22 @@ void Location::create_location(vector_iterator it, vector_iterator end)
     }
 }
 
+void    Location::reset_location()
+{
+	_location.clear();
+	_root.clear();
+	_accepted_method.clear();
+	_index.clear();
+}
+
 int     Location::identify_location_value(const std::string &str)
 {
     if (str.find("root") != std::string::npos)
         return root_;
     else if (str.find("accepted_method") != std::string::npos)
         return method_;
-    else if (str.find("autoindex") != std::string::npos)
-        return autoindex_;
     else if (str.find("index") != std::string::npos)
         return index_;
-    else if (str.find("max_body_size") != std::string::npos)
-        return max_body_size_;
 	return failed_;
 }
 
@@ -75,16 +75,6 @@ void    Location::failed_element(const std::string &str)
 	parser_fail(str);
 }
 
-void    Location::configure_max_body_size(const std::string &str)
-{
-	_max_body_size = parser_num(str);
-}
-
-void    Location::configure_autoindex(const std::string &str)
-{
-	if (parser_str(str) == "on")
-        _autoindex = true;
-}
 
 std::string Location::get_location()
 {
@@ -96,32 +86,13 @@ std::string Location::get_root()
 	return _root;
 }
 
-std::string Location::get_index()
-{
-	return _index;
-}
-
 std::vector<std::string> Location::get_method()
 {
 	return _accepted_method;
 }
 
-int Location::get_max_body_size()
+std::string Location::get_index()
 {
-	return _max_body_size;
+	return _index;
 }
 
-bool Location::get_autoindex()
-{
-	return _autoindex;
-}
-
-void    Location::reset_location()
-{
-	_location.clear();
-	_root.clear();
-	_accepted_method.clear();
-	_index.clear();
-	_autoindex = false;
-	_max_body_size = 0;
-}

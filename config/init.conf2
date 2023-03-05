@@ -1,6 +1,6 @@
 server
 {
-	port 8081 8082
+	port 8081
 	host localhost
 
 	server_name die_Veteranen_webserv
@@ -11,7 +11,7 @@ server
 
 	autoindex on
     
-	max_body_size 10000
+	max_body_size 1000
 
 	redirect /old_path /new_path
 

@@ -45,8 +45,8 @@ void check_file_curly_brackets(std::vector <std::string> words)
     }
     if (count != 0)
     {
-        std::cout << "🔴  FAILURE Wrong config_file formated (curly_brackets)" << std::endl;
-		std::exit(0);
+		std::string errorMessage = std::string("🔴  FAILURE Wrong config_file formated (curly_brackets)");
+		throw std::runtime_error(errorMessage);
     }
 	std::cout << "🟢  SUCCESS Right config_file formated (curly_brackets)" << std::endl;
 }
@@ -58,8 +58,8 @@ std::vector <std::string> parser_config_file(std::vector <std::string> text_vect
     words = split_line(text_vector);
     if (words.size() == 0)
     {
-        std::cout << "🔴  FAILURE Wrong config_file formated (empty file)" << std::endl;
-		std::exit(0);
+		std::string errorMessage = std::string("🔴  FAILURE Wrong config_file formated (empty file)");
+		throw std::runtime_error(errorMessage);
     }
 	std::cout << "🟢  SUCCESS Right config_file formated (not empty file)" << std::endl;
 	words = remove_tabs(words);
@@ -70,27 +70,27 @@ std::vector <std::string> parser_config_file(std::vector <std::string> text_vect
 
 int check_directives_server(std::string word)
 {
-	std::string err;
-	err = "🔴  FAILURE: [";
-    err += word;
-    err += "] directives in config_file is not a valid syntax";
+	std::string errorMessage;
+	errorMessage = "🔴  FAILURE: [";
+    errorMessage += word;
+    errorMessage += "] directives in config_file is not a valid syntax";
     if (word != "server" && 
 		word != "port" && 
 		word != "host" && 
 		word != "server_name" && 
 		word != "error_page" && 
 		word != "cgi_file_ext" && 
+		word != "autoindex" && 
+		word != "max_body_size" && 
+		word != "redirect" && 
 		word != "location" && 
 		word != "root" && 
 		word != "accepted_methods" && 
 		word != "index" && 
-		word != "autoindex" && 
-		word != "max_body_size" && 
 		word != "{" && 
 		word != "}") 
 	{
-		std::cout << err << std::endl;
-		std::exit(1);    
+		throw std::runtime_error(errorMessage);
 	}
 	return (0);
 }
@@ -112,7 +112,7 @@ void check_words_config_file(std::vector<std::string> text_vector)
 		tmp.clear();
        	first_word.clear();
     }
-	std::cout << "🟢  SUCCESS All instructions in config_file are right" << std::endl;
+	std::cout << "🟢  SUCCESS All instructions in config_file are valid directives" << std::endl;
 }
 
 
