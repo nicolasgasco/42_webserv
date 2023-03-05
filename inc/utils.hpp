@@ -18,4 +18,4 @@ std::string const get_mime_type(std::string target);
 
 void replace_var_in_page(std::string &file, std::string const var, std::string const value);
 
-bool find_in_vec(std::string const &pattern, std::vector<char>::iterator it);
+bool find_in_vec(std::string const &pattern, std::vector<char>::const_iterator it);
