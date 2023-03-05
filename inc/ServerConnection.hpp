@@ -13,22 +13,20 @@ class ServerConnection
 {
 private:
     int _new_sock_id;
-    int _bytes_received;
-    int _bytes_sent;
-    bool _sent_done;
-    bool _read_done;
+    int _bytes_received, _bytes_sent;
+    bool _read_done, _sent_done;
 
 public:
     ServerConnection();
     ~ServerConnection();
 
-    int const &accept_connection(int const &sock_id, addrinfo *addr_info);
-
     int const &get_new_sock_id() const;
     bool get_read_done() const;
     bool get_send_done() const;
 
+    int const &accept_connection(int const &sock_id, addrinfo *addr_info);
     void receive_req(int const &client_fd, HttpRequest &req);
-    void reset();
     void send_res(int const &client_fd, HttpResponse &res);
+
+    void reset();
 };
