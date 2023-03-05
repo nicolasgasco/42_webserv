@@ -164,7 +164,7 @@ void replace_var_in_page(std::string &file, std::string const var, std::string c
  * @param it Iterator representing the position from where the search start
  * @returns True if pattern is found, false otherwise.
  */
-bool find_in_vec(std::string const &pattern, std::vector<char>::iterator it)
+bool find_in_vec(std::string const &pattern, std::vector<char>::const_iterator it)
 {
     if (pattern.length() == 0)
         return false;
