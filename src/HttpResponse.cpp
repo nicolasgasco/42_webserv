@@ -8,11 +8,11 @@ HttpResponse::~HttpResponse()
 {
 }
 
-void HttpResponse::build_response(HttpRequest req)
+void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiService const &cgi)
 {
     this->_req = req;
-    this->_http = HttpService();
-    this->_cgi = CgiService();
+    this->_http = http;
+    this->_cgi = cgi;
 
     if (this->_req.has_error())
         this->_build_error_res();
