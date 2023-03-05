@@ -15,9 +15,9 @@ void HttpRequest::parse_req()
     // TODO remove this when build is over
     std::cout << std::endl
               << "RAW REQUEST:" << std::endl;
-    cout_explicit_whitespaces(std::string(this->_buff));
+    cout_explicit_whitespaces(std::string(this->_body.data()));
 
-    std::istringstream buff_stream(std::string(this->_buff));
+    std::istringstream buff_stream(std::string(this->_body.data()));
     std::string line;
 
     // In the interest of robustness, a server that is expecting to receive and parse a request-line
@@ -170,18 +170,18 @@ void HttpRequest::parse_post_req_body()
 {
     std::vector<char> body = this->_body;
 
-    std::vector<char>::iterator start;
+    std::vector<char>::const_iterator start;
     std::string search_pattern = "\r\n\r\n";
-    for (std::vector<char>::iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
     {
         if (find_in_vec(search_pattern, it))
             start = it + 4;
     }
     body.erase(body.begin(), start);
 
-    std::vector<char>::iterator end;
+    std::vector<char>::const_iterator end;
     search_pattern = "------WebKitFormBoundary";
-    for (std::vector<char>::iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
     {
         if (find_in_vec(search_pattern, it))
         {
@@ -195,12 +195,28 @@ void HttpRequest::parse_post_req_body()
     this->_body = body;
 }
 
-void HttpRequest::parse_post_req_file_name(std::string const &buff)
+void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
 {
-    std::string delim = "filename=\"";
+    std::string file_name;
 
-    std::string file_name = buff.substr(buff.find(delim) + delim.length());
-    file_name = file_name.substr(0, file_name.find("\""));
+    std::string start_delim = "filename=\"";
+    std::vector<char>::const_iterator start;
+    for (std::vector<char>::const_iterator it = body.begin(); it != body.end(); ++it)
+    {
+        if (find_in_vec(start_delim, it))
+        {
+            start = it + start_delim.length();
+            break;
+        }
+    }
+
+    std::string end_delim = "\"";
+    for (std::vector<char>::const_iterator it = start; it != body.end(); ++it)
+    {
+        if (find_in_vec(end_delim, it))
+            break;
+        file_name.push_back(*it);
+    }
 
     this->_post_req_file_name = file_name;
 }
@@ -216,14 +232,9 @@ void HttpRequest::output_status()
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
-std::vector<char> HttpRequest::get_body() const
+std::vector<char> const &HttpRequest::get_body() const
 {
     return this->_body;
-}
-
-std::string const &HttpRequest::get_buff() const
-{
-    return this->_buff;
 }
 
 std::string const &HttpRequest::get_post_req_file_name() const
@@ -317,17 +328,9 @@ bool HttpRequest::_is_method_supported() const
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
 
-void HttpRequest::set_buff(char const *buff)
+void HttpRequest::set_body(std::vector<char> &buff)
 {
-    this->_buff = buff;
-}
-
-void HttpRequest::set_body(std::vector<char> buff)
-{
-    if (this->_body.empty())
-        this->_body = buff;
-    else
-        this->_body.insert(this->_body.end(), buff.begin(), buff.end());
+    this->_body.insert(this->_body.end(), buff.begin(), buff.end());
 }
 
 void HttpRequest::_set_err(int const &code, std::string const &message)
@@ -344,7 +347,6 @@ void HttpRequest::reset()
     this->_attrs.clear();
     this->_params.clear();
     this->_body.clear();
-    this->_buff.clear();
     this->_post_req_file_name.clear();
 
     this->_req_line.method.clear();

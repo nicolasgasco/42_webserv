@@ -43,7 +43,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
         std::cout << YELLOW << "Bytes received: " << bytes_received << NC << std::endl;
     }
     this->_bytes_received += bytes_received;
-    
+
     // There is a body to read
     if (req.has_body())
     {
@@ -53,14 +53,13 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
         if (bytes_received < REC_BUFF_SIZE)
         {
             this->_read_done = true;
+            req.parse_post_req_file_name(req.get_body());
             req.parse_post_req_body();
-            req.parse_post_req_file_name(req.get_buff());
         }
     }
     // No body or request wasn't parsed yet
     else
     {
-        req.set_buff(buff.data());
         req.set_body(buff);
 
         req.parse_req();
@@ -71,8 +70,8 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
             // If req has body but is still smaller than REC_BUFF_SIZE
             if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
             {
+                req.parse_post_req_file_name(req.get_body());
                 req.parse_post_req_body();
-                req.parse_post_req_file_name(req.get_buff());
                 this->_read_done = true;
             }
             // If req has body but it cannot be read in only one go
