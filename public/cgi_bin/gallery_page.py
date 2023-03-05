@@ -12,12 +12,15 @@ path = os.getenv("PATH_INFO")
 pictures_href_list = [
     f'{path.removeprefix("public/")}/{f}' for f in listdir(path) if isfile(join(path, f))]
 
-# Format pictures list as HTML
-formatted_pictures = map(
-    lambda x: f'<li><a href="{x}"><img src="{x}"/></a><button type="button" class="delete-button" data-value="{x}">🗑️</button></li>', pictures_href_list)
+if len(pictures_href_list) == 0:
+    formatted_pictures_list = "<div class='container centered'><img src='assets/error/empty.png' alt='Pictures list is empty' width='900' /></div>"
+else:
+    # Format pictures list as HTML
+    formatted_pictures = map(
+        lambda x: f'<li><a href="{x}"><img src="{x}"/></a><button type="button" class="delete-button" data-value="{x}">🗑️</button></li>', pictures_href_list)
 
-# Add parent UL tag
-formatted_pictures_list = f'<ul>{"".join(formatted_pictures)}</ul>'
+    # Add parent UL tag
+    formatted_pictures_list = f'<div id="pictures-container"><ul>{"".join(formatted_pictures)}</ul></div>'
 
 # Open template for gallery
 with open('./public/gallery/index.html', 'r') as file:

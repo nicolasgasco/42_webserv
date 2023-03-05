@@ -7,6 +7,10 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+p {
+  line-height: 1.7;
+}
+
 a {
   color: inherit;
   font-weight: bold;
@@ -69,6 +73,7 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
 .padded {
