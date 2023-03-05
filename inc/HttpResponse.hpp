@@ -42,7 +42,7 @@ public:
     void set_buff(std::string const &buff);
 
     // Methods
-    void build_response(HttpRequest req);
+    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi);
     void reset();
 
 private:

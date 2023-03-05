@@ -22,7 +22,9 @@ int main(int argc, char **argv)
 		try
 		{
 			// Todo check if Config and RouterService should be long lived
+			CgiService cgi;
 			Config config;
+			HttpService http;
 			RouterService router;
 
 			if (argc == 1)
@@ -45,7 +47,7 @@ int main(int argc, char **argv)
 
 			// TODO fix this
 			// while (webserver.bind_socket(&port) != "")
-			// {
+
 			std::string server_name;
 			webserver.get_server_name(&server_name);
 
@@ -56,24 +58,30 @@ int main(int argc, char **argv)
 
 			SocketConnection sock_connection(server_socket, addr_info, BACKLOG_DEFAULT);
 
+			// Initialize fd_sets for select
 			fd_set read_fds, read_fds_cpy, write_fds, write_fds_cpy;
 			FD_ZERO(&read_fds);
 			FD_ZERO(&read_fds_cpy);
 			FD_ZERO(&write_fds);
 			FD_ZERO(&write_fds_cpy);
-			FD_SET(server_socket, &read_fds_cpy);
-			int max_fd = server_socket;
 
+			// Set server_socket for reading
+			FD_SET(server_socket, &read_fds_cpy);
+
+			// Set timeout for select
 			struct timeval timeout;
 			timeout.tv_sec = SERVER_TIMEOUT;
 			timeout.tv_usec = 0;
 
+			int max_fd = server_socket;
+			// For each socket: connection + req + res
 			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
 			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
 			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router));
 
 			while (true)
 			{
+				// Necessary because select is destructive
 				read_fds = read_fds_cpy;
 				write_fds = write_fds_cpy;
 
@@ -82,8 +90,10 @@ int main(int argc, char **argv)
 
 				for (int i = MIN_FD; i <= max_fd; ++i)
 				{
+					// If fd is set for reading
 					if (FD_ISSET(i, &read_fds))
 					{
+						// IF fd is socket connection
 						if (i == server_socket)
 						{
 							int client_fd = connections.at(i).accept_connection(i, addr_info.get_serv_info());
@@ -98,18 +108,21 @@ int main(int argc, char **argv)
 								responses.push_back(HttpResponse(router));
 							}
 						}
+						// If fd is new accepted connection
 						else
 						{
 							connections.at(i).receive_req(i, requests.at(i));
 
 							if (connections.at(i).get_read_done())
 							{
-								responses.at(i).build_response(requests.at(i));
+								responses.at(i).build_response(requests.at(i), http, cgi);
+
 								FD_CLR(i, &read_fds_cpy);
 								FD_SET(i, &write_fds_cpy);
 							}
 						}
 					}
+					// If fd is set for writing
 					else if (FD_ISSET(i, &write_fds))
 					{
 						connections.at(i).send_res(i, responses.at(i));
@@ -125,7 +138,6 @@ int main(int argc, char **argv)
 					}
 				}
 			}
-			// }
 		}
 		catch (const std::exception &e)
 		{
