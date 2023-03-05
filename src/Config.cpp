@@ -15,8 +15,8 @@ void	Config::process_config_file(char *config_file)
     file.open(config_file);
 	if (!file.is_open())
 	{
-		std::cout << "🔴  FAILURE Opening or reading config_file" << std::endl;
-		std::exit(0);
+		std::string errorMessage = std::string("🔴  FAILURE Opening or reading config_file");
+		throw std::runtime_error(errorMessage);
 	}
 	std::cout << "🟢  SUCCESS Opening and reading config_file" << std::endl;
 	

@@ -54,10 +54,10 @@ void Webserver::print_config_data()
         std::cout << "\n";
         std::cout << "Host > " << srv_data.get_host() << std::endl;
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
-		std::string def_ser_name = srv_data.get_server_name();
-		std::cout << "              " << def_ser_name << std::endl;
         std::cout << "Error page > " << srv_data.get_error_page() << std::endl;
         std::cout << "CGI files > " << srv_data.get_cgi_file_ext() << std::endl;
+        std::cout << "Autoindex > " << srv_data.get_autoindex() << std::endl;
+		std::cout << "Max body size > " << srv_data.get_max_body_size() << std::endl;
 
         std::vector<Location> locations = srv_data.get_location_blocks();
         for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
@@ -77,8 +77,6 @@ void Webserver::print_config_data()
             }
             std::cout << "\n";
             std::cout << "Index > " << location.get_index() << std::endl;
-            std::cout << "Autoindex > " << location.get_autoindex() << std::endl;
-			std::cout << "Max body size > " << location.get_max_body_size() << std::endl;
         }
         std::cout << "\n\n";
     }
@@ -97,18 +95,18 @@ void    Webserver::inspect_config_data()
 			int port_int = parser_num(port_str_1);
         	if (port_int < 0)
 			{
-				std::cout << "🔴  FAILURE Invalid port in config_file. Port with negative number is not allowed" << std::endl;
-				std::exit(0);
+				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Port with negative number is not allowed");
+				throw std::runtime_error(errorMessage);
 			}
         	if (port_int >= 0 && port_int <= 1024 )
 			{
-				std::cout << "🔴  FAILURE Invalid port in config_file. Ports numbersfrom 0 to 1024 are reserved for privileged services" << std::endl;
-				std::exit(0);
+				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Ports numbers from 0 to 1024 are reserved for privileged services");
+				throw std::runtime_error(errorMessage);
 			}
         	if (port_int > 63536)
 			{
-				std::cout << "🔴  FAILURE Invalid port in config_file. Maximum allowed port number is 65536" << std::endl;
-				std::exit(0);
+				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Maximum allowed port number is 65536");
+				throw std::runtime_error(errorMessage);
 			}
 
         	bool port_duplicate = false;
@@ -120,8 +118,8 @@ void    Webserver::inspect_config_data()
 				{
                		if (port_duplicate == true)
 					{	
-						std::cout << "🔴  FAILURE Duplicate port in config_file" << std::endl;
-						std::exit(0);
+						std::string errorMessage = std::string("🔴  FAILURE Duplicate port in config_file");
+						throw std::runtime_error(errorMessage);
 					}
 					port_duplicate = true;
            		}
@@ -130,8 +128,8 @@ void    Webserver::inspect_config_data()
 			std::string error_page_location = it->_error_page;
 			if (error_page_location.empty())
 			{
-				std::cout << "🔴  FAILURE Error page path does not exist in config_file" << std::endl;
-				std::exit(0);
+				std::string errorMessage = std::string("🔴  FAILURE Error page path does not exist in config_file");
+				throw std::runtime_error(errorMessage);
 			}
 		}
 	}

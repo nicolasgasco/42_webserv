@@ -6,6 +6,8 @@ Server::Server() :
 		_server_name(), 
 		_error_page(), 
 		_cgi_file_ext(),
+		_autoindex(false), 
+		_max_body_size(0),
 		_location_blocks()
 {
 }
@@ -15,13 +17,15 @@ Server::~Server() {}
 void Server::create_server(std::vector <std::string> &server_config)
 {
 	Location	location;
-    configure configure_array[6] = 
+    configure configure_array[8] = 
 	{ 
 		&Server::configure_port,
         &Server::configure_host,
         &Server::configure_server_name,
         &Server::configure_error_page,
         &Server::configure_cgi_file_ext,
+      	&Server::configure_autoindex,
+   	    &Server::configure_max_body_size,
         &Server::failed_element
 	};
     reset_server(); 
@@ -48,6 +52,8 @@ void    Server::reset_server()
     _server_name.clear();
     _error_page.clear();
     _cgi_file_ext.clear();
+	_autoindex = false;
+	_max_body_size = 0;
     _location_blocks.clear();
 }
 
@@ -63,6 +69,10 @@ int     Server::identify_server_value(const std::string &str)
         return error_page_;
     else if (str.find("cgi_file_ext") != std::string::npos)
         return cgi_file_ext_;
+    else if (str.find("autoindex") != std::string::npos)
+        return autoindex_;
+    else if (str.find("max_body_size") != std::string::npos)
+        return max_body_size_;
     else if (str.find("location") != std::string::npos)
         return location_;
     return failed_;
@@ -93,6 +103,17 @@ void    Server::configure_cgi_file_ext(const std::string &str)
 	_cgi_file_ext = parser_str(str);
 }
 
+void    Server::configure_autoindex(const std::string &str)
+{
+	if (parser_str(str) == "on")
+        _autoindex = true;
+}
+
+void    Server::configure_max_body_size(const std::string &str)
+{
+	_max_body_size = parser_num(str);
+}
+
 void    Server::failed_element(const std::string &str)
 {
 	parser_fail(str);
@@ -121,6 +142,16 @@ std::string	Server::get_error_page()
 std::string	Server::get_cgi_file_ext()
 {
 	return _cgi_file_ext;
+}
+
+bool Server::get_autoindex()
+{
+	return _autoindex;
+}
+
+int Server::get_max_body_size()
+{
+	return _max_body_size;
 }
 
 std::vector<Location> Server::get_location_blocks()
