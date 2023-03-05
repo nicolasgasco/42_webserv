@@ -48,11 +48,6 @@ void HttpRequest::parse_req()
         else
             this->_parse_attr_line(line);
     }
-
-    // TODO determine if message body is expected by reading header
-    // If so, read as stream until amount of octets is depleted
-    // Either Content-Length or Transfer-Encoding
-
     this->output_status();
 }
 
@@ -73,8 +68,6 @@ void HttpRequest::_parse_attr_line(std::string const &line)
         this->_set_err(400, "Bad Request");
 
     this->_attrs.insert(std::pair<std::string, std::string>(key, value));
-
-    // TODO Check Obsolete line folding
 }
 
 void HttpRequest::_parse_req_line(std::string &line)
@@ -285,12 +278,20 @@ bool HttpRequest::has_query_params() const
     return this->_req_line.target.find("?") != std::string::npos;
 }
 
+bool HttpRequest::is_cgi_req() const
+{
+    return (this->_req_line.target.find("cgi_bin/") != std::string::npos);
+}
+
+bool HttpRequest::is_dir_req() const
+{
+    // Ends with / but it's not root folder request
+    return (this->_req_line.target.back() == '/' && this->_req_line.target.length() != 1);
+}
+
 bool HttpRequest::is_html_req() const
 {
-    bool is_root_target = this->_req_line.target == "/";
-
-    // TODO investigate if Accept */* is required
-
+    // Check if Sec-Fetch-Dest is set to document
     bool is_sec_fetch_dest_document;
     try
     {
@@ -301,17 +302,9 @@ bool HttpRequest::is_html_req() const
         is_sec_fetch_dest_document = false;
     }
 
+    bool is_root_target = this->_req_line.target == "/";
+
     return (is_sec_fetch_dest_document || is_root_target);
-}
-
-bool HttpRequest::is_cgi_req() const
-{
-    return (this->_req_line.target.find("cgi_bin/") != std::string::npos);
-}
-
-bool HttpRequest::is_dir_req() const
-{
-    return (this->_req_line.target.back() == '/' && this->_req_line.target.length() != 1);
 }
 
 bool HttpRequest::_is_method_supported() const
