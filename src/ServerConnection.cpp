@@ -25,11 +25,11 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
 
 void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
 {
+    std::vector<char> buff(REC_BUFF_SIZE, 0);
+    int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
 
     if (req.has_body())
     {
-        std::vector<char> buff(REC_BUFF_SIZE, 0);
-        int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
         if (bytes_received == -1)
         {
             this->_read_done = true;
@@ -55,8 +55,6 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
     }
     else
     {
-        std::vector<char> buff(REC_BUFF_SIZE, 0);
-        int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
         if (bytes_received == -1)
             std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
         else if (bytes_received == 0)
@@ -72,7 +70,21 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
 
         req.parse_req();
 
-        this->_read_done = req.has_body() ? false : true;
+        if (req.has_body())
+        {
+            int content_length = std::stoi(req.get_attrs().at("Content-Length"));
+            // There's nothing else to read but there's a body to parse
+            if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
+            {
+                req.parse_post_req_body();
+                req.parse_post_req_file_name(req.get_buff());
+                this->_read_done = true;
+            }
+            else
+                this->_read_done = false;
+        }
+        else
+            this->_read_done = true;
     }
 }
 
