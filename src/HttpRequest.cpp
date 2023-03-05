@@ -10,6 +10,9 @@ HttpRequest::~HttpRequest()
 {
 }
 
+/**
+ * Parse request line and attributes.
+ */
 void HttpRequest::parse_req()
 {
     // TODO remove this when build is over
@@ -48,10 +51,13 @@ void HttpRequest::parse_req()
         else
             this->_parse_attr_line(line);
     }
+    // TODO delete this once build is over
     this->output_status();
 }
 
-// E.g. GET / HTTP/1.1
+/**
+ * Parse attribute, e.g. Accept-Encoding: gzip, deflate.
+ */
 void HttpRequest::_parse_attr_line(std::string const &line)
 {
     // A server MUST reject, with a response status code of 400 (Bad Request)
@@ -70,6 +76,9 @@ void HttpRequest::_parse_attr_line(std::string const &line)
     this->_attrs.insert(std::pair<std::string, std::string>(key, value));
 }
 
+/**
+ * Parse request line, e.g. GET / HTTP/1.1.
+ */
 void HttpRequest::_parse_req_line(std::string &line)
 {
     this->_parse_method(line);
@@ -82,6 +91,9 @@ void HttpRequest::_parse_req_line(std::string &line)
     this->_parse_version(line);
 }
 
+/**
+ * Parse request line method, e.g. GET.
+ */
 void HttpRequest::_parse_method(std::string &line)
 {
     /* Recipients MAY instead parse on whitespace-delimited word boundaries and, aside from the CRLF terminator,
@@ -98,6 +110,9 @@ void HttpRequest::_parse_method(std::string &line)
     line = ltrim(line.substr(first_whitespace));
 }
 
+/**
+ * Parse request line target, e.g. /index.hmtl.
+ */
 void HttpRequest::_parse_target(std::string &line)
 {
     try
@@ -121,6 +136,9 @@ void HttpRequest::_parse_target(std::string &line)
     }
 }
 
+/**
+ * Parse request line version, e.g. HTTP/1.1.
+ */
 void HttpRequest::_parse_version(std::string &line)
 {
     /* Although the line terminator for the start-line and fields is the sequence CRLF,
@@ -142,6 +160,9 @@ void HttpRequest::_parse_version(std::string &line)
     }
 }
 
+/**
+ * Parse query params in target, e.g. /index.hmtl&user=bar.
+ */
 void HttpRequest::_parse_query_params(std::string &target)
 {
     size_t question_mark_sign_pos = target.find("?");
@@ -166,6 +187,9 @@ void HttpRequest::_parse_query_params(std::string &target)
     target = target.substr(0, question_mark_sign_pos);
 }
 
+/**
+ * Parse body of request, delimited by browser boundary.
+ */
 void HttpRequest::parse_post_req_body()
 {
     std::vector<char> body = this->_body;
@@ -180,7 +204,7 @@ void HttpRequest::parse_post_req_body()
     body.erase(body.begin(), start);
 
     std::vector<char>::const_iterator end;
-    search_pattern = "------WebKitFormBoundary";
+    search_pattern = CHROME_BODY_BOUNDARY;
     for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
     {
         if (find_in_vec(search_pattern, it))
@@ -195,6 +219,9 @@ void HttpRequest::parse_post_req_body()
     this->_body = body;
 }
 
+/**
+ * Parse file name of binary data sent in POST request.
+ */
 void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
 {
     std::string file_name;
@@ -219,17 +246,6 @@ void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
     }
 
     this->_post_req_file_name = file_name;
-}
-
-void HttpRequest::output_status()
-{
-    // TODO delete this once build is over
-    std::cout << *this << std::endl;
-
-    if (this->_err.code != -1)
-        std::cerr << this->_err << std::endl;
-    else
-        std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
 std::vector<char> const &HttpRequest::get_body() const
@@ -262,6 +278,10 @@ std::map<std::string, std::string> const &HttpRequest::get_attrs() const
     return this->_attrs;
 }
 
+/**
+ * Checks if request has a body.
+ * It must have either Content-Length or Content-Type headers
+ */
 bool HttpRequest::has_body() const
 {
     try
@@ -294,12 +314,20 @@ bool HttpRequest::is_cgi_req() const
     return (this->_req_line.target.find("cgi_bin/") != std::string::npos);
 }
 
+/**
+ * Checks if request is for a directory.
+ * Root folder is not included.
+ */
 bool HttpRequest::is_dir_req() const
 {
     // Ends with / but it's not root folder request
     return (this->_req_line.target.back() == '/' && this->_req_line.target.length() != 1);
 }
 
+/**
+ * Checks if request is for an HTML document.
+ * If Sec-Fetch-Dest header is set to document or if it is root folder.
+ */
 bool HttpRequest::is_html_req() const
 {
     // Check if Sec-Fetch-Dest is set to document
@@ -342,6 +370,10 @@ void HttpRequest::_set_err(int const &code, std::string const &message)
     }
 }
 
+/**
+ * Resets req object state.
+ * Requests are long-lived in main function.
+ */
 void HttpRequest::reset()
 {
     this->_attrs.clear();
@@ -355,6 +387,16 @@ void HttpRequest::reset()
 
     this->_err.code = -1;
     this->_err.message.clear();
+}
+
+void HttpRequest::output_status()
+{
+    std::cout << *this << std::endl;
+
+    if (this->_err.code != -1)
+        std::cerr << this->_err << std::endl;
+    else
+        std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &os, HttpRequest &std)
