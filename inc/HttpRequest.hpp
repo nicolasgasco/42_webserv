@@ -26,11 +26,9 @@ struct ReqErr
 class HttpRequest
 {
 private:
-    std::map<std::string, std::string> _attrs;
-    std::map<std::string, std::string> _params;
+    std::map<std::string, std::string> _attrs, _params;
     std::vector<char> _body;
-    std::string _buff;
-    std::string _post_req_file_name;
+    std::string _buff, _post_req_file_name;
     ReqLine _req_line;
     ReqErr _err;
 
@@ -62,15 +60,15 @@ public:
     bool has_body() const;
     bool has_error() const;
     bool has_query_params() const;
-    bool is_html_req() const;
-    bool is_dir_req() const;
     bool is_cgi_req() const;
+    bool is_dir_req() const;
+    bool is_html_req() const;
 
 private:
     void _parse_attr_line(std::string const &line);
+    void _parse_method(std::string &line);
     void _parse_query_params(std::string &target);
     void _parse_req_line(std::string &line);
-    void _parse_method(std::string &line);
     void _parse_target(std::string &line);
     void _parse_version(std::string &line);
 
@@ -82,5 +80,4 @@ private:
 
 // TODO remove when not required anymore
 std::ostream &operator<<(std::ostream &os, HttpRequest &std);
-
 std::ostream &operator<<(std::ostream &os, ReqErr &std);
