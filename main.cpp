@@ -48,8 +48,8 @@ int main(int argc, char **argv)
 			// TODO fix this
 			// while (webserver.bind_socket(&port) != "")
 
-			std::string server_name;
-			webserver.get_server_name(&server_name);
+	//		std::string server_name;
+	//		webserver.get_server_name(&server_name);
 
 			AddressInfo addr_info(port);
 
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 			// For each socket: connection + req + res
 			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
 			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
-			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router));
+			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router, &webserver));
 
 			while (true)
 			{
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
 								connections.push_back(ServerConnection());
 								requests.push_back(HttpRequest());
-								responses.push_back(HttpResponse(router));
+								responses.push_back(HttpResponse(router, &webserver));
 							}
 						}
 						// If fd is new accepted connection
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 
 							if (connections.at(i).get_read_done())
 							{
-								responses.at(i).build_response(requests.at(i), http, cgi);
+								responses.at(i).build_response(requests.at(i), http, cgi,&webserver);
 
 								FD_CLR(i, &read_fds_cpy);
 								FD_SET(i, &write_fds_cpy);
