@@ -1,8 +1,6 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(RouterService const &router, class Webserver *webserver) :
-	_router(router),
-	_server(*webserver)
+HttpResponse::HttpResponse(RouterService const &router, class Webserver *webserver) : _router(router), _server(*webserver)
 {
 }
 
@@ -10,6 +8,9 @@ HttpResponse::~HttpResponse()
 {
 }
 
+/**
+ * Takes a request and returns a response.
+ */
 void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, class Webserver *webserver)
 {
     this->_req = req;
@@ -34,6 +35,9 @@ void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiS
               << std::endl;
 }
 
+/**
+ * Build response when there is an error.
+ */
 void HttpResponse::_build_error_res(class Webserver *webserver)
 {
     this->set_status_line(this->_req.gett_err().code, this->_req.gett_err().message);
@@ -41,6 +45,7 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
     int content_len = 0;
     std::string res_body;
 
+    // If the request was for an HTML page, sends error page
     if (this->_req.is_html_req())
     {
         std::ifstream file(this->_router.get_def_err_file_path());
@@ -58,12 +63,16 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
     this->_buff += res_body;
 }
 
+/**
+ * Build response when it is GET request.
+ */
 void HttpResponse::_build_get_res(class Webserver *webserver)
 {
 
     int content_len = 0;
     std::string res_body;
 
+    // If a folder is required, use CGI script to output folder content
     if (this->_req.is_dir_req())
     {
         this->set_status_line(200, "OK");
@@ -77,6 +86,7 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
 
         content_len = res_body.length() - CRLF_LEN;
     }
+    // If a CGI script is required
     else if (this->_req.is_cgi_req())
     {
         std::string file_path = this->_router.get_file_path(this->_req);
@@ -101,6 +111,7 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
             content_len = res_body.length() - CRLF_LEN;
         }
     }
+    // If it's another type of asset
     else
     {
         std::string file_path = this->_router.get_file_path(this->_req);
@@ -129,6 +140,9 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
     this->_buff += res_body;
 }
 
+/**
+ * Build response when it is POST request.
+ */
 void HttpResponse::_build_post_res(class Webserver *webserver)
 {
     int content_len = 0;
@@ -136,6 +150,8 @@ void HttpResponse::_build_post_res(class Webserver *webserver)
 
     std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
     std::ifstream f(file_path.c_str());
+
+    // If file you want to POST exists already
     if (f.good())
     {
         this->set_status_line(400, "Bad Request");
@@ -167,12 +183,16 @@ void HttpResponse::_build_post_res(class Webserver *webserver)
     this->_buff += res_body;
 }
 
+/**
+ * Build response when it is DELETE request.
+ */
 void HttpResponse::_build_delete_res(class Webserver *webserver)
 {
     int content_len = 0;
     std::string res_body;
     std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
 
+    // TODO add real logic to check if DELETE is allowed on route
     bool is_allowed_path = target.find(GALLERY_STORAGE_PATH) != std::string::npos;
     if (!is_allowed_path)
         this->set_status_line(401, "Not authorized");
@@ -184,6 +204,7 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
         char *envp[] = {const_cast<char *>(path.c_str()), NULL};
         std::string cgi_output = this->_cgi.build_cgi_output(args, envp);
 
+        // CGI script returns 404 error code when file to delete wasn't found
         if (cgi_output.find("404") != std::string::npos)
             this->set_status_line(404, "Not Found");
         else
@@ -198,6 +219,9 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
     this->_buff += res_body;
 }
 
+/**
+ * Get content type for a specific target URI.
+ */
 std::string const HttpResponse::_get_content_type(std::string target) const
 {
     std::string content_type;
@@ -242,6 +266,7 @@ void HttpResponse::reset()
     this->_status_line.reason.clear();
 }
 
+// For testing only
 std::string HttpResponse::test_build_headers(int const &content_len, class Webserver *webserver) const
 {
     return this->_http.build_headers(content_len, webserver);
