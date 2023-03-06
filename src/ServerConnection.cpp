@@ -114,7 +114,8 @@ void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
         std::cerr << "Error: send: " << strerror(errno) << std::endl;
         break;
     case 0:
-        std::cerr << "porca madonna" << std::endl;
+        std::cerr << "Error: send: " << strerror(errno) << std::endl;
+        break;
     default:
         std::cout << YELLOW << "Bytes sent: " << bytes_sent << NC << std::endl;
     }
