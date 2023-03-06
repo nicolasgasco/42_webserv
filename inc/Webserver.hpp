@@ -14,6 +14,6 @@ class Webserver
 		std::string	bind_socket(std::string *port);
 		std::string get_server_name(std::string *server_name);
 
-	private:
+//	private:
     	std::vector<Server>     _server;
 };

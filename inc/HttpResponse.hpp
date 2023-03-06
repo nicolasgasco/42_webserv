@@ -6,6 +6,7 @@
 #include "HttpService.hpp"
 #include "macros.hpp"
 #include "RouterService.hpp"
+#include "Webserver.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -28,9 +29,10 @@ private:
     HttpService _http;
     CgiService _cgi;
     HttpRequest _req;
+	Webserver _server;
 
 public:
-    HttpResponse(RouterService const &router);
+    HttpResponse(RouterService const &router, class Webserver *webserver);
     ~HttpResponse();
 
     // Getters
@@ -42,21 +44,21 @@ public:
     void set_buff(std::string const &buff);
 
     // Methods
-    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi);
+    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, class Webserver *webserver);
     void reset();
 
 private:
-    void _build_error_res();
-    void _build_get_res();
-    void _build_post_res();
-    void _build_delete_res();
+    void _build_error_res(class Webserver *webserver);
+    void _build_get_res(class Webserver *webserver);
+    void _build_post_res(class Webserver *webserver);
+    void _build_delete_res(class Webserver *webserver);
 
     void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
     std::string const _get_content_type(std::string target) const;
 
 public:
     // For testing purposes only
-    std::string test_build_headers(int const &content_len) const;
+    std::string test_build_headers(int const &content_len, class Webserver *webserver) const;
 };
 
 // TODO remove when not required anymore

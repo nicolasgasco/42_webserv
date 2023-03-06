@@ -24,27 +24,29 @@ std::string const HttpService::build_file(std::ifstream const &file) const
     return message_body;
 }
 
-std::string const HttpService::build_headers(int const &content_len) const
+std::string const HttpService::build_headers(int const &content_len, class Webserver *webserver) const
 {
     std::string headers;
 
     std::string date = "Date: " + get_gmt_time() + "\r\n";
-		
-	Webserver webserver;
+
 	std::string server_name;
-	webserver.get_server_name(&server_name);
-	std::cout << "Server: " << std::string(server_name) << std::endl;
+
+    for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
+	{
+        Server srv_data = *it;
+        server_name = srv_data.get_server_name();
+		std::cout << "Server: " << std::string(server_name) << std::endl;
+	}
     
-	std::cout << "Server: " << std::string(DEFAULT_SERVER_NAME) << std::endl;
-    
-	std::string server1 = "Server: " + std::string(DEFAULT_SERVER_NAME) + "/1.0" + "\r\n";
+	std::string server = "Server: " + std::string(server_name) + "/1.0" + "\r\n";
 
     std::string content_length = "Content-Length: " + std::to_string(content_len) + "\r\n";
 
     // std::string content_type = this->_get_content_type(this->_req.get_req_line().target);
 
     headers += date;
-    headers += server1;
+    headers += server;
     headers += content_length;
     // headers += content_type;
 
