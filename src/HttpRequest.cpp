@@ -217,6 +217,10 @@ void HttpRequest::parse_post_req_body()
 
     this->_body.clear();
     this->_body = body;
+
+    // If an empty POST request was sent
+    if (this->_body.empty())
+        this->_set_err(400, "Bad Request");
 }
 
 /**
