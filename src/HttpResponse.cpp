@@ -75,7 +75,7 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
     // If a folder is required, use CGI script to output folder content
     if (this->_req.is_dir_req())
     {
-        this->set_status_line(200, "OK");
+        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
         std::string cgi_script_path = build_path(PUBLIC_PATH, "cgi_bin", "output_dir_content.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
@@ -94,7 +94,7 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
 
         if (file)
         {
-            this->set_status_line(200, "OK");
+            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
             char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(file_path.c_str()), NULL};
             std::string path = "PATH_INFO=" + std::string(GALLERY_STORAGE_PATH);
@@ -105,7 +105,7 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
         }
         else
         {
-            this->set_status_line(404, "Not Found");
+            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
             std::ifstream file_404(this->_router.get_404_file_path());
             res_body = this->_http.build_file(file_404);
             content_len = res_body.length() - CRLF_LEN;
@@ -119,13 +119,13 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
 
         if (file)
         {
-            this->set_status_line(200, "OK");
+            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
             res_body = this->_http.build_file(file);
             content_len = res_body.length() - CRLF_LEN;
         }
         else
         {
-            this->set_status_line(404, "Not Found");
+            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
             if (this->_req.is_html_req())
             {
                 std::ifstream file_404(this->_router.get_404_file_path());
@@ -172,7 +172,7 @@ void HttpResponse::_build_post_res(class Webserver *webserver)
         img.write(this->_req.get_body().data(), this->_req.get_body().size());
         img.close();
 
-        this->set_status_line(200, "OK");
+        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
         std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
         res_body = this->_http.build_file(res_file);
         content_len = res_body.length() - CRLF_LEN;
@@ -195,7 +195,7 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
     // TODO add real logic to check if DELETE is allowed on route
     bool is_allowed_path = target.find(GALLERY_STORAGE_PATH) != std::string::npos;
     if (!is_allowed_path)
-        this->set_status_line(401, "Not authorized");
+        this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
     else
     {
 
@@ -205,10 +205,10 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
         std::string cgi_output = this->_cgi.build_cgi_output(args, envp);
 
         // CGI script returns 404 error code when file to delete wasn't found
-        if (cgi_output.find("404") != std::string::npos)
-            this->set_status_line(404, "Not Found");
+        if (cgi_output.find(std::to_string(HTTP_404_CODE)) != std::string::npos)
+            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
         else
-            this->set_status_line(200, "OK");
+            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
         res_body = cgi_output;
         content_len = res_body.length() - CRLF_LEN;

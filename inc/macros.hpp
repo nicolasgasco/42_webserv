@@ -22,10 +22,17 @@
 #define GALLERY_SUCCESS_TEMPLATE_PATH "public/gallery/upload/success.html"
 #define WHITESPACES " \t\v\f\r\n"
 
+// HTTP CODES
+#define HTTP_200_CODE 200
+#define HTTP_200_REASON "OK"
+#define HTTP_401_CODE 401
+#define HTTP_401_REASON "Not Authorized"
+#define HTTP_404_CODE 404
+#define HTTP_404_REASON "Not Found"
+#define HTTP_501_CODE 501
+#define HTTP_501_REASON "Not Implemented"
 // Output colors
 #define GREY "\033[30;1m"
 #define NC "\033[0m"
 #define RED "\033[0;31m"
 #define YELLOW "\033[0;33m"
-
-

@@ -105,7 +105,7 @@ void HttpRequest::_parse_method(std::string &line)
 
     bool is_method_too_long = this->_req_line.method.length() > std::string(LONGEST_METHOD).length();
     if (is_method_too_long || !this->_is_method_supported()) // 501 - Method is too long or not supported
-        this->_set_err(501, "Not Implemented");
+        this->_set_err(HTTP_501_CODE, HTTP_501_REASON);
 
     line = ltrim(line.substr(first_whitespace));
 }
