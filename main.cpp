@@ -48,10 +48,7 @@ int main(int argc, char **argv)
 			// TODO fix this
 			// while (webserver.bind_socket(&port) != "")
 
-	//		std::string server_name;
-	//		webserver.get_server_name(&server_name);
-
-			AddressInfo addr_info(port);
+			AddressInfo addr_info(port, &webserver);
 
 			Socket socket(addr_info);
 			int server_socket = socket.get_socket_id();
