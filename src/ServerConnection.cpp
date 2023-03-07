@@ -67,6 +67,10 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
         if (bytes_received < REC_BUFF_SIZE)
         {
             this->_read_done = true;
+
+            // TODO check that bytes_received is < max body size
+            // If not, set error to 404 - Bad request
+
             req.parse_post_req_file_name(req.get_body());
             req.parse_post_req_body();
         }
@@ -81,6 +85,9 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
         if (req.has_body())
         {
             int content_length = std::stoi(req.get_attrs().at("Content-Length"));
+
+            // TODO check here if content_length is bigger than max body size
+            // If so, this->_set_err(400, "Bad Request"); + set this->_read_done as true
             // If req has body but is still smaller than REC_BUFF_SIZE
             if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
             {
