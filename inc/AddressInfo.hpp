@@ -48,13 +48,13 @@ private:
 
 public:
     AddressInfo();
-    AddressInfo(std::string const &port);
+    AddressInfo(std::string const &port, class Webserver *webserver);
     ~AddressInfo();
 
     struct addrinfo *get_serv_info() const;
 
 private:
-    void _fill_addr_info(std::string const &port);
+    void _fill_addr_info(std::string const &port, class Webserver *webserver);
     struct addrinfo _fill_hints();
     void _check_addr_info_status(int const &status) const;
 };

@@ -5,7 +5,6 @@
 #define CGI_BUF_LEN 20000
 #define CHROME_BODY_BOUNDARY "------WebKitFormBoundary"
 #define CRLF_LEN 2
-#define DEFAULT_SERVER_NAME "Die Veteranen"
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"
 #define GALLERY_STORAGE_PATH "public/gallery/pictures"
@@ -31,6 +30,7 @@
 #define HTTP_404_REASON "Not Found"
 #define HTTP_501_CODE 501
 #define HTTP_501_REASON "Not Implemented"
+
 // Output colors
 #define GREY "\033[30;1m"
 #define NC "\033[0m"
