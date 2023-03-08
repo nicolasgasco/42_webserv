@@ -31,6 +31,9 @@
 #define HTTP_501_CODE 501
 #define HTTP_501_REASON "Not Implemented"
 
+// HTTP HEADERS
+#define CONTENT_LENGTH "Content-Length"
+#define TRANSFER_ENCODING "Transfer-Encoding"
 // Output colors
 #define GREY "\033[30;1m"
 #define NC "\033[0m"

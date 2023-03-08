@@ -284,23 +284,36 @@ std::map<std::string, std::string> const &HttpRequest::get_attrs() const
 
 /**
  * Checks if request has a body.
- * It must have either Content-Length or Content-Type headers
+ * It must have either Content-Length or Transfer-Encoding headers
  */
 bool HttpRequest::has_body() const
 {
+    int content_length = -1;
+    std::string transfer_encoding;
+
     try
     {
-        int content_length = std::stoi(this->_attrs.at("Content-Length"));
-        std::string content_type = this->_attrs.at("Content-Type");
-
-        if (content_length <= 0 || content_type.empty())
+        content_length = std::stoi(this->_attrs.at(CONTENT_LENGTH));
+        if (content_length <= 0)
             return false;
-        return true;
     }
     catch (const std::out_of_range &e)
     {
-        return false;
     }
+
+    try
+    {
+        transfer_encoding = this->_attrs.at(TRANSFER_ENCODING);
+        if (transfer_encoding.empty())
+            return false;
+    }
+    catch (const std::out_of_range &e)
+    {
+    }
+
+    if (content_length == -1 && transfer_encoding.empty())
+        return false;
+    return true;
 }
 
 bool HttpRequest::has_error() const
