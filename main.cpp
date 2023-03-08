@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 						// If fd is new accepted connection
 						else
 						{
-							connections.at(i).receive_req(i, requests.at(i));
+							connections.at(i).receive_req(i, requests.at(i), &webserver);
 
 							if (connections.at(i).get_read_done())
 							{
