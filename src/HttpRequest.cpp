@@ -402,6 +402,7 @@ bool HttpRequest::_is_method_supported() const
     supported_methods.push_back("GET");
     supported_methods.push_back("POST");
     supported_methods.push_back("DELETE");
+    supported_methods.push_back("HEAD");
 
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
