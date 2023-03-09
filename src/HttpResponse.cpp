@@ -154,13 +154,13 @@ void HttpResponse::_build_post_res(class Webserver *webserver)
     // If file you want to POST exists already
     if (f.good())
     {
-        this->set_status_line(400, "Bad Request");
+        this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
 
         std::ifstream file(this->_router.get_def_err_file_path());
 
         std::string err_page = this->_http.build_file(file);
-        replace_var_in_page(err_page, "{{code}}", "400");
-        replace_var_in_page(err_page, "{{message}}", "Bad Request");
+        replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
+        replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
 
         res_body = err_page;
         content_len = err_page.length() - CRLF_LEN;

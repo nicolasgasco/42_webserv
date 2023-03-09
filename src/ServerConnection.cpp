@@ -69,7 +69,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
             this->_read_done = true;
 
             // TODO check that bytes_received is < max body size
-            // If not, set error to 404 - Bad request
+            // If not, set error to 413, "Content Too Large"
 
             req.parse_post_req_file_name(req.get_body());
             req.parse_post_req_body();
@@ -84,20 +84,42 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
 
         if (req.has_body())
         {
-            int content_length = std::stoi(req.get_attrs().at("Content-Length"));
-
-            // TODO check here if content_length is bigger than max body size
-            // If so, this->_set_err(400, "Bad Request"); + set this->_read_done as true
-            // If req has body but is still smaller than REC_BUFF_SIZE
-            if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
+            // Check if there is Content-Length header
+            try
             {
-                req.parse_post_req_file_name(req.get_body());
-                req.parse_post_req_body();
-                this->_read_done = true;
+                int content_length = std::stoi(req.get_attrs().at(CONTENT_LENGTH));
+
+                // TODO check here if content_length is bigger than max body size
+                // If so, this->_set_err(413, "Content Too Large"); + set this->_read_done as true
+
+                // If req has body but is still smaller than REC_BUFF_SIZE
+                if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
+                {
+                    req.parse_post_req_file_name(req.get_body());
+                    req.parse_post_req_body();
+
+                    this->_read_done = true;
+                }
+                // If req has body but it cannot be read in only one go
+                else
+                    this->_read_done = false;
             }
-            // If req has body but it cannot be read in only one go
-            else
-                this->_read_done = false;
+            // It is chunked request
+            catch (const std::out_of_range &e)
+            {
+                // If end of body was found already
+                std::string search_pattern = "0\r\n\r\n";
+                for (std::vector<char>::const_iterator it = req.get_body().begin(); it != (req.get_body().end() - search_pattern.length()); ++it)
+                {
+                    if (find_in_vec(search_pattern, it))
+                    {
+                        req.parse_post_req_file_name(req.get_body());
+                        req.parse_post_req_body();
+                        this->_read_done = true;
+                        break;
+                    }
+                }
+            }
         }
         // If req has no body
         else
