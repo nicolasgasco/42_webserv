@@ -3,7 +3,6 @@
 #define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
 #define BACKLOG_DEFAULT 10
 #define CGI_BUF_LEN 20000
-#define CHROME_BODY_BOUNDARY "------WebKitFormBoundary"
 #define CRLF_LEN 2
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"
@@ -15,6 +14,7 @@
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 #define POST_BODY_FILENAME_DELIM "filename=\""
+#define POST_BODY_BOUNDARY "boundary="
 #define PUBLIC_PATH "public"
 #define PYTHON3_PATH "/usr/bin/python3"
 #define REC_BUFF_SIZE 300000 // TODO change to parametrized values

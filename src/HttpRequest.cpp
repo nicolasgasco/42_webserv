@@ -205,7 +205,7 @@ void HttpRequest::parse_post_req_body()
 
     bool is_body_empty = true;
     std::vector<char>::const_iterator end;
-    std::string end_pattern = CHROME_BODY_BOUNDARY;
+    std::string end_pattern = this->_parse_post_req_boundary();
     for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - end_pattern.length()); ++it)
     {
         if (find_in_vec(end_pattern, it))
@@ -258,6 +258,22 @@ void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
         this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     this->_post_req_file_name = file_name;
+}
+
+/**
+ * Parse boundary used by browser when sending post request.
+ * @returns Parsed boundary.
+ */
+std::string const HttpRequest::_parse_post_req_boundary() const
+{
+    std::string body_str = std::string(this->_body.data());
+
+    std::string delim = POST_BODY_BOUNDARY;
+    body_str = body_str.substr(body_str.find(delim) + delim.length());
+
+    std::string boundary = body_str.substr(0, body_str.find("\r\n"));
+
+    return boundary;
 }
 
 std::vector<char> const &HttpRequest::get_body() const

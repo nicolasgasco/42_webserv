@@ -65,6 +65,7 @@ public:
 private:
     void _parse_attr_line(std::string const &line);
     void _parse_method(std::string &line);
+    std::string const _parse_post_req_boundary() const;
     void _parse_query_params(std::string &target);
     void _parse_req_line(std::string &line);
     void _parse_target(std::string &line);
