@@ -23,7 +23,9 @@ void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiS
     {
         std::string method = this->_req.get_req_line().method;
         if (method == "GET")
-            this->_build_get_res(webserver);
+            this->_build_get_res("GET", webserver);
+        else if (method == "HEAD")
+            this->_build_get_res("HEAD", webserver);
         else if (method == "POST")
             this->_build_post_res(webserver);
         else if (method == "DELETE")
@@ -66,7 +68,7 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
 /**
  * Build response when it is GET request.
  */
-void HttpResponse::_build_get_res(class Webserver *webserver)
+void HttpResponse::_build_get_res(std::string method, class Webserver *webserver)
 {
 
     int content_len = 0;
@@ -137,7 +139,10 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, webserver);
-    this->_buff += res_body;
+    if (method == "GET")
+        this->_buff += res_body;
+    else if (method == "HEAD")
+        this->_buff += "\r\n";
 }
 
 /**
