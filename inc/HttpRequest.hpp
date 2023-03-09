@@ -49,7 +49,7 @@ public:
 
     // Methods
     void parse_post_req_body();
-    void parse_post_req_file_name(std::vector<char> const &body);
+    void parse_post_req_file_name();
     void parse_req();
     void output_status();
     void reset();

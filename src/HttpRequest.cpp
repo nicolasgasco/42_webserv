@@ -192,6 +192,8 @@ void HttpRequest::_parse_query_params(std::string &target)
  */
 void HttpRequest::parse_post_req_body()
 {
+    this->parse_post_req_file_name();
+
     std::vector<char> body = this->_body;
 
     std::vector<char>::const_iterator start;
@@ -230,34 +232,41 @@ void HttpRequest::parse_post_req_body()
 /**
  * Parse file name of binary data sent in POST request.
  */
-void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
+void HttpRequest::parse_post_req_file_name()
 {
     std::string file_name;
 
+    bool is_filename_found = false;
     std::string start_delim = POST_BODY_FILENAME_DELIM;
     std::vector<char>::const_iterator start;
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_delim.length()); ++it)
+    for (std::vector<char>::const_iterator it = this->_body.begin(); it != (this->_body.end() - start_delim.length()); ++it)
     {
         if (find_in_vec(start_delim, it))
         {
             start = it + start_delim.length();
+            is_filename_found = true;
             break;
         }
     }
 
-    std::string end_delim = "\"";
-    for (std::vector<char>::const_iterator it = start; it != (body.end() - end_delim.length()); ++it)
-    {
-        if (find_in_vec(end_delim, it))
-            break;
-        file_name.push_back(*it);
-    }
-
-    // If name doesn't exist, it's impossible to save the file
-    if (file_name.empty())
+    if (is_filename_found == false)
         this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+    else
+    {
+        std::string end_delim = "\"";
+        for (std::vector<char>::const_iterator it = start; it != (this->_body.end() - end_delim.length()); ++it)
+        {
+            if (find_in_vec(end_delim, it))
+                break;
+            file_name.push_back(*it);
+        }
 
-    this->_post_req_file_name = file_name;
+        // If name doesn't exist, it's impossible to save the file
+        if (file_name.empty())
+            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+
+        this->_post_req_file_name = file_name;
+    }
 }
 
 /**
