@@ -36,6 +36,8 @@
 #define HTTP_405_REASON "Not Allowed"
 #define HTTP_409_CODE 409
 #define HTTP_409_REASON "Conflict"
+#define HTTP_414_CODE 414
+#define HTTP_414_REASON "URI Too Long"
 #define HTTP_501_CODE 501
 #define HTTP_501_REASON "Not Implemented"
 

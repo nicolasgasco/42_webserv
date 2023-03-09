@@ -64,14 +64,14 @@ void HttpRequest::_parse_attr_line(std::string const &line)
     // any received request message that contains whitespace between a header field name and colon
     bool is_space_before_colon = line.find(" :") != std::string::npos;
     if (is_space_before_colon)
-        this->_set_err(400, "Bad Request");
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     size_t colon_delim = line.find(":");
     std::string key = ltrim(line.substr(0, colon_delim));
     std::string value = trim(line.substr(colon_delim + 1));
 
     if (key.empty() || value.empty())
-        this->_set_err(400, "Bad Request");
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     this->_attrs.insert(std::pair<std::string, std::string>(key, value));
 }
@@ -123,10 +123,10 @@ void HttpRequest::_parse_target(std::string &line)
         this->_req_line.target = target;
 
         if (this->_req_line.target.empty())
-            this->_set_err(400, "Bad Request");
+            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
         if (this->_req_line.target.length() > LONGEST_URI)
-            this->_set_err(414, "URI Too Long");
+            this->_set_err(HTTP_414_CODE, HTTP_414_REASON);
 
         line = ltrim(line.substr(first_whitespace));
     }
@@ -152,7 +152,7 @@ void HttpRequest::_parse_version(std::string &line)
         this->_req_line.version = trim(version);
 
         if (this->_req_line.version.empty() || this->_req_line.version != HTTP_PROTOCOL)
-            this->_set_err(400, "Bad Request");
+            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
     }
     catch (const std::out_of_range &e)
     {
