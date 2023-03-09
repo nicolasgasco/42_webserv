@@ -195,32 +195,36 @@ void HttpRequest::parse_post_req_body()
     std::vector<char> body = this->_body;
 
     std::vector<char>::const_iterator start;
-    std::string search_pattern = "\r\n\r\n";
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    std::string start_pattern = "\r\n\r\n";
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_pattern.length()); ++it)
     {
-        if (find_in_vec(search_pattern, it))
-            start = it + 4;
+        if (find_in_vec(start_pattern, it))
+            start = it + start_pattern.length();
     }
     body.erase(body.begin(), start);
 
+    bool is_body_empty = true;
     std::vector<char>::const_iterator end;
-    search_pattern = CHROME_BODY_BOUNDARY;
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    std::string end_pattern = CHROME_BODY_BOUNDARY;
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - end_pattern.length()); ++it)
     {
-        if (find_in_vec(search_pattern, it))
+        if (find_in_vec(end_pattern, it))
         {
             end = it;
+            is_body_empty = false;
             break;
         }
     }
-    body.erase(end, body.end());
-
     this->_body.clear();
-    this->_body = body;
 
-    // If an empty POST request was sent
-    if (this->_body.empty())
-        this->_set_err(400, "Bad Request");
+    // If an empty POST request was sent from tester or Postman
+    if (is_body_empty)
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+    else
+    {
+        body.erase(end, body.end());
+        this->_body = body;
+    }
 }
 
 /**
@@ -230,9 +234,9 @@ void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
 {
     std::string file_name;
 
-    std::string start_delim = "filename=\"";
+    std::string start_delim = POST_BODY_FILENAME_DELIM;
     std::vector<char>::const_iterator start;
-    for (std::vector<char>::const_iterator it = body.begin(); it != body.end(); ++it)
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_delim.length()); ++it)
     {
         if (find_in_vec(start_delim, it))
         {
@@ -242,12 +246,16 @@ void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
     }
 
     std::string end_delim = "\"";
-    for (std::vector<char>::const_iterator it = start; it != body.end(); ++it)
+    for (std::vector<char>::const_iterator it = start; it != (body.end() - end_delim.length()); ++it)
     {
         if (find_in_vec(end_delim, it))
             break;
         file_name.push_back(*it);
     }
+
+    // If name doesn't exist, it's impossible to save the file
+    if (file_name.empty())
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     this->_post_req_file_name = file_name;
 }

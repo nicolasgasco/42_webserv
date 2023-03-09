@@ -14,6 +14,7 @@
 #define MIN_FD 4
 #define PIPE_READ 0
 #define PIPE_WRITE 1
+#define POST_BODY_FILENAME_DELIM "filename=\""
 #define PUBLIC_PATH "public"
 #define PYTHON3_PATH "/usr/bin/python3"
 #define REC_BUFF_SIZE 300000 // TODO change to parametrized values
@@ -24,10 +25,17 @@
 // HTTP CODES
 #define HTTP_200_CODE 200
 #define HTTP_200_REASON "OK"
+#define HTTP_400_CODE 400
+#define HTTP_400_REASON "Bad Request"
 #define HTTP_401_CODE 401
 #define HTTP_401_REASON "Not Authorized"
 #define HTTP_404_CODE 404
 #define HTTP_404_REASON "Not Found"
+// TODO use this when method not configured for route
+#define HTTP_405_CODE 405
+#define HTTP_405_REASON "Not Allowed"
+#define HTTP_409_CODE 409
+#define HTTP_409_REASON "Conflict"
 #define HTTP_501_CODE 501
 #define HTTP_501_REASON "Not Implemented"
 
