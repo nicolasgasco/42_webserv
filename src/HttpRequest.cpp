@@ -30,7 +30,7 @@ void HttpRequest::parse_req()
         if (str_isspace(line))
             continue;
         else
-       {
+        {
             this->_parse_req_line(line);
             break;
         }
