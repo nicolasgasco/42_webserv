@@ -89,8 +89,26 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class
             {
                 int content_length = std::stoi(req.get_attrs().at(CONTENT_LENGTH));
 
-                // TODO check here if content_length is bigger than max body size
-                // If so, this->_set_err(413, "Content Too Large"); + set this->_read_done as true
+                // Check here if content_length is bigger than max body size
+				
+    			int max_body_size;
+
+    			for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
+    			{
+        			Server srv_data = *it;
+        			max_body_size = srv_data.get_max_body_size();
+    			}
+
+				if (content_length > max_body_size)
+				{
+					std::cout << "⚠️   File to upload is bigger than 'max_body_size' " << std::endl; 
+        			std::cout << "Max file size allowed: " << max_body_size << std::endl;
+        			std::cout << "File size to upload:   " << content_length << std::endl;
+
+					req._set_err(413, "Content Too Large");
+
+                	this->_read_done = true;
+				}
 
                 // If req has body but is still smaller than REC_BUFF_SIZE
                 if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
