@@ -1,12 +1,5 @@
 #include "Socket.hpp"
 
-Socket::Socket()
-{
-    AddressInfo addr_info;
-
-    this->_create_socket(addr_info);
-}
-
 Socket::Socket(AddressInfo const &addr_info)
 {
     this->_create_socket(addr_info);

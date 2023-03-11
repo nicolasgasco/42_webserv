@@ -10,7 +10,6 @@ private:
     int _id;
 
 public:
-    Socket();
     Socket(AddressInfo const &addr_info);
 
     ~Socket();
