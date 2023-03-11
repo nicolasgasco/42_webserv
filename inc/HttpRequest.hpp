@@ -9,6 +9,8 @@
 #include "dev_utils.hpp" // TODO remove this after build is done
 #include "macros.hpp"
 #include "utils.hpp"
+//#include "SocketConnection.hpp"
+//#include "ServerConnection.hpp"
 
 struct ReqLine
 {
@@ -23,8 +25,12 @@ struct ReqErr
     std::string message;
 };
 
+class ServerConnection;
+
 class HttpRequest
 {
+	friend class ServerConnection;
+
 private:
     std::map<std::string, std::string> _attrs, _params;
     std::vector<char> _body;
@@ -35,6 +41,7 @@ private:
 public:
     HttpRequest();
     ~HttpRequest();
+
 
     // Getters
     std::map<std::string, std::string> const &get_attrs() const;

@@ -40,7 +40,7 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
  * @param client_fd Fd where the request is sent.
  * @param req Req object where the request is stored.
  */
-void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
+void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class Webserver *webserver)
 {
     std::vector<char> buff(REC_BUFF_SIZE, 0);
     int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
@@ -82,6 +82,8 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
 
         if (req.has_body())
         {
+
+
             // Check if there is Content-Length header
             try
             {
@@ -102,6 +104,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req)
             }
             // It is chunked request
             catch (const std::out_of_range &e)
+
             {
                 // If end of body was found already
                 std::string search_pattern = "0\r\n\r\n";
