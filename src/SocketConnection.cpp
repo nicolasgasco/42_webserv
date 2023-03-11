@@ -1,15 +1,5 @@
 #include "SocketConnection.hpp"
 
-SocketConnection::SocketConnection()
-{
-    AddressInfo addr_info;
-
-    Socket socket(addr_info);
-    int sock_id = socket.get_socket_id();
-
-    this->_bind_and_listen(sock_id, addr_info, BACKLOG_DEFAULT);
-}
-
 SocketConnection::SocketConnection(int const &sock_id, AddressInfo &addr_info, int const &backlog)
 {
     this->_bind_and_listen(sock_id, addr_info, backlog);
