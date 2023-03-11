@@ -64,14 +64,14 @@ void HttpRequest::_parse_attr_line(std::string const &line)
     // any received request message that contains whitespace between a header field name and colon
     bool is_space_before_colon = line.find(" :") != std::string::npos;
     if (is_space_before_colon)
-        this->_set_err(400, "Bad Request");
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     size_t colon_delim = line.find(":");
     std::string key = ltrim(line.substr(0, colon_delim));
     std::string value = trim(line.substr(colon_delim + 1));
 
     if (key.empty() || value.empty())
-        this->_set_err(400, "Bad Request");
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     this->_attrs.insert(std::pair<std::string, std::string>(key, value));
 }
@@ -123,10 +123,10 @@ void HttpRequest::_parse_target(std::string &line)
         this->_req_line.target = target;
 
         if (this->_req_line.target.empty())
-            this->_set_err(400, "Bad Request");
+            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
         if (this->_req_line.target.length() > LONGEST_URI)
-            this->_set_err(414, "URI Too Long");
+            this->_set_err(HTTP_414_CODE, HTTP_414_REASON);
 
         line = ltrim(line.substr(first_whitespace));
     }
@@ -152,7 +152,7 @@ void HttpRequest::_parse_version(std::string &line)
         this->_req_line.version = trim(version);
 
         if (this->_req_line.version.empty() || this->_req_line.version != HTTP_PROTOCOL)
-            this->_set_err(400, "Bad Request");
+            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
     }
     catch (const std::out_of_range &e)
     {
@@ -192,64 +192,97 @@ void HttpRequest::_parse_query_params(std::string &target)
  */
 void HttpRequest::parse_post_req_body()
 {
+    this->parse_post_req_file_name();
+
     std::vector<char> body = this->_body;
 
     std::vector<char>::const_iterator start;
-    std::string search_pattern = "\r\n\r\n";
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    std::string start_pattern = "\r\n\r\n";
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_pattern.length()); ++it)
     {
-        if (find_in_vec(search_pattern, it))
-            start = it + 4;
+        if (find_in_vec(start_pattern, it))
+            start = it + start_pattern.length();
     }
     body.erase(body.begin(), start);
 
+    bool is_body_empty = true;
     std::vector<char>::const_iterator end;
-    search_pattern = CHROME_BODY_BOUNDARY;
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - search_pattern.length()); ++it)
+    std::string end_pattern = this->_parse_post_req_boundary();
+    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - end_pattern.length()); ++it)
     {
-        if (find_in_vec(search_pattern, it))
+        if (find_in_vec(end_pattern, it))
         {
             end = it;
+            is_body_empty = false;
             break;
         }
     }
-    body.erase(end, body.end());
-
     this->_body.clear();
-    this->_body = body;
 
-    // If an empty POST request was sent
-    if (this->_body.empty())
-        this->_set_err(400, "Bad Request");
+    // If an empty POST request was sent from tester or Postman
+    if (is_body_empty)
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+    else
+    {
+        body.erase(end, body.end());
+        this->_body = body;
+    }
 }
 
 /**
  * Parse file name of binary data sent in POST request.
  */
-void HttpRequest::parse_post_req_file_name(std::vector<char> const &body)
+void HttpRequest::parse_post_req_file_name()
 {
     std::string file_name;
 
-    std::string start_delim = "filename=\"";
+    bool is_filename_found = false;
+    std::string start_delim = POST_BODY_FILENAME_DELIM;
     std::vector<char>::const_iterator start;
-    for (std::vector<char>::const_iterator it = body.begin(); it != body.end(); ++it)
+    for (std::vector<char>::const_iterator it = this->_body.begin(); it != (this->_body.end() - start_delim.length()); ++it)
     {
         if (find_in_vec(start_delim, it))
         {
             start = it + start_delim.length();
+            is_filename_found = true;
             break;
         }
     }
 
-    std::string end_delim = "\"";
-    for (std::vector<char>::const_iterator it = start; it != body.end(); ++it)
+    if (is_filename_found == false)
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+    else
     {
-        if (find_in_vec(end_delim, it))
-            break;
-        file_name.push_back(*it);
-    }
+        std::string end_delim = "\"";
+        for (std::vector<char>::const_iterator it = start; it != (this->_body.end() - end_delim.length()); ++it)
+        {
+            if (find_in_vec(end_delim, it))
+                break;
+            file_name.push_back(*it);
+        }
 
-    this->_post_req_file_name = file_name;
+        // If name doesn't exist, it's impossible to save the file
+        if (file_name.empty())
+            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+
+        this->_post_req_file_name = file_name;
+    }
+}
+
+/**
+ * Parse boundary used by browser when sending post request.
+ * @returns Parsed boundary.
+ */
+std::string const HttpRequest::_parse_post_req_boundary() const
+{
+    std::string body_str = std::string(this->_body.data());
+
+    std::string delim = POST_BODY_BOUNDARY;
+    body_str = body_str.substr(body_str.find(delim) + delim.length());
+
+    std::string boundary = body_str.substr(0, body_str.find("\r\n"));
+
+    return boundary;
 }
 
 std::vector<char> const &HttpRequest::get_body() const
@@ -284,23 +317,36 @@ std::map<std::string, std::string> const &HttpRequest::get_attrs() const
 
 /**
  * Checks if request has a body.
- * It must have either Content-Length or Content-Type headers
+ * It must have either Content-Length or Transfer-Encoding headers
  */
 bool HttpRequest::has_body() const
 {
+    int content_length = -1;
+    std::string transfer_encoding;
+
     try
     {
-        int content_length = std::stoi(this->_attrs.at("Content-Length"));
-        std::string content_type = this->_attrs.at("Content-Type");
-
-        if (content_length <= 0 || content_type.empty())
+        content_length = std::stoi(this->_attrs.at(CONTENT_LENGTH));
+        if (content_length <= 0)
             return false;
-        return true;
     }
     catch (const std::out_of_range &e)
     {
-        return false;
     }
+
+    try
+    {
+        transfer_encoding = this->_attrs.at(TRANSFER_ENCODING);
+        if (transfer_encoding.empty())
+            return false;
+    }
+    catch (const std::out_of_range &e)
+    {
+    }
+
+    if (content_length == -1 && transfer_encoding.empty())
+        return false;
+    return true;
 }
 
 bool HttpRequest::has_error() const
@@ -356,6 +402,7 @@ bool HttpRequest::_is_method_supported() const
     supported_methods.push_back("GET");
     supported_methods.push_back("POST");
     supported_methods.push_back("DELETE");
+    supported_methods.push_back("HEAD");
 
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }

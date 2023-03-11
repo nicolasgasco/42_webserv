@@ -12,7 +12,6 @@
 class SocketConnection
 {
 public:
-    SocketConnection();
     SocketConnection(int const &sock_id, AddressInfo &addr_info, int const &backlog);
     ~SocketConnection();
 

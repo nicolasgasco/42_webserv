@@ -50,7 +50,7 @@ public:
 
 private:
     void _build_delete_res(class Webserver *webserver);
-    void _build_get_res(class Webserver *webserver);
+    void _build_get_res(std::string method, class Webserver *webserver);
     void _build_error_res(class Webserver *webserver);
     void _build_post_res(class Webserver *webserver);
 

@@ -2,12 +2,6 @@
 #include "Webserver.hpp"
 #include "Server.hpp"
 
-AddressInfo::AddressInfo()
-{
-    // TODO define default port
-    this->_fill_addr_info("http",NULL);
-}
-
 AddressInfo::AddressInfo(std::string const &port, class Webserver *webserver)
 {
     this->_fill_addr_info(port, webserver);
@@ -54,12 +48,12 @@ struct addrinfo AddressInfo::_fill_hints()
 void AddressInfo::_check_addr_info_status(int const &status) const
 {
     if (status != 0)
-	{
-		std::string errorMessage;
-		errorMessage = "🔴  FAILURE getaddrinfo error: ";
-		errorMessage += gai_strerror(status);
-		throw std::runtime_error(errorMessage);
-	}
+    {
+        std::string errorMessage;
+        errorMessage = "🔴  FAILURE getaddrinfo error: ";
+        errorMessage += gai_strerror(status);
+        throw std::runtime_error(errorMessage);
+    }
     else
         std::cout << YELLOW << "addrinfo list created..." << NC << std::endl;
 }

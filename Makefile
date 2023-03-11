@@ -103,6 +103,9 @@ run-san: fclean san
 test:
 	make -C tests run
 
+tester:
+	./42_tester/tester http://localhost:8081
+
 -include $(OBJ_DIR)/*.d
 
 .PHONY: all clean fclean re

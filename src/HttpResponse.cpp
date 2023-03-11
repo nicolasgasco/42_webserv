@@ -23,7 +23,9 @@ void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiS
     {
         std::string method = this->_req.get_req_line().method;
         if (method == "GET")
-            this->_build_get_res(webserver);
+            this->_build_get_res("GET", webserver);
+        else if (method == "HEAD")
+            this->_build_get_res("HEAD", webserver);
         else if (method == "POST")
             this->_build_post_res(webserver);
         else if (method == "DELETE")
@@ -66,7 +68,7 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
 /**
  * Build response when it is GET request.
  */
-void HttpResponse::_build_get_res(class Webserver *webserver)
+void HttpResponse::_build_get_res(std::string method, class Webserver *webserver)
 {
 
     int content_len = 0;
@@ -137,7 +139,10 @@ void HttpResponse::_build_get_res(class Webserver *webserver)
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, webserver);
-    this->_buff += res_body;
+    if (method == "GET")
+        this->_buff += res_body;
+    else if (method == "HEAD")
+        this->_buff += "\r\n";
 }
 
 /**
@@ -154,13 +159,13 @@ void HttpResponse::_build_post_res(class Webserver *webserver)
     // If file you want to POST exists already
     if (f.good())
     {
-        this->set_status_line(400, "Bad Request");
+        this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
 
         std::ifstream file(this->_router.get_def_err_file_path());
 
         std::string err_page = this->_http.build_file(file);
-        replace_var_in_page(err_page, "{{code}}", "400");
-        replace_var_in_page(err_page, "{{message}}", "Bad Request");
+        replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
+        replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
 
         res_body = err_page;
         content_len = err_page.length() - CRLF_LEN;

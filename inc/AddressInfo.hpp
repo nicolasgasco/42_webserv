@@ -47,7 +47,6 @@ private:
     struct addrinfo *_serv_info;
 
 public:
-    AddressInfo();
     AddressInfo(std::string const &port, class Webserver *webserver);
     ~AddressInfo();
 
