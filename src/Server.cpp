@@ -158,3 +158,23 @@ std::vector<Location> Server::get_location_blocks()
 {
 	return _location_blocks;
 }
+
+int Server::get_socket() const
+{
+    return _socket;
+}
+
+AddressInfo Server::get_addr_info() const
+{
+    return *_addr_info;
+}
+
+void Server::set_socket(int const &socket)
+{
+    _socket = socket;
+}
+
+void Server::set_addr_info(AddressInfo const &addr_info)
+{
+    *_addr_info = addr_info;
+}
