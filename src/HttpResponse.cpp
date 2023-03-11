@@ -62,7 +62,8 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, webserver);
-    this->_buff += res_body;
+    // Required for empty body POST request
+    this->_buff += res_body.empty() ? "\r\n" : res_body;
 }
 
 /**

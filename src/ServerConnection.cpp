@@ -48,12 +48,9 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class
     switch (bytes_received)
     {
     case -1:
-        this->_has_err = true;
-        std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
-        return;
     case 0:
+        this->_has_err = true;
         std::cerr << "recv: received 0 bytes" << std::endl;
-        this->_read_done = true;
         return;
     default:
         std::cout << YELLOW << "Bytes received: " << bytes_received << NC << std::endl;
@@ -84,7 +81,6 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class
 
         if (req.has_body())
         {
-
 
             // Check if there is Content-Length header
             try
