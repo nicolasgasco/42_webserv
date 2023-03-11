@@ -110,11 +110,18 @@ int main(int argc, char **argv)
 						{
 							connections.at(i).receive_req(i, requests.at(i));
 
-							if (connections.at(i).get_read_done())
+							if (connections.at(i).get_has_err())
 							{
-								responses.at(i).build_response(requests.at(i), http, cgi,&webserver);
-
 								FD_CLR(i, &read_fds_cpy);
+								close(i);
+								requests.at(i).reset();
+								responses.at(i).reset();
+								connections.at(i).reset();
+							}
+							else if (connections.at(i).get_read_done())
+							{
+								FD_CLR(i, &read_fds_cpy);
+								responses.at(i).build_response(requests.at(i), http, cgi, &webserver);
 								FD_SET(i, &write_fds_cpy);
 							}
 						}
@@ -123,7 +130,7 @@ int main(int argc, char **argv)
 					else if (FD_ISSET(i, &write_fds))
 					{
 						connections.at(i).send_res(i, responses.at(i));
-						if (connections.at(i).get_send_done())
+						if (connections.at(i).get_has_err() || connections.at(i).get_send_done())
 						{
 							FD_CLR(i, &write_fds_cpy);
 							close(i);
