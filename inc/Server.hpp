@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AddressInfo.hpp"
 #include "Location.hpp"
 
 #include <iostream>
@@ -48,6 +49,11 @@ class Server
     	bool                        get_autoindex();
     	int                         get_max_body_size();
     	std::vector<Location>   	get_location_blocks();
+		int							get_socket() const;
+		struct addrinfo *			get_addr_info();
+
+		void						set_socket(int const &socket);
+		void						set_addr_info(struct addrinfo const &addr_info);
 
     	typedef     std::vector<std::string>::iterator vector_iterator;
     	typedef     void (Server::*configure)(const std::string &);
@@ -61,4 +67,6 @@ class Server
     	bool                        _autoindex;
     	int                         _max_body_size;
     	std::vector<Location>		_location_blocks;
+		int							_socket;
+		struct addrinfo 			_addr_info;
 };

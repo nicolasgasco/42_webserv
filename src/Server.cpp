@@ -8,7 +8,8 @@ Server::Server() :
 		_cgi_file_ext(),
 		_autoindex(false), 
 		_max_body_size(0),
-		_location_blocks()
+		_location_blocks(),
+        _socket(0)
 {
 }
 
@@ -157,4 +158,24 @@ int Server::get_max_body_size()
 std::vector<Location> Server::get_location_blocks()
 {
 	return _location_blocks;
+}
+
+int Server::get_socket() const
+{
+    return _socket;
+}
+
+struct addrinfo *Server::get_addr_info()
+{
+    return &_addr_info;
+}
+
+void Server::set_socket(int const &socket)
+{
+    _socket = socket;
+}
+
+void Server::set_addr_info(struct addrinfo const &addr_info)
+{
+    _addr_info = addr_info;
 }

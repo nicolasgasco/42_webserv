@@ -9,6 +9,7 @@
 #include "Server.hpp"
 
 #include <sys/select.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
@@ -42,19 +43,6 @@ int main(int argc, char **argv)
 			webserver.print_config_data();
 			webserver.inspect_config_data();
 
-			std::string port;
-			webserver.bind_socket(&port);
-
-			// TODO fix this
-			// while (webserver.bind_socket(&port) != "")
-
-			AddressInfo addr_info(port, &webserver);
-
-			Socket socket(addr_info);
-			int server_socket = socket.get_socket_id();
-
-			SocketConnection sock_connection(server_socket, addr_info, BACKLOG_DEFAULT);
-
 			// Initialize fd_sets for select
 			fd_set read_fds, read_fds_cpy, write_fds, write_fds_cpy;
 			FD_ZERO(&read_fds);
@@ -62,16 +50,35 @@ int main(int argc, char **argv)
 			FD_ZERO(&write_fds);
 			FD_ZERO(&write_fds_cpy);
 
-			// Set server_socket for reading
-			FD_SET(server_socket, &read_fds_cpy);
-
 			// Set timeout for select
 			struct timeval timeout;
 			timeout.tv_sec = SERVER_TIMEOUT;
 			timeout.tv_usec = 0;
 
-			int max_fd = server_socket;
-			// For each socket: connection + req + res
+			int max_fd = STDERR_FILENO + 1;
+
+			for (std::vector<Server>::iterator it = webserver.get_server().begin(); it != webserver.get_server().end(); it++)
+			{
+				// TODO change this with real logic
+				std::string port = "8081";
+				std::string host_name = it->get_host();
+
+				AddressInfo addr_info(port, host_name);
+				it->set_addr_info(*addr_info.get_serv_info());
+
+				Socket socket(addr_info);
+				it->set_socket(socket.get_socket_id());
+
+				SocketConnection sock_connection(it->get_socket(), addr_info, BACKLOG_DEFAULT);
+				std::cout << YELLOW << "Socket listening on port " << it->get_socket() << "..." << NC << std::endl;
+
+				// Set server_socket for reading
+				FD_SET(it->get_socket(), &read_fds_cpy);
+
+				max_fd = it->get_socket() > max_fd ? it->get_socket() : max_fd;
+			}
+
+			// For each fd from fd_set: connection + req + res
 			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
 			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
 			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router, &webserver));
@@ -90,39 +97,43 @@ int main(int argc, char **argv)
 					// If fd is set for reading
 					if (FD_ISSET(i, &read_fds))
 					{
-						// IF fd is socket connection
-						if (i == server_socket)
+						for (std::vector<Server>::iterator it = webserver.get_server().begin(); it != webserver.get_server().end(); it++)
 						{
-							int client_fd = connections.at(i).accept_connection(i, addr_info.get_serv_info());
-							FD_SET(client_fd, &read_fds_cpy);
-
-							if (client_fd > max_fd)
+							// IF fd is socket connection
+							if (i == it->get_socket())
 							{
-								max_fd = client_fd;
+								
+								int client_fd = connections.at(i).accept_connection(i, it->get_addr_info());
+								FD_SET(client_fd, &read_fds_cpy);
 
-								connections.push_back(ServerConnection());
-								requests.push_back(HttpRequest());
-								responses.push_back(HttpResponse(router, &webserver));
+								if (client_fd > max_fd)
+								{
+									max_fd = client_fd;
+
+									connections.push_back(ServerConnection());
+									requests.push_back(HttpRequest());
+									responses.push_back(HttpResponse(router, &webserver));
+								}
 							}
-						}
-						// If fd is new accepted connection
-						else
-						{
-							connections.at(i).receive_req(i, requests.at(i), &webserver);
+							// If fd is new accepted connection
+							else
+							{
+								connections.at(i).receive_req(i, requests.at(i), &webserver);
 
-							if (connections.at(i).get_has_err())
-							{
-								FD_CLR(i, &read_fds_cpy);
-								close(i);
-								requests.at(i).reset();
-								responses.at(i).reset();
-								connections.at(i).reset();
-							}
-							else if (connections.at(i).get_read_done())
-							{
-								FD_CLR(i, &read_fds_cpy);
-								responses.at(i).build_response(requests.at(i), http, cgi, &webserver);
-								FD_SET(i, &write_fds_cpy);
+								if (connections.at(i).get_has_err())
+								{
+									FD_CLR(i, &read_fds_cpy);
+									close(i);
+									requests.at(i).reset();
+									responses.at(i).reset();
+									connections.at(i).reset();
+								}
+								else if (connections.at(i).get_read_done())
+								{
+									FD_CLR(i, &read_fds_cpy);
+									responses.at(i).build_response(requests.at(i), http, cgi, &webserver);
+									FD_SET(i, &write_fds_cpy);
+								}
 							}
 						}
 					}
