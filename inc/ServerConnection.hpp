@@ -15,11 +15,13 @@ private:
     int _new_sock_id;
     int _bytes_received, _bytes_sent;
     bool _read_done, _sent_done;
+    bool _has_err;
 
 public:
     ServerConnection();
     ~ServerConnection();
 
+    bool get_has_err() const;
     int const &get_new_sock_id() const;
     bool get_read_done() const;
     bool get_send_done() const;

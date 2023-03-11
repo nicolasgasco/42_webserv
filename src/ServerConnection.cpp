@@ -48,9 +48,11 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class
     switch (bytes_received)
     {
     case -1:
+        this->_has_err = true;
         std::cerr << "Error: recv: " << std::strerror(errno) << std::endl;
-        break;
+        return;
     case 0:
+        std::cerr << "recv: received 0 bytes" << std::endl;
         this->_read_done = true;
         return;
     default:
@@ -156,10 +158,11 @@ void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
     switch (bytes_sent)
     {
     case -1:
+        this->_has_err = true;
         std::cerr << "Error: send: " << strerror(errno) << std::endl;
-        break;
+        return;
     case 0:
-        std::cerr << "Error: send: " << strerror(errno) << std::endl;
+        std::cerr << "send: sent 0 bytes" << strerror(errno) << std::endl;
         break;
     default:
         std::cout << YELLOW << "Bytes sent: " << bytes_sent << NC << std::endl;
@@ -177,6 +180,11 @@ void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
 
         this->_sent_done = false;
     }
+}
+
+bool ServerConnection::get_has_err() const
+{
+    return this->_has_err;
 }
 
 int const &ServerConnection::get_new_sock_id() const
@@ -203,6 +211,7 @@ void ServerConnection::reset()
     this->_new_sock_id = 0;
     this->_bytes_received = 0;
     this->_bytes_sent = 0;
+    this->_has_err = false;
     this->_sent_done = false;
     this->_read_done = false;
 }
