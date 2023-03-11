@@ -88,11 +88,17 @@ void    Webserver::inspect_config_data()
 	{
         Server srv_data = *it;
         std::vector<std::string> port = srv_data.get_port();
+        
+		if (port.empty())
+		{
+			std::string errorMessage = std::string("🔴  FAILURE No port in config_file. Port number is required");
+			throw std::runtime_error(errorMessage);
+		}
 
 		for (std::vector<std::string>::iterator it1 = port.begin(); it1 != port.end(); it1++)
 		{
-            std::string port_str_1 = *it1;
-			int port_int = parser_num(port_str_1);
+            std::string port_str = *it1;
+			int port_int = parser_num(port_str);
         	if (port_int < 0)
 			{
 				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Port with negative number is not allowed");

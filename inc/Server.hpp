@@ -8,11 +8,11 @@ class Webserver;
 
 class Server
 {
+	friend class Webserver;
+	
 	public:
     	Server();
     	~Server();
-		
-		friend class Webserver;
     
 		void	create_server(std::vector<std::string> &server_config);
     	void	reset_server();
