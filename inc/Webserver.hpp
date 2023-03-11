@@ -2,8 +2,16 @@
 
 #include "Server.hpp"
 
+class AddressInfo;
+class ServerConnection;
+class HttpService;
+
 class Webserver
 {
+	friend class AddressInfo;
+	friend class ServerConnection;
+	friend class HttpService;
+
 	public:
     	Webserver();
     	~Webserver();
@@ -14,6 +22,6 @@ class Webserver
 		std::string	bind_socket(std::string *port);
 		std::string get_server_name(std::string *server_name);
 
-//	private:
+	private:
     	std::vector<Server>     _server;
 };
