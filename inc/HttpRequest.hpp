@@ -9,7 +9,8 @@
 #include "dev_utils.hpp" // TODO remove this after build is done
 #include "macros.hpp"
 #include "utils.hpp"
-#include "SocketConnection.hpp"
+//#include "SocketConnection.hpp"
+//#include "ServerConnection.hpp"
 
 struct ReqLine
 {
@@ -24,8 +25,12 @@ struct ReqErr
     std::string message;
 };
 
+class ServerConnection;
+
 class HttpRequest
 {
+	friend class ServerConnection;
+
 private:
     std::map<std::string, std::string> _attrs, _params;
     std::vector<char> _body;
@@ -37,7 +42,6 @@ public:
     HttpRequest();
     ~HttpRequest();
 
-	friend class SocketConnection;
 
     // Getters
     std::map<std::string, std::string> const &get_attrs() const;
@@ -73,10 +77,8 @@ private:
     void _parse_target(std::string &line);
     void _parse_version(std::string &line);
 
-public:
     void _set_err(int const &code, std::string const &message);
 
-private:
     // Computed properties
     bool _is_method_supported() const;
 };

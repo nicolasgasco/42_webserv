@@ -106,7 +106,6 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class
 
                 this->_read_done = true;
 			}
-            // If so, this->_set_err(400, "Bad Request"); + set this->_read_done as true
 
             // If req has body but is still smaller than REC_BUFF_SIZE
             if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
