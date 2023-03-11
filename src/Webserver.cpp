@@ -87,6 +87,7 @@ void    Webserver::inspect_config_data()
     for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
 	{
         Server srv_data = *it;
+
         std::vector<std::string> port = srv_data.get_port();
         
 		if (port.empty())
@@ -130,13 +131,30 @@ void    Webserver::inspect_config_data()
 					port_duplicate = true;
            		}
 			}
+		}
 
-			std::string error_page_location = it->_error_page;
-			if (error_page_location.empty())
+		std::string error_page_location = it->_error_page;
+		if (error_page_location.empty())
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Error page path does not exist in config_file");
+			throw std::runtime_error(errorMessage);
+		}
+
+        std::vector<Location> locations = srv_data.get_location_blocks();
+        for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+		{
+            Location location = *it;
+
+            std::vector<std::string> methods = location.get_method();
+            for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
 			{
-				std::string errorMessage = std::string("🔴  FAILURE Error page path does not exist in config_file");
-				throw std::runtime_error(errorMessage);
-			}
+                std::string method = *it1;
+				if (method != "GET" && method != "POST" && method!= "DELETE")
+				{
+					std::string errorMessage = std::string("🔴  FAILURE Method not allowed in config_file");
+					throw std::runtime_error(errorMessage);
+				}
+            }
 		}
 	}
 }
