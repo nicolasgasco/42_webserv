@@ -188,3 +188,8 @@ std::string  	Webserver::get_server_name(std::string *server_name)
 	}
 	return(*server_name);
 }
+
+std::vector<Server> &Webserver::get_server()
+{
+	return _server;
+}
