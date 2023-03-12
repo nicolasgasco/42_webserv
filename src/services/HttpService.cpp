@@ -75,3 +75,17 @@ std::string const HttpService::build_status_line(std::string const &version, int
     status_line += "\r\n";
     return status_line;
 }
+
+/**
+ * Expands special characters in a string.
+ * @param target String to be expanded.
+ */
+std::string const HttpService::decode_whitespace(std::string const &target) const
+{
+    std::string expanded_target = target;
+
+    if (target.find("%20") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%20"), 3, " ");
+
+    return expanded_target;
+}

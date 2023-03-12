@@ -117,10 +117,12 @@ void HttpRequest::_parse_target(std::string &line)
 {
     try
     {
+        HttpService http;
+
         size_t first_whitespace = line.find_first_of(WHITESPACES);
         std::string target = line.substr(0, first_whitespace);
 
-        this->_req_line.target = target;
+        this->_req_line.target = http.decode_whitespace(target);
 
         if (this->_req_line.target.empty())
             this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
