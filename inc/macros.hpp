@@ -1,7 +1,7 @@
 #pragma once
 
 #define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
-#define BACKLOG_DEFAULT 10
+#define BACKLOG_DEFAULT 100
 #define CGI_BUF_LEN 20000
 #define CRLF_LEN 2
 #define DIR_PATH "dir"
@@ -10,7 +10,7 @@
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define LONGEST_METHOD "DELETE" // Replace with computed value
 #define LONGEST_URI 124         // Replace with computed value
-#define MIN_FD 4
+#define MIN_FD 3
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 #define POST_BODY_FILENAME_DELIM "filename=\""
