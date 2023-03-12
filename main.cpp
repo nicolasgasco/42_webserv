@@ -55,6 +55,9 @@ int main(int argc, char **argv)
 
 			int max_fd = STDERR_FILENO + 1;
 
+			// To track active sockets for select
+			std::vector<int> active_sockets;
+
 			for (std::vector<Server>::iterator it = webserver.get_server().begin(); it != webserver.get_server().end(); it++)
 			{
 				std::string port = it->get_port();
@@ -64,6 +67,7 @@ int main(int argc, char **argv)
 				it->set_addr_info(*addr_info.get_serv_info());
 
 				Socket socket(addr_info);
+				active_sockets.push_back(socket.get_socket_id());
 				it->set_socket(socket.get_socket_id());
 
 				SocketConnection sock_connection(it->get_socket(), addr_info, BACKLOG_DEFAULT);
@@ -96,10 +100,11 @@ int main(int argc, char **argv)
 					{
 						for (std::vector<Server>::iterator it = webserver.get_server().begin(); it != webserver.get_server().end(); it++)
 						{
+							bool is_active_socket = std::find(active_sockets.begin(), active_sockets.end(), i) != active_sockets.end();
+
 							// IF fd is socket connection
 							if (i == it->get_socket())
 							{
-								
 								int client_fd = connections.at(i).accept_connection(i, it->get_addr_info());
 								FD_SET(client_fd, &read_fds_cpy);
 
@@ -112,8 +117,8 @@ int main(int argc, char **argv)
 									responses.push_back(HttpResponse(router, &webserver));
 								}
 							}
-							// If fd is new accepted connection
-							else
+							// If fd is new accepted connection (but not an active socket)
+							else if (!is_active_socket)
 							{
 								connections.at(i).receive_req(i, requests.at(i), &webserver);
 
@@ -130,6 +135,7 @@ int main(int argc, char **argv)
 									FD_CLR(i, &read_fds_cpy);
 									responses.at(i).build_response(requests.at(i), http, cgi, &webserver);
 									FD_SET(i, &write_fds_cpy);
+									break; // to avoid double reading
 								}
 							}
 						}
