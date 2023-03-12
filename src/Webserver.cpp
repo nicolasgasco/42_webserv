@@ -123,11 +123,25 @@ void    Webserver::inspect_config_data()
 			throw std::runtime_error(errorMessage);
 		}
 
+		//Parsing SERVER_NAME
+		std::string server_name = it->_server_name;
+		if (server_name.empty())
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Server name does not exist in config_file");
+			throw std::runtime_error(errorMessage);
+		}
+
 		//Parsing ROOT
 		std::string root_path = it->_root;
 		if (root_path.empty())
 		{
 			std::string errorMessage = std::string("🔴  FAILURE Root path does not exist in config_file");
+			throw std::runtime_error(errorMessage);
+		}
+		int spaces_root = std::count(root_path.begin(), root_path.end(), ' ');
+		if (spaces_root > 0)
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Root path is not a valid path");
 			throw std::runtime_error(errorMessage);
 		}
 
@@ -138,6 +152,13 @@ void    Webserver::inspect_config_data()
 			std::string errorMessage = std::string("🔴  FAILURE Error page path does not exist in config_file");
 			throw std::runtime_error(errorMessage);
 		}
+		int spaces_error_page = std::count(error_page_path.begin(), error_page_path.end(), ' ');
+		if (spaces_error_page > 0)
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Error page path is not a valid path");
+			throw std::runtime_error(errorMessage);
+		}
+
 
 		//Parsing CGI FILE EXTENSION
         std::vector<std::string> cgi = it->get_cgi_file_ext();
@@ -151,8 +172,22 @@ void    Webserver::inspect_config_data()
 			}
         }
 
-		//Parsing METHODS
+		//Parsing ALIAS
         std::vector<Location> locations = srv_data.get_location_blocks();
+        for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+		{
+        	Location location = *it;
+
+           	std::string alias = location.get_alias();
+			int spaces_alias = std::count(alias.begin(), alias.end(), ' ');
+			if (spaces_alias > 0)
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Alias path is not a valid path");
+				throw std::runtime_error(errorMessage);
+			}
+		}
+		
+		//Parsing METHODS
         for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
             Location location = *it;
@@ -171,24 +206,6 @@ void    Webserver::inspect_config_data()
 	}
 }
 
-/*
-std::string  	Webserver::bind_socket(std::string *port)  
-{
-    for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
-	{
-        Server srv_data = *it;
-        std::vector<std::string> port_data = srv_data.get_port();
-
-		for (std::vector<std::string>::iterator it1 = port_data.begin(); it1 != port_data.end(); it1++)
-		{
-			*port = *it1;
-			std::cout << "port [config_file]  " << *port << std::endl;
-			return(*port);
-		}
-	}
-	return (0);
-}
-*/
 
 std::vector<Server> &Webserver::get_server()
 {
