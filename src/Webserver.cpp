@@ -19,7 +19,6 @@ void	Webserver::load_config_file(char *config_file)
 	std::ifstream 				input_data;
 	std::string 				text;
 	std::vector <std::string> 	text_vector;
-    std::vector <std::string>   server_block;
     Server                      server;
 
     input_data.open(config_file);
@@ -27,15 +26,16 @@ void	Webserver::load_config_file(char *config_file)
 	while(getline(input_data,text))
 	{
 		text_vector.push_back(text);
+	
+		if (check_server_block(text_vector))
+		{
+			server.create_server(text_vector);
+			_server.push_back(server);
+			text_vector.clear();
+		}
 	}
-	if (check_server_block(text_vector))
-	{
-		server.create_server(text_vector);
-		_server.push_back(server);
-		text_vector.clear();
-		print_config_data();
-		inspect_config_data();
-	}
+	print_config_data();
+	inspect_config_data();
 }
 
 void Webserver::print_config_data()
