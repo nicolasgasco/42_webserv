@@ -3,6 +3,7 @@
 #define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
 #define BACKLOG_DEFAULT 100
 #define CGI_BUF_LEN 20000
+#define CGI_MAX_ENV_VARS 10
 #define CRLF_LEN 2
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"

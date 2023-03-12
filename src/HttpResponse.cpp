@@ -82,9 +82,15 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
 
         std::string cgi_script_path = build_path(PUBLIC_PATH, "cgi_bin", "output_dir_content.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
-        std::string target = this->_req.get_req_line().target;
-        std::string path = "PATH_INFO=./" + build_path(PUBLIC_PATH, target);
-        char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+
+        // Environment variables for CGI script
+        std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_req);
+        char *envp[CGI_MAX_ENV_VARS];
+        for (size_t i = 0; i < envp_v.size(); i++)
+            envp[i] = const_cast<char *>(envp_v[i].c_str());
+        envp[envp_v.size()] = NULL;
+
         res_body = this->_cgi.build_cgi_output(args, envp);
 
         content_len = res_body.length() - CRLF_LEN;
@@ -100,8 +106,13 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
             this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
             char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(file_path.c_str()), NULL};
-            std::string path = "PATH_INFO=" + std::string(GALLERY_STORAGE_PATH);
-            char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+
+            // Environment variables for CGI script
+            std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_req);
+            char *envp[CGI_MAX_ENV_VARS];
+            for (size_t i = 0; i < envp_v.size(); i++)
+                envp[i] = const_cast<char *>(envp_v[i].c_str());
+            envp[envp_v.size()] = NULL;
             res_body = this->_cgi.build_cgi_output(args, envp);
 
             content_len = res_body.length() - CRLF_LEN;
@@ -206,8 +217,14 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
     {
 
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("public/cgi_bin/delete_file.py"), NULL};
-        std::string path = "PATH_INFO=" + target;
-        char *envp[] = {const_cast<char *>(path.c_str()), NULL};
+
+        // Environment variables for CGI script
+        std::vector<std::string> envp_v = this->_cgi.build_envp(target, this->_req);
+        char *envp[CGI_MAX_ENV_VARS];
+        for (size_t i = 0; i < envp_v.size(); i++)
+            envp[i] = const_cast<char *>(envp_v[i].c_str());
+        envp[envp_v.size()] = NULL;
+
         std::string cgi_output = this->_cgi.build_cgi_output(args, envp);
 
         // CGI script returns 404 error code when file to delete wasn't found
