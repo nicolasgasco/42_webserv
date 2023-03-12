@@ -92,29 +92,34 @@ void    Webserver::inspect_config_data()
         Server srv_data = *it;
 
         std::string port = srv_data.get_port();
-        
 		if (port == "")
 		{
 			std::string errorMessage = std::string("🔴  FAILURE No port in config_file. Port number is required");
 			throw std::runtime_error(errorMessage);
 		}
+		int port_int = parser_num(port);
+       	if (port_int < 0)
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Port with negative number is not allowed");
+			throw std::runtime_error(errorMessage);
+		}
+       	if (port_int >= 0 && port_int <= 1024 )
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Ports numbers from 0 to 1024 are reserved for privileged services");
+			throw std::runtime_error(errorMessage);
+		}
+       	if (port_int > 63536)
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Maximum allowed port number is 65536");
+			throw std::runtime_error(errorMessage);
+		}
 
-			int port_int = parser_num(port);
-        	if (port_int < 0)
-			{
-				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Port with negative number is not allowed");
-				throw std::runtime_error(errorMessage);
-			}
-        	if (port_int >= 0 && port_int <= 1024 )
-			{
-				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Ports numbers from 0 to 1024 are reserved for privileged services");
-				throw std::runtime_error(errorMessage);
-			}
-        	if (port_int > 63536)
-			{
-				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Maximum allowed port number is 65536");
-				throw std::runtime_error(errorMessage);
-			}
+        std::string host = srv_data.get_host();
+		if (host != "localhost")
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Invalid host: 'localhost' is the only valid host in 42 network");
+			throw std::runtime_error(errorMessage);
+		}
 
 		std::string error_page_location = it->_error_page;
 		if (error_page_location.empty())
