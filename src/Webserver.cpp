@@ -91,6 +91,7 @@ void    Webserver::inspect_config_data()
 	{
         Server srv_data = *it;
 
+		//Parsing PORT
         std::string port = srv_data.get_port();
 		if (port == "")
 		{
@@ -114,6 +115,7 @@ void    Webserver::inspect_config_data()
 			throw std::runtime_error(errorMessage);
 		}
 
+		//Parsing HOST
         std::string host = srv_data.get_host();
 		if (host != "localhost")
 		{
@@ -121,13 +123,35 @@ void    Webserver::inspect_config_data()
 			throw std::runtime_error(errorMessage);
 		}
 
-		std::string error_page_location = it->_error_page;
-		if (error_page_location.empty())
+		//Parsing ROOT
+		std::string root_path = it->_root;
+		if (root_path.empty())
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Root path does not exist in config_file");
+			throw std::runtime_error(errorMessage);
+		}
+
+		//Parsing ERROR PAGE
+		std::string error_page_path = it->_error_page;
+		if (error_page_path.empty())
 		{
 			std::string errorMessage = std::string("🔴  FAILURE Error page path does not exist in config_file");
 			throw std::runtime_error(errorMessage);
 		}
 
+		//Parsing CGI FILE EXTENSION
+        std::vector<std::string> cgi = it->get_cgi_file_ext();
+        for (std::vector<std::string>::iterator it1 = cgi.begin(); it1 != cgi.end(); it1++)
+		{
+        	std::string cgi_ext = *it1;
+			if (cgi_ext != ".py" && cgi_ext != ".sh")
+			{
+				std::string errorMessage = std::string("🔴  FAILURE CGI file extension not allowed in config_file");
+				throw std::runtime_error(errorMessage);
+			}
+        }
+
+		//Parsing METHODS
         std::vector<Location> locations = srv_data.get_location_blocks();
         for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
