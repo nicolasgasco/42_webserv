@@ -57,7 +57,6 @@ int main(int argc, char **argv)
 
 			for (std::vector<Server>::iterator it = webserver.get_server().begin(); it != webserver.get_server().end(); it++)
 			{
-				// TODO change this with real logic
 				std::string port = it->get_port();
 				std::string host_name = it->get_host();
 
