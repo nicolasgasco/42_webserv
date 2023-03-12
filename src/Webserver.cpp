@@ -33,6 +33,7 @@ void	Webserver::load_config_file(char *config_file)
 		server.create_server(text_vector);
 		_server.push_back(server);
 		text_vector.clear();
+		print_config_data();
 	}
 }
 
@@ -44,18 +45,20 @@ void Webserver::print_config_data()
 
         std::cout << "\n";
         std::cout << "💻  SERVER DATA\n";
-        std::vector<std::string> port = srv_data.get_port();
-        std::cout << "Port > ";
-        for (std::vector<std::string>::iterator it1 = port.begin(); it1 != port.end(); it1++)
-		{
-            std::string port = *it1;
-            std::cout << port << " ";
-        }
-        std::cout << "\n";
+        std::cout << "Port > " << srv_data.get_port() << std::endl;
         std::cout << "Host > " << srv_data.get_host() << std::endl;
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
+        std::cout << "Root > " << srv_data.get_root() << std::endl;
         std::cout << "Error page > " << srv_data.get_error_page() << std::endl;
-        std::cout << "CGI files > " << srv_data.get_cgi_file_ext() << std::endl;
+//        std::cout << "CGI files > " << srv_data.get_cgi_file_ext() << std::endl;
+        std::vector<std::string> cgi = srv_data.get_cgi_file_ext();
+        std::cout << "CGI files allowed > ";
+        for (std::vector<std::string>::iterator it1 = cgi.begin(); it1 != cgi.end(); it1++)
+		{
+            std::string cgi = *it1;
+            std::cout << cgi << " ";
+        }
+        std::cout << "\n";
         std::cout << "Autoindex > " << srv_data.get_autoindex() << std::endl;
 		std::cout << "Max body size > " << srv_data.get_max_body_size() << std::endl;
 
@@ -67,7 +70,7 @@ void Webserver::print_config_data()
             std::cout << "\n";
             std::cout << "📂  LOCATION BLOCK DATA\n";
             std::cout << "Location > " << location.get_location() << std::endl;
-            std::cout << "Root > " << location.get_root() << std::endl;
+            std::cout << "Alias > " << location.get_alias() << std::endl;
             std::vector<std::string> methods = location.get_method();
             std::cout << "Accepted methods > ";
             for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
@@ -87,7 +90,7 @@ void    Webserver::inspect_config_data()
     for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
 	{
         Server srv_data = *it;
-
+/*
         std::vector<std::string> port = srv_data.get_port();
         
 		if (port.empty())
@@ -131,7 +134,7 @@ void    Webserver::inspect_config_data()
 					port_duplicate = true;
            		}
 			}
-		}
+		}*/
 
 		std::string error_page_location = it->_error_page;
 		if (error_page_location.empty())
@@ -149,7 +152,7 @@ void    Webserver::inspect_config_data()
             for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
 			{
                 std::string method = *it1;
-				if (method != "GET" && method != "POST" && method!= "DELETE")
+				if (method != "GET" && method != "POST" && method!= "DELETE" && method != "HEAD")
 				{
 					std::string errorMessage = std::string("🔴  FAILURE Method not allowed in config_file");
 					throw std::runtime_error(errorMessage);
@@ -159,7 +162,7 @@ void    Webserver::inspect_config_data()
 	}
 }
 
-
+/*
 std::string  	Webserver::bind_socket(std::string *port)  
 {
     for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
@@ -176,18 +179,7 @@ std::string  	Webserver::bind_socket(std::string *port)
 	}
 	return (0);
 }
-
-
-std::string  	Webserver::get_server_name(std::string *server_name)  
-{
-    for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
-	{
-        Server srv_data = *it;
-        *server_name = srv_data.get_server_name();
-		std::cout << "server_name [config_file]  " << *server_name << std::endl;
-	}
-	return(*server_name);
-}
+*/
 
 std::vector<Server> &Webserver::get_server()
 {

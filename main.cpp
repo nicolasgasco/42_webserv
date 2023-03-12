@@ -40,8 +40,8 @@ int main(int argc, char **argv)
 
 			Webserver webserver;
 			webserver.load_config_file(argv[1]);
-			webserver.print_config_data();
-			webserver.inspect_config_data();
+	//		webserver.print_config_data();
+	//		webserver.inspect_config_data();
 
 			// Initialize fd_sets for select
 			fd_set read_fds, read_fds_cpy, write_fds, write_fds_cpy;
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 			for (std::vector<Server>::iterator it = webserver.get_server().begin(); it != webserver.get_server().end(); it++)
 			{
 				// TODO change this with real logic
-				std::string port = "8081";
+				std::string port = "8080";
 				std::string host_name = it->get_host();
 
 				AddressInfo addr_info(port, host_name);

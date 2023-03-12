@@ -2,7 +2,7 @@
 
 Location::Location() : 
 	_location(), 
-	_root(), 
+	_alias(), 
 	_accepted_method(0), 
 	_index()
 {
@@ -14,7 +14,7 @@ void Location::create_location(vector_iterator it, vector_iterator end)
 {
     configure configure_array[4] =
 	{
-		&Location::configure_root,
+		&Location::configure_alias,
       	&Location::configure_accepted_method,
      	&Location::configure_index,
  	    &Location::failed_element
@@ -32,15 +32,15 @@ void Location::create_location(vector_iterator it, vector_iterator end)
 void    Location::reset_location()
 {
 	_location.clear();
-	_root.clear();
+	_alias.clear();
 	_accepted_method.clear();
 	_index.clear();
 }
 
 int     Location::identify_location_value(const std::string &str)
 {
-    if (str.find("root") != std::string::npos)
-        return root_;
+    if (str.find("alias") != std::string::npos)
+        return alias_;
     else if (str.find("accepted_method") != std::string::npos)
         return method_;
     else if (str.find("index") != std::string::npos)
@@ -55,9 +55,9 @@ void    Location::configure_location(const std::string &str)
 	_location = str.substr(start, end - start);
 }
 
-void    Location::configure_root(const std::string &str)
+void    Location::configure_alias(const std::string &str)
 {
-	_root = parser_str(str);
+	_alias = parser_str(str);
 }
 
 void    Location::configure_accepted_method(const std::string &str)
@@ -81,9 +81,9 @@ std::string Location::get_location()
 	return _location;
 }
 
-std::string Location::get_root()
+std::string Location::get_alias()
 {
-	return _root;
+	return _alias;
 }
 
 std::vector<std::string> Location::get_method()
@@ -95,4 +95,3 @@ std::string Location::get_index()
 {
 	return _index;
 }
-
