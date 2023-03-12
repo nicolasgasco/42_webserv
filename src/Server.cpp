@@ -4,6 +4,7 @@ Server::Server() :
 		_port(), 
 		_host(), 
 		_server_name(), 
+		_root(), 
 		_error_page(), 
 		_cgi_file_ext(),
 		_autoindex(false), 
@@ -18,11 +19,12 @@ Server::~Server() {}
 void Server::create_server(std::vector <std::string> &server_config)
 {
 	Location	location;
-    configure configure_array[8] = 
+    configure configure_array[9] = 
 	{ 
 		&Server::configure_port,
         &Server::configure_host,
         &Server::configure_server_name,
+        &Server::configure_root,
         &Server::configure_error_page,
         &Server::configure_cgi_file_ext,
       	&Server::configure_autoindex,
@@ -51,6 +53,7 @@ void    Server::reset_server()
     _port.clear();
     _host.clear();
     _server_name.clear();
+    _root.clear();
     _error_page.clear();
     _cgi_file_ext.clear();
 	_autoindex = false;
@@ -66,6 +69,8 @@ int     Server::identify_server_value(const std::string &str)
         return host_;
     else if (str.find("server_name") != std::string::npos)
         return server_name_;
+    else if (str.find("root") != std::string::npos)
+        return root_;
     else if (str.find("error_page") != std::string::npos)
         return error_page_;
     else if (str.find("cgi_file_ext") != std::string::npos)
@@ -81,7 +86,7 @@ int     Server::identify_server_value(const std::string &str)
 
 void    Server::configure_port(const std::string &str)
 {
-	_port = parser_vec(str);
+	_port = parser_str(str);
 }
 
 void    Server::configure_host(const std::string &str)
@@ -94,6 +99,11 @@ void    Server::configure_server_name(const std::string &str)
 	_server_name = parser_str(str);
 }
 
+void    Server::configure_root(const std::string &str)
+{
+	_root = parser_str(str);
+}
+
 void    Server::configure_error_page(const std::string &str)
 {
 	_error_page = parser_str(str);
@@ -101,7 +111,7 @@ void    Server::configure_error_page(const std::string &str)
 
 void    Server::configure_cgi_file_ext(const std::string &str)
 {
-	_cgi_file_ext = parser_str(str);
+	_cgi_file_ext = parser_vec(str);
 }
 
 void    Server::configure_autoindex(const std::string &str)
@@ -120,7 +130,7 @@ void    Server::failed_element(const std::string &str)
 	parser_fail(str);
 }
 
-std::vector<std::string> Server::get_port()
+std::string Server::get_port()
 {
 	return _port;
 }
@@ -135,12 +145,17 @@ std::string	Server::get_server_name()
 	return _server_name;
 }
 
+std::string	Server::get_root()
+{
+	return _root;
+}
+
 std::string	Server::get_error_page()
 {
 	return _error_page;
 }
 
-std::string	Server::get_cgi_file_ext()
+std::vector<std::string>	Server::get_cgi_file_ext()
 {
 	return _cgi_file_ext;
 }

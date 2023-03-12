@@ -17,20 +17,20 @@ class Location
     	int     identify_location_value(const std::string &str);
     	enum	location_values
 		{ 
-			root_ = 0, 
+			alias_ = 0, 
 			method_ = 1, 
 			index_ = 2, 
 			failed_ = 3
 		};
 
     	void    configure_location(const std::string &str);
-    	void    configure_root(const std::string &str);
+    	void    configure_alias(const std::string &str);
     	void    configure_accepted_method(const std::string &str);
     	void    configure_index(const std::string &str);
 		void    failed_element(const std::string &str);
 
     	std::string                 get_location();
-    	std::string                 get_root();
+    	std::string                 get_alias();
     	std::vector<std::string>    get_method();
     	std::string                 get_index();
 
@@ -39,7 +39,7 @@ class Location
 
 	private:
     	std::string                 _location;
-    	std::string                 _root;
+    	std::string                 _alias;
     	std::vector<std::string>    _accepted_method;
     	std::string                 _index;
 };

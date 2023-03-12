@@ -78,13 +78,13 @@ int check_directives_server(std::string word)
 		word != "port" && 
 		word != "host" && 
 		word != "server_name" && 
+		word != "root" && 
 		word != "error_page" && 
 		word != "cgi_file_ext" && 
 		word != "autoindex" && 
 		word != "max_body_size" && 
-		word != "redirect" && 
 		word != "location" && 
-		word != "root" && 
+		word != "alias" && 
 		word != "accepted_methods" && 
 		word != "index" && 
 		word != "{" && 
