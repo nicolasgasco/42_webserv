@@ -34,6 +34,7 @@ void	Webserver::load_config_file(char *config_file)
 		_server.push_back(server);
 		text_vector.clear();
 		print_config_data();
+		inspect_config_data();
 	}
 }
 
@@ -50,7 +51,6 @@ void Webserver::print_config_data()
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
         std::cout << "Root > " << srv_data.get_root() << std::endl;
         std::cout << "Error page > " << srv_data.get_error_page() << std::endl;
-//        std::cout << "CGI files > " << srv_data.get_cgi_file_ext() << std::endl;
         std::vector<std::string> cgi = srv_data.get_cgi_file_ext();
         std::cout << "CGI files allowed > ";
         for (std::vector<std::string>::iterator it1 = cgi.begin(); it1 != cgi.end(); it1++)
@@ -90,19 +90,16 @@ void    Webserver::inspect_config_data()
     for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
 	{
         Server srv_data = *it;
-/*
-        std::vector<std::string> port = srv_data.get_port();
+
+        std::string port = srv_data.get_port();
         
-		if (port.empty())
+		if (port == "")
 		{
 			std::string errorMessage = std::string("🔴  FAILURE No port in config_file. Port number is required");
 			throw std::runtime_error(errorMessage);
 		}
 
-		for (std::vector<std::string>::iterator it1 = port.begin(); it1 != port.end(); it1++)
-		{
-            std::string port_str = *it1;
-			int port_int = parser_num(port_str);
+			int port_int = parser_num(port);
         	if (port_int < 0)
 			{
 				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Port with negative number is not allowed");
@@ -118,23 +115,6 @@ void    Webserver::inspect_config_data()
 				std::string errorMessage = std::string("🔴  FAILURE Invalid port in config_file. Maximum allowed port number is 65536");
 				throw std::runtime_error(errorMessage);
 			}
-
-        	bool port_duplicate = false;
-			for (std::vector<std::string>::iterator it2 = port.begin(); it2 != port.end(); it2++)
-			{
-            	std::string port_str_2 = *it2;
-				int port_int_2 = parser_num(port_str_2);
-           		if (port_int == port_int_2)
-				{
-               		if (port_duplicate == true)
-					{	
-						std::string errorMessage = std::string("🔴  FAILURE Duplicate port in config_file");
-						throw std::runtime_error(errorMessage);
-					}
-					port_duplicate = true;
-           		}
-			}
-		}*/
 
 		std::string error_page_location = it->_error_page;
 		if (error_page_location.empty())
