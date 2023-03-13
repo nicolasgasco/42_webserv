@@ -80,7 +80,7 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
     {
         this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
-        std::string cgi_script_path = build_path(PUBLIC_PATH, "cgi_bin", "output_dir_content.py");
+        std::string cgi_script_path = build_path(PUBLIC_PATH, CGI_BIN_PATH, "output_dir_content.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
@@ -105,7 +105,8 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
         {
             this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
-            char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(file_path.c_str()), NULL};
+            std::string executable = this->_cgi.get_cgi_executable(file_path);
+            char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
 
             // Environment variables for CGI script
             std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_req);
@@ -215,8 +216,8 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
         this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
     else
     {
-
-        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>("public/cgi_bin/delete_file.py"), NULL};
+        std::string cgi_script_path = build_path(PUBLIC_PATH, CGI_BIN_PATH, "delete_file.py");
+        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
         std::vector<std::string> envp_v = this->_cgi.build_envp(target, this->_req);

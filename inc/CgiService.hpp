@@ -17,4 +17,6 @@ public:
 
     std::string const build_cgi_output(char *const *args, char *const *envp) const;
     std::vector<std::string> build_envp(std::string path, HttpRequest const &req) const;
+
+    std::string const get_cgi_executable(std::string const &path) const;
 };
