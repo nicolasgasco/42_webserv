@@ -363,7 +363,7 @@ bool HttpRequest::has_query_params() const
 
 bool HttpRequest::is_cgi_req() const
 {
-    return (this->_req_line.target.find("cgi_bin/") != std::string::npos);
+    return (this->_req_line.target.find(CGI_BIN_PATH) != std::string::npos);
 }
 
 /**

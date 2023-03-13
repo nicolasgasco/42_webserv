@@ -2,6 +2,7 @@
 
 #define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
 #define BACKLOG_DEFAULT 100
+#define CGI_BIN_PATH "cgi_bin"
 #define CGI_BUF_LEN 20000
 #define CGI_MAX_ENV_VARS 10
 #define CRLF_LEN 2
@@ -18,6 +19,7 @@
 #define POST_BODY_BOUNDARY "boundary="
 #define PUBLIC_PATH "public"
 #define PYTHON3_PATH "/usr/bin/python3"
+#define SHELL_PATH "/bin/sh"
 #define REC_BUFF_SIZE 300000 // TODO change to parametrized values
 #define SERVER_TIMEOUT 30
 #define GALLERY_SUCCESS_TEMPLATE_PATH "public/gallery/upload/success.html"

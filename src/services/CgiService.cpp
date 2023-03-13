@@ -92,3 +92,13 @@ std::vector<std::string> CgiService::build_envp(std::string path, HttpRequest co
 
     return envp;
 }
+
+std::string const CgiService::get_cgi_executable(std::string const &path) const
+{
+    if (path.find(".sh") != std::string::npos)
+        return SHELL_PATH;
+    else if (path.find("py") != std::string::npos)
+        return PYTHON3_PATH;
+    else
+        return std::string();
+}
