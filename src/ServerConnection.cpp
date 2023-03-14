@@ -23,7 +23,7 @@ int const &ServerConnection::accept_connection(int const &sock_id, addrinfo *add
     switch (this->_new_sock_id)
     {
     case -1:
-        std::cerr << "Error: accept: " << std::strerror(errno) << std::endl;
+        std::cerr << "Error: accept: " << strerror(errno) << std::endl;
         break;
     default:
         std::cout << YELLOW << std::endl

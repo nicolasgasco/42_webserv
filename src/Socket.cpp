@@ -27,7 +27,7 @@ void Socket::_create_socket(AddressInfo const &addr_info)
 void Socket::_check_socket_id(int const &status) const
 {
     if (status == -1)
-        std::cerr << "Socket sys call failed: " << std::strerror(errno) << std::endl;
+        std::cerr << "Socket sys call failed: " << strerror(errno) << std::endl;
     else
         std::cout << YELLOW << "Socket created (" << this->_id << ")..." << NC << std::endl;
 }
