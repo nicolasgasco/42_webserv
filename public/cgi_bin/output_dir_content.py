@@ -1,7 +1,7 @@
 import os
 from os import listdir
 
-print('\n')
+print('\r\n')
 
 # Open template for showing directory content
 with open('./public/dir/index.html', 'r') as file:

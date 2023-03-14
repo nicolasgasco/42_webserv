@@ -24,4 +24,4 @@ while IFS= read -r line; do
 done < public/env/index.html
 
 # Output page
-printf "\n%s" "$page"
+printf "\r\n%s" "$page"
