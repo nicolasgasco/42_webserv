@@ -1,11 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload a picture - Webserv</title>
     <base href="/" />
+    <title>Env - Webserv</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,20 +29,14 @@
       >
     </div>
     <main class="container centered padded">
-      <h2>Upload a picture</h2>
+      <h1>Env variables</h1>
       <p>
-        Chose a picture from your system or go
-        <a href="/cgi_bin/gallery_page.py">back to gallery</a>.
+        These are the environment variables fed to CGI scripts.
+        <a href="/">Back to home</a>
       </p>
-      <p>Max size is determined by server's config file.</p>
-      <form
-        action="/gallery/upload"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <input type="file" name="image" accept="image/*" />
-        <button type="submit">Submit</button>
-      </form>
+      <ul>
+        {{vars}}
+      </ul>
     </main>
   </body>
 </html>
