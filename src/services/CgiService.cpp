@@ -39,9 +39,31 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
     return std::string(buff);
 }
 
-std::vector<std::string> CgiService::build_envp(std::string path, HttpRequest const &req) const
+std::vector<std::string> CgiService::build_envp(std::string path, std::string const &server_name, HttpRequest const &req) const
 {
     std::vector<std::string> envp;
+
+    std::string server_software = "SERVER_SOFTWARE=" + server_name + "/1.0";
+    envp.push_back(server_software);
+
+    try
+    {
+        std::string server_name = "SERVER_NAME=" + req.get_attrs().at("Host");
+        envp.push_back(server_name);
+    }
+    catch (std::out_of_range &e)
+    {
+    }
+
+    std::string gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";
+    envp.push_back(gateway_interface);
+
+    std::string raw_target = req.get_req_line().raw_target;
+    if (raw_target.size() && raw_target.find("?") != std::string::npos)
+    {
+        std::string query_string = "QUERY_STRING=" + raw_target.substr(raw_target.find("?") + 1);
+        envp.push_back(query_string);
+    }
 
     std::string server_protocol = "SERVER_PROTOCOL=" + req.get_req_line().version;
     envp.push_back(server_protocol);
@@ -56,17 +78,8 @@ std::vector<std::string> CgiService::build_envp(std::string path, HttpRequest co
     std::string path_info = "PATH_INFO=./" + path;
     envp.push_back(path_info);
 
-    try
-    {
-        if (req.get_attrs().at("Host").length())
-        {
-            std::string remote_host = "REMOTE_HOST=" + req.get_attrs().at("Host");
-            envp.push_back(const_cast<char *>(remote_host.c_str()));
-        }
-    }
-    catch (std::out_of_range &e)
-    {
-    }
+    std::string script_name = "SCRIPT_NAME=" + req.get_req_line().target;
+    envp.push_back(script_name);
 
     // Remote adress
 

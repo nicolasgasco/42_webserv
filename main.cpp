@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 			// For each fd from fd_set: connection + req + res
 			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
 			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
-			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router, &webserver));
+			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router));
 
 			while (true)
 			{
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 
 									connections.push_back(ServerConnection());
 									requests.push_back(HttpRequest());
-									responses.push_back(HttpResponse(router, &webserver));
+									responses.push_back(HttpResponse(router));
 								}
 							}
 							// If fd is new accepted connection (but not an active socket)
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 								else if (connections.at(i).get_read_done())
 								{
 									FD_CLR(i, &read_fds_cpy);
-									responses.at(i).build_response(requests.at(i), http, cgi, &webserver);
+									responses.at(i).build_response(requests.at(i), http, cgi, it->get_server_name());
 									FD_SET(i, &write_fds_cpy);
 									break; // to avoid double reading
 								}

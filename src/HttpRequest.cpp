@@ -122,6 +122,7 @@ void HttpRequest::_parse_target(std::string &line)
         size_t first_whitespace = line.find_first_of(WHITESPACES);
         std::string target = line.substr(0, first_whitespace);
 
+        this->_req_line.raw_target = target;
         this->_req_line.target = http.decode_whitespace(target);
 
         if (this->_req_line.target.empty())
@@ -436,6 +437,7 @@ void HttpRequest::reset()
 
     this->_req_line.method.clear();
     this->_req_line.target.clear();
+    this->_req_line.raw_target.clear();
     this->_req_line.version.clear();
 
     this->_err.code = -1;
