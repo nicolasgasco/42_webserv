@@ -26,14 +26,15 @@ private:
     RouterService const &_router;
     HttpService _http;
     CgiService _cgi;
-    Webserver _server;
 
     std::string _buff;
     HttpRequest _req;
     StatusLine _status_line;
 
+    std::string _server_name;
+
 public:
-    HttpResponse(RouterService const &router, class Webserver *webserver);
+    HttpResponse(RouterService const &router);
     ~HttpResponse();
 
     // Getters
@@ -45,14 +46,14 @@ public:
     void set_status_line(int const &code, std::string const &reason);
 
     // Methods
-    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, class Webserver *webserver);
+    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, std::string const &server_name);
     void reset();
 
 private:
-    void _build_delete_res(class Webserver *webserver);
-    void _build_get_res(std::string method, class Webserver *webserver);
-    void _build_error_res(class Webserver *webserver);
-    void _build_post_res(class Webserver *webserver);
+    void _build_delete_res();
+    void _build_get_res(std::string method);
+    void _build_error_res();
+    void _build_post_res();
 
     void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
 
@@ -60,7 +61,7 @@ private:
 
 public:
     // For testing purposes only
-    std::string test_build_headers(int const &content_len, class Webserver *webserver) const;
+    std::string test_build_headers(int const &content_len) const;
 };
 
 // TODO remove when not required anymore

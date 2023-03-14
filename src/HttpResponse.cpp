@@ -1,6 +1,6 @@
 #include "HttpResponse.hpp"
 
-HttpResponse::HttpResponse(RouterService const &router, class Webserver *webserver) : _router(router), _server(*webserver)
+HttpResponse::HttpResponse(RouterService const &router) : _router(router)
 {
 }
 
@@ -11,25 +11,26 @@ HttpResponse::~HttpResponse()
 /**
  * Takes a request and returns a response.
  */
-void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, class Webserver *webserver)
+void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, std::string const &server_name)
 {
     this->_req = req;
     this->_http = http;
     this->_cgi = cgi;
+    this->_server_name = server_name;
 
     if (this->_req.has_error())
-        this->_build_error_res(webserver);
+        this->_build_error_res();
     else
     {
         std::string method = this->_req.get_req_line().method;
         if (method == "GET")
-            this->_build_get_res("GET", webserver);
+            this->_build_get_res("GET");
         else if (method == "HEAD")
-            this->_build_get_res("HEAD", webserver);
+            this->_build_get_res("HEAD");
         else if (method == "POST")
-            this->_build_post_res(webserver);
+            this->_build_post_res();
         else if (method == "DELETE")
-            this->_build_delete_res(webserver);
+            this->_build_delete_res();
     }
 
     // TODO delete this when build is done
@@ -40,7 +41,7 @@ void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiS
 /**
  * Build response when there is an error.
  */
-void HttpResponse::_build_error_res(class Webserver *webserver)
+void HttpResponse::_build_error_res()
 {
     this->set_status_line(this->_req.gett_err().code, this->_req.gett_err().message);
 
@@ -61,7 +62,7 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, webserver);
+    this->_buff += this->_http.build_headers(content_len, this->_server_name);
     // Required for empty body POST request
     this->_buff += res_body.empty() ? "\r\n" : res_body;
 }
@@ -69,7 +70,7 @@ void HttpResponse::_build_error_res(class Webserver *webserver)
 /**
  * Build response when it is GET request.
  */
-void HttpResponse::_build_get_res(std::string method, class Webserver *webserver)
+void HttpResponse::_build_get_res(std::string method)
 {
 
     int content_len = 0;
@@ -150,7 +151,7 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, webserver);
+    this->_buff += this->_http.build_headers(content_len, this->_server_name);
     if (method == "GET")
         this->_buff += res_body;
     else if (method == "HEAD")
@@ -160,7 +161,7 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
 /**
  * Build response when it is POST request.
  */
-void HttpResponse::_build_post_res(class Webserver *webserver)
+void HttpResponse::_build_post_res()
 {
     int content_len = 0;
     std::string res_body;
@@ -196,14 +197,14 @@ void HttpResponse::_build_post_res(class Webserver *webserver)
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, webserver);
+    this->_buff += this->_http.build_headers(content_len, this->_server_name);
     this->_buff += res_body;
 }
 
 /**
  * Build response when it is DELETE request.
  */
-void HttpResponse::_build_delete_res(class Webserver *webserver)
+void HttpResponse::_build_delete_res()
 {
     int content_len = 0;
     std::string res_body;
@@ -238,7 +239,7 @@ void HttpResponse::_build_delete_res(class Webserver *webserver)
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, webserver);
+    this->_buff += this->_http.build_headers(content_len, this->_server_name);
     this->_buff += res_body;
 }
 
@@ -290,9 +291,9 @@ void HttpResponse::reset()
 }
 
 // For testing only
-std::string HttpResponse::test_build_headers(int const &content_len, class Webserver *webserver) const
+std::string HttpResponse::test_build_headers(int const &content_len) const
 {
-    return this->_http.build_headers(content_len, webserver);
+    return this->_http.build_headers(content_len, this->_server_name);
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)
