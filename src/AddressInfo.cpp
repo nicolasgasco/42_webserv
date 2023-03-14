@@ -21,7 +21,8 @@ void AddressInfo::_fill_addr_info(std::string const &port, std::string const &ho
 {
     struct addrinfo hints = this->_fill_hints();
 
-    int status = getaddrinfo(host_name.c_str(), port.c_str(), &hints, &(this->_serv_info));
+    std::string host_name_copy = (host_name.empty() || host_name == "localhost") ? "http" : host_name;
+    int status = getaddrinfo(host_name_copy.c_str(), port.c_str(), &hints, &(this->_serv_info));
 
     this->_check_addr_info_status(status);
 }
