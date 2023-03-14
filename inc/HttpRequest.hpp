@@ -16,6 +16,7 @@ struct ReqLine
 {
 	std::string method;
 	std::string target;
+	std::string raw_target;
 	std::string version;
 };
 
