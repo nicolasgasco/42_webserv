@@ -19,7 +19,7 @@
 #define POST_BODY_BOUNDARY "boundary="
 #define PUBLIC_PATH "public"
 #define PYTHON3_PATH "/usr/bin/python3"
-#define SHELL_PATH "/bin/sh"
+#define SHELL_PATH "/bin/bash"
 #define REC_BUFF_SIZE 300000 // TODO change to parametrized values
 #define SERVER_TIMEOUT 30
 #define GALLERY_SUCCESS_TEMPLATE_PATH "public/gallery/upload/success.html"

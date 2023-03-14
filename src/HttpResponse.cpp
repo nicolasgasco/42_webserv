@@ -115,7 +115,6 @@ void HttpResponse::_build_get_res(std::string method, class Webserver *webserver
                 envp[i] = const_cast<char *>(envp_v[i].c_str());
             envp[envp_v.size()] = NULL;
             res_body = this->_cgi.build_cgi_output(args, envp);
-
             content_len = res_body.length() - CRLF_LEN;
         }
         else
