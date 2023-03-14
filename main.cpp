@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 				write_fds = write_fds_cpy;
 
 				if (select(max_fd + 1, &read_fds, &write_fds, NULL, &timeout) < 0)
-					std::cerr << std::strerror(errno) << std::endl;
+					std::cerr << strerror(errno) << std::endl;
 
 				for (int i = MIN_FD; i <= max_fd; ++i)
 				{
