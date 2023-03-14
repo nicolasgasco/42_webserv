@@ -86,7 +86,7 @@ void HttpResponse::_build_get_res(std::string method)
 
         // Environment variables for CGI script
         std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
-        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_req);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server_name, this->_req);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -110,7 +110,8 @@ void HttpResponse::_build_get_res(std::string method)
             char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
 
             // Environment variables for CGI script
-            std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_req);
+            std::cout << "mierda " << this->_req.get_req_line().target << std::endl;
+            std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_server_name, this->_req);
             char *envp[CGI_MAX_ENV_VARS];
             for (size_t i = 0; i < envp_v.size(); i++)
                 envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -220,7 +221,7 @@ void HttpResponse::_build_delete_res()
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
-        std::vector<std::string> envp_v = this->_cgi.build_envp(target, this->_req);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(target, this->_server_name, this->_req);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -288,6 +289,8 @@ void HttpResponse::reset()
     this->_status_line.version.clear();
     this->_status_line.code = -1;
     this->_status_line.reason.clear();
+
+    this->_server_name.clear();
 }
 
 // For testing only
