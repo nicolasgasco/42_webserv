@@ -3,7 +3,7 @@ from os import listdir
 from os.path import isfile, join
 import json
 
-print('\n')
+print('\r\n')
 
 # Open template for showing directory content
 path = os.getenv("PATH_INFO")

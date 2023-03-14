@@ -1,7 +1,7 @@
 import os
 import json
 
-print("\n")
+print("\r\n")
 
 path = os.getenv("PATH_INFO")
 
