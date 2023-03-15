@@ -8,7 +8,7 @@ with open('./public/dir/index.html', 'r') as file:
     dir_content_template = file.read()
 
 # Get all files in PATH_INFO directory
-dir_path = os.getenv("PATH_INFO")
+dir_path = os.getenv("PATH_TRANSLATED")
 files_in_dir = [f for f in listdir(dir_path)]
 
 

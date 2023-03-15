@@ -66,11 +66,11 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     std::string gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";
     envp.push_back(gateway_interface);
 
-    std::string path_info = "PATH_INFO=./" + path;
+    std::string path_info = "PATH_INFO=" + path;
     envp.push_back(path_info);
 
-    // std::string path_translated = "PATH_TRANSLATED=./" + path;
-    // envp.push_back(path_translated);
+    std::string path_translated = "PATH_TRANSLATED=./" + path;
+    envp.push_back(path_translated);
 
     std::string raw_target = req.get_req_line().raw_target;
     if (raw_target.size() && raw_target.find("?") != std::string::npos)
@@ -80,6 +80,9 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     }
 
     // Remote adress
+    // TODO change this to the real remote address
+    std::string remote_address = "REMOTE_ADDR=127.0.0.0";
+    envp.push_back(remote_address);
 
     std::string request_method = "REQUEST_METHOD=" + req.get_req_line().method;
     envp.push_back(request_method);

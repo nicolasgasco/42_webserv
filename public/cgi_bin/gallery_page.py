@@ -6,7 +6,7 @@ import json
 print('\r\n')
 
 # Open template for showing directory content
-path = os.getenv("PATH_INFO")
+path = os.getenv("PATH_TRANSLATED")
 
 # Get href for each file
 pictures_href_list = [
