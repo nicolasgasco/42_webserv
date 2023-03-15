@@ -13,7 +13,7 @@ HttpRequest::~HttpRequest()
 /**
  * Parse request line and attributes.
  */
-void HttpRequest::parse_req()
+void HttpRequest::parse_req(Webserver *webserver)
 {
     // TODO remove this when build is over
     std::cout << std::endl
@@ -31,7 +31,7 @@ void HttpRequest::parse_req()
             continue;
         else
         {
-            this->_parse_req_line(line);
+            this->_parse_req_line(line, webserver);
             break;
         }
     }
@@ -79,7 +79,7 @@ void HttpRequest::_parse_attr_line(std::string const &line)
 /**
  * Parse request line, e.g. GET / HTTP/1.1.
  */
-void HttpRequest::_parse_req_line(std::string &line)
+void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver)
 {
     this->_parse_method(line);
 
@@ -89,6 +89,58 @@ void HttpRequest::_parse_req_line(std::string &line)
         this->_parse_query_params(this->_req_line.target);
 
     this->_parse_version(line);
+
+	std::cout << "🔴  🔴 parse req line TARGET    -> " << _req_line.target << std::endl;
+	
+	std::string s = _req_line.target;
+	std::string *path_com = NULL;
+	std::string path;
+	path_com = &path;
+	int init = 0;
+	int end = 0;
+	while( end = s.find("/", init ), end >= 0 )
+	{
+ 		path = s.substr(init, end - init);
+		if (path.length() > 0)
+		{
+			path = "/" + path;
+			std::cout << &path;
+		}
+		init = end + 1;
+	}
+	std::cout << std::endl;
+
+	std::cout << "🔴  🔴 parse req line METHOD    -> " << _req_line.method << std::endl;
+	std::cout << "🔴  🔴 parse req line WEBSERVER -> " << webserver <<std::endl;
+	std::cout << "🔴  🔴 parse req line WEBSERVER -> " << &webserver <<std::endl;
+    
+	for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
+	{
+        Server srv_data = *it;
+
+        std::vector<Location> location = srv_data.get_location_blocks();
+        for (std::vector<Location>::iterator it = location.begin(); it != location.end(); it++)
+		{
+            Location location = *it;
+			std::cout << "🟠 location -> " << location.get_location() << std::endl;
+			std::string new_path = *path_com;
+			std::cout << "PATH     " << new_path << std::endl;
+			std::cout << "LOCATION " << location.get_location() << std::endl;
+			if (new_path == location.get_location())
+				std::cout << "🟢 Path exists in location" << std::endl;
+            
+			std::vector<std::string> methods = location.get_method();
+            for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
+			{
+                std::string method = *it1;
+				std::cout << "\tmethod -> " << method << std::endl;
+            }
+		}
+	}
+
+
+
+
 }
 
 /**

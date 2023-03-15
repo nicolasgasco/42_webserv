@@ -77,7 +77,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, class
     {
         req.set_body(buff);
 
-        req.parse_req();
+        req.parse_req(webserver);
 
         if (req.has_body())
         {
