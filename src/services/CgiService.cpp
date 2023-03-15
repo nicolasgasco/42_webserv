@@ -43,45 +43,15 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
 {
     std::vector<std::string> envp;
 
-    std::string server_software = "SERVER_SOFTWARE=" + server->get_server_name() + "/1.0";
-    envp.push_back(server_software);
-
+    // Content Length
     try
     {
-        std::string server_name = "SERVER_NAME=" + req.get_attrs().at("Host");
-        envp.push_back(server_name);
+        std::string content_length = "CONTENT_LENGTH=" + req.get_attrs().at("Content-Length");
+        envp.push_back(content_length);
     }
     catch (std::out_of_range &e)
     {
     }
-
-    std::string gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";
-    envp.push_back(gateway_interface);
-
-    std::string raw_target = req.get_req_line().raw_target;
-    if (raw_target.size() && raw_target.find("?") != std::string::npos)
-    {
-        std::string query_string = "QUERY_STRING=" + raw_target.substr(raw_target.find("?") + 1);
-        envp.push_back(query_string);
-    }
-
-    std::string server_protocol = "SERVER_PROTOCOL=" + req.get_req_line().version;
-    envp.push_back(server_protocol);
-
-    // TODO change with real server port
-    std::string server_port = "SERVER_PORT=" + server->get_port();
-    envp.push_back(server_port);
-
-    std::string request_method = "REQUEST_METHOD=" + req.get_req_line().method;
-    envp.push_back(request_method);
-
-    std::string path_info = "PATH_INFO=./" + path;
-    envp.push_back(path_info);
-
-    std::string script_name = "SCRIPT_NAME=" + req.get_req_line().target;
-    envp.push_back(script_name);
-
-    // Remote adress
 
     // Content Type
     try
@@ -93,15 +63,48 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     {
     }
 
-    // Content Length
+    std::string gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";
+    envp.push_back(gateway_interface);
+
+    std::string path_info = "PATH_INFO=./" + path;
+    envp.push_back(path_info);
+
+    // std::string path_translated = "PATH_TRANSLATED=./" + path;
+    // envp.push_back(path_translated);
+
+    std::string raw_target = req.get_req_line().raw_target;
+    if (raw_target.size() && raw_target.find("?") != std::string::npos)
+    {
+        std::string query_string = "QUERY_STRING=" + raw_target.substr(raw_target.find("?") + 1);
+        envp.push_back(query_string);
+    }
+
+    // Remote adress
+
+    std::string request_method = "REQUEST_METHOD=" + req.get_req_line().method;
+    envp.push_back(request_method);
+
+    std::string script_name = "SCRIPT_NAME=" + req.get_req_line().target;
+    envp.push_back(script_name);
     try
     {
-        std::string content_length = "CONTENT_LENGTH=" + req.get_attrs().at("Content-Length");
-        envp.push_back(content_length);
+        std::string server_name = "SERVER_NAME=" + req.get_attrs().at("Host");
+        if (server_name.size() && server_name.find(":") != std::string::npos)
+            server_name = server_name.substr(0, server_name.find(":"));
+        envp.push_back(server_name);
     }
     catch (std::out_of_range &e)
     {
     }
+
+    std::string server_port = "SERVER_PORT=" + server->get_port();
+    envp.push_back(server_port);
+
+    std::string server_protocol = "SERVER_PROTOCOL=" + req.get_req_line().version;
+    envp.push_back(server_protocol);
+
+    std::string server_software = "SERVER_SOFTWARE=" + server->get_server_name() + "/1.0";
+    envp.push_back(server_software);
 
     return envp;
 }
