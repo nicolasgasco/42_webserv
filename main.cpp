@@ -22,7 +22,6 @@ int main(int argc, char **argv)
 	{
 		try
 		{
-			// Todo check if Config and RouterService should be long lived
 			CgiService cgi;
 			Config config;
 			HttpService http;

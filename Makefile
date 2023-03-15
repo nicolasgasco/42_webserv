@@ -91,7 +91,6 @@ $(OBJ_DIR_SAN)%.o: $(SRC_DIR_SE)%.cpp
 	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
 
 run: re 
-	@# TODO Delete when build is done
 	@# Copy all assets from backup so that they can be deleted
 	@rm -rf public/gallery/pictures/*
 	@cp -a public/gallery/backup/. public/gallery/pictures
