@@ -65,9 +65,6 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Serve
         // If read all there was to read
         if (bytes_received < REC_BUFF_SIZE)
         {
-            // TODO check that bytes_received is < max body size
-            // If not, set error to 413, "Content Too Large"
-
             req.parse_post_req_body();
             this->_read_done = true;
         }
