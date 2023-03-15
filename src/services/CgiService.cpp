@@ -39,11 +39,11 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
     return std::string(buff);
 }
 
-std::vector<std::string> CgiService::build_envp(std::string path, std::string const &server_name, HttpRequest const &req) const
+std::vector<std::string> CgiService::build_envp(std::string path, Server const *server, HttpRequest const &req) const
 {
     std::vector<std::string> envp;
 
-    std::string server_software = "SERVER_SOFTWARE=" + server_name + "/1.0";
+    std::string server_software = "SERVER_SOFTWARE=" + server->get_server_name() + "/1.0";
     envp.push_back(server_software);
 
     try
@@ -69,7 +69,7 @@ std::vector<std::string> CgiService::build_envp(std::string path, std::string co
     envp.push_back(server_protocol);
 
     // TODO change with real server port
-    std::string server_port = "SERVER_PORT=" + std::to_string(8180);
+    std::string server_port = "SERVER_PORT=" + server->get_port();
     envp.push_back(server_port);
 
     std::string request_method = "REQUEST_METHOD=" + req.get_req_line().method;

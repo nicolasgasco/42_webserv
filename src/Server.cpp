@@ -130,7 +130,7 @@ void    Server::failed_element(const std::string &str)
 	parser_fail(str);
 }
 
-std::string Server::get_port()
+std::string Server::get_port() const
 {
 	return _port;
 }
@@ -140,7 +140,7 @@ std::string	Server::get_host()
 	return _host;
 }
 
-std::string	Server::get_server_name()
+std::string	Server::get_server_name() const
 {
 	return _server_name;
 }
@@ -165,7 +165,7 @@ bool Server::get_autoindex()
 	return _autoindex;
 }
 
-int Server::get_max_body_size()
+int Server::get_max_body_size() const
 {
 	return _max_body_size;
 }

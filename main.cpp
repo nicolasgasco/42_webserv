@@ -79,10 +79,11 @@ int main(int argc, char **argv)
 				max_fd = it->get_socket() > max_fd ? it->get_socket() : max_fd;
 			}
 
-			// For each fd from fd_set: connection + req + res
+			// For each fd from fd_set: connection + req + res + pointer to server
 			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
 			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
 			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router));
+			std::vector<Server *> servers(max_fd + 1, nullptr);
 
 			while (true)
 			{
@@ -115,12 +116,16 @@ int main(int argc, char **argv)
 									connections.push_back(ServerConnection());
 									requests.push_back(HttpRequest());
 									responses.push_back(HttpResponse(router));
+									servers.push_back(nullptr);
 								}
+
+								// Save a pointer to the server for the client
+								servers.at(client_fd) = &(*it);
 							}
 							// If fd is new accepted connection (but not an active socket)
 							else if (!is_active_socket)
 							{
-								connections.at(i).receive_req(i, requests.at(i), &webserver);
+								connections.at(i).receive_req(i, requests.at(i), servers.at(i));
 
 								if (connections.at(i).get_has_err())
 								{
@@ -133,7 +138,7 @@ int main(int argc, char **argv)
 								else if (connections.at(i).get_read_done())
 								{
 									FD_CLR(i, &read_fds_cpy);
-									responses.at(i).build_response(requests.at(i), http, cgi, it->get_server_name());
+									responses.at(i).build_response(requests.at(i), http, cgi, servers.at(i));
 									FD_SET(i, &write_fds_cpy);
 									break; // to avoid double reading
 								}
