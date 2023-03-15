@@ -3,7 +3,7 @@ import json
 
 print("\r\n")
 
-path = os.getenv("PATH_INFO")
+path = os.getenv("PATH_TRANSLATED")
 
 try:
     os.remove(path)

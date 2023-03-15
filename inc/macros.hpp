@@ -4,7 +4,7 @@
 #define BACKLOG_DEFAULT 100
 #define CGI_BIN_PATH "cgi_bin"
 #define CGI_BUF_LEN 20000
-#define CGI_MAX_ENV_VARS 10
+#define CGI_MAX_ENV_VARS 20
 #define CRLF_LEN 2
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"
