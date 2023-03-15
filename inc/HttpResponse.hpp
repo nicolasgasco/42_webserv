@@ -6,7 +6,7 @@
 #include "HttpService.hpp"
 #include "macros.hpp"
 #include "RouterService.hpp"
-#include "Webserver.hpp"
+#include "Server.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -26,12 +26,11 @@ private:
     RouterService const &_router;
     HttpService _http;
     CgiService _cgi;
+    Server const *_server;
 
     std::string _buff;
     HttpRequest _req;
     StatusLine _status_line;
-
-    std::string _server_name;
 
 public:
     HttpResponse(RouterService const &router);
@@ -46,7 +45,7 @@ public:
     void set_status_line(int const &code, std::string const &reason);
 
     // Methods
-    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, std::string const &server_name);
+    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, Server const *server);
     void reset();
 
 private:

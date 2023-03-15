@@ -27,7 +27,7 @@ public:
     bool get_send_done() const;
 
     int const &accept_connection(int const &sock_id, addrinfo *addr_info);
-    void receive_req(int const &client_fd, HttpRequest &req, class Webserver *webserver);
+    void receive_req(int const &client_fd, HttpRequest &req, Server const *server);
     void send_res(int const &client_fd, HttpResponse &res);
 
     void reset();

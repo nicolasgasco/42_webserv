@@ -11,12 +11,12 @@ HttpResponse::~HttpResponse()
 /**
  * Takes a request and returns a response.
  */
-void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, std::string const &server_name)
+void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, Server const *server)
 {
     this->_req = req;
     this->_http = http;
     this->_cgi = cgi;
-    this->_server_name = server_name;
+    this->_server = server;
 
     if (this->_req.has_error())
         this->_build_error_res();
@@ -62,7 +62,7 @@ void HttpResponse::_build_error_res()
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, this->_server_name);
+    this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name());
     // Required for empty body POST request
     this->_buff += res_body.empty() ? "\r\n" : res_body;
 }
@@ -86,7 +86,7 @@ void HttpResponse::_build_get_res(std::string method)
 
         // Environment variables for CGI script
         std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
-        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server_name, this->_req);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -110,8 +110,7 @@ void HttpResponse::_build_get_res(std::string method)
             char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
 
             // Environment variables for CGI script
-            std::cout << "mierda " << this->_req.get_req_line().target << std::endl;
-            std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_server_name, this->_req);
+            std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_server, this->_req);
             char *envp[CGI_MAX_ENV_VARS];
             for (size_t i = 0; i < envp_v.size(); i++)
                 envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -152,7 +151,7 @@ void HttpResponse::_build_get_res(std::string method)
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, this->_server_name);
+    this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name());
     if (method == "GET")
         this->_buff += res_body;
     else if (method == "HEAD")
@@ -198,7 +197,7 @@ void HttpResponse::_build_post_res()
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, this->_server_name);
+    this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name());
     this->_buff += res_body;
 }
 
@@ -221,7 +220,7 @@ void HttpResponse::_build_delete_res()
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
-        std::vector<std::string> envp_v = this->_cgi.build_envp(target, this->_server_name, this->_req);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(target, this->_server, this->_req);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -240,7 +239,7 @@ void HttpResponse::_build_delete_res()
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, this->_server_name);
+    this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name());
     this->_buff += res_body;
 }
 
@@ -289,14 +288,12 @@ void HttpResponse::reset()
     this->_status_line.version.clear();
     this->_status_line.code = -1;
     this->_status_line.reason.clear();
-
-    this->_server_name.clear();
 }
 
 // For testing only
 std::string HttpResponse::test_build_headers(int const &content_len) const
 {
-    return this->_http.build_headers(content_len, this->_server_name);
+    return this->_http.build_headers(content_len, this->_server->get_server_name());
 }
 
 std::ostream &operator<<(std::ostream &os, HttpResponse &std)

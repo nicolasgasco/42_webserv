@@ -43,14 +43,14 @@ class Server
 		void    configure_max_body_size(const std::string &str);
     	void    failed_element(const std::string &str);
 
-    	std::string					get_port();
+    	std::string					get_port() const;
     	std::string             	get_host();
-    	std::string             	get_server_name();
+    	std::string             	get_server_name() const;
     	std::string             	get_root();
     	std::string             	get_error_page();
 		std::vector<std::string>   	get_cgi_file_ext();
     	bool                        get_autoindex();
-    	int                         get_max_body_size();
+    	int                         get_max_body_size() const;
     	std::vector<Location>   	get_location_blocks();
 		int							get_socket() const;
 		struct addrinfo *			get_addr_info();
