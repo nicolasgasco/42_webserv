@@ -34,7 +34,7 @@
           <img src="assets/ngasco.jpeg" alt="Portrait of ngasco" />
           <img src="assets/dgerwig.jpeg" alt="Portrait of dgerwig" />
         </div>
-        <nav class="hero-section__navigation">
+        <nav class="hero-section__navigation container">
           <a href="/cgi_bin/output_cgi_envs.sh?foo=bar&baz=qux">Env</a>
           <a href="/assets/">Assets</a>
           <a href="/cgi_bin/gallery_page.py">Gallery</a>
@@ -42,85 +42,69 @@
         </nav>
       </section>
       <section class="quick-actions centered padded">
-        <h2>Quick actions</h2>
-        <ul>
-          <li>
-            <p>
-              Route that does not exist:
-              <a href="/does-not-exist">/does-not-exist</a>
-            </p>
-          </li>
-          <li>
-            <form id="method-too-long-form">
-              <input
-                type="text"
-                placeholder="Target"
-                value="/index.css"
-                id="method-too-long-form__target"
-              />
-              <select id="method-too-long-form__method">
-                <option value="GET">GET</option>
-                <option value="DELETE">DELETE</option>
-                <option value="HEAD">HEAD</option>
-                <option value="OPTIONS">OPTIONS</option>
-                <option value="PUT">PUT</option>
-                <option value="PATCH">PATCH</option>
-                <option value="LOOOOOOOOONG">LOOOONG</option>
-              </select>
-              <button type="submit">Submit</button>
+        <div class="centered">
+          <h2>Quick actions</h2>
+          <ul class="w-600">
+            <li>
+              <form id="method-too-long-form">
+                <input
+                  type="text"
+                  placeholder="Target"
+                  value="/index.css"
+                  id="method-too-long-form__target"
+                />
+                <select id="method-too-long-form__method">
+                  <option value="GET">GET</option>
+                  <option value="DELETE">DELETE</option>
+                  <option value="POST">POST</option>
+                  <option value="HEAD">HEAD</option>
+                  <option value="OPTIONS">OPTIONS</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="LOOOOOOOOONG">LOOOONG</option>
+                </select>
+                <button type="submit">Submit</button>
+                <p>
+                  Response received:
+                  <span class="method-too-long-form__message"></span>
+                </p>
+                <p>
+                  *For <b>DELETE</b> all deletable pictures are in the
+                  <a href="/gallery/pictures/">/gallery/pictures/</a> folder
+                </p>
+              </form>
+            </li>
+            <li>
               <p>
-                Response received:
-                <span class="method-too-long-form__message"></span>
+                Go to <a href="redirect/redirection.html">redirected page</a> to
+                see redirection
               </p>
+            </li>
+            <li>
+              <p>Go to <a href="/video">page with video</a></p>
+            </li>
+          </ul>
+        </div>
+        <div class="centered container">
+          <h2>Error states</h2>
+          <ul class="w-600">
+            <li>
               <p>
-                *For <b>DELETE</b> all deletable pictures are in the
-                <a href="/gallery/pictures/">/gallery/pictures/</a> folder
+                Route that does not exist:
+                <a href="/does-not-exist">/does-not-exist</a>
               </p>
-            </form>
-          </li>
-          <li>
-            <p>
-              Go to <a href="redirect/redirection.html">redirected page</a> to see
-              redirection
-            </p>
-          </li>
-          <li>
-            <p>Go to <a href="/video">page with video</a></p>
-          </li>
-          <li>
-            <p>Choose query params values:</p>
-            <form class="query-params__form">
-              <label for="code"><b>Code:</b></label>
-              <input id="code" type="text" placeholder="value" value="403" />
-
-              <label for="message"><b>Message:</b></label>
-              <input
-                id="message"
-                type="text"
-                placeholder="value"
-                value="Forbidden"
-              />
-            </form>
-            <p>
-              Visit
-              <a
-                id="query-params__link"
-                href="/error/default.html?code=403&message=Forbidden"
-                >/error/index.html?code=403&message=Forbidden</a
-              >
-            </p>
-          </li>
-          <li>
-            <p>
-              Go to very long route
-              <a
-                href="/uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_"
-                >/uri_that_is_way_too_long... (125 characters)</a
-              >
-              to see 414 error
-            </p>
-          </li>
-        </ul>
+            </li>
+            <li>
+              <p>
+                Go to very long route
+                <a
+                  href="/uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_"
+                  >/uri_that_is_way_too_long... (125 characters)</a
+                >
+              </p>
+            </li>
+          </ul>
+        </div>
       </section>
     </main>
   </body>
