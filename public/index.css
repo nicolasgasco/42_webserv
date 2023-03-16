@@ -27,7 +27,6 @@
 }
 
 .hero-section__navigation {
-  width: 600px;
   padding: 20px 30px;
   outline: 2px black solid;
   display: flex;

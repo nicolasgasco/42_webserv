@@ -70,6 +70,10 @@ input:focus-visible {
 }
 
 /* Utils */
+.w-600 {
+  width: 600px;
+}
+
 .centered {
   display: flex;
   flex-direction: column;
