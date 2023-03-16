@@ -28,6 +28,8 @@
 // HTTP CODES
 #define HTTP_200_CODE 200
 #define HTTP_200_REASON "OK"
+#define HTTP_301_CODE 301
+#define HTTP_301_REASON "Moved Permanently"
 #define HTTP_400_CODE 400
 #define HTTP_400_REASON "Bad Request"
 #define HTTP_401_CODE 401

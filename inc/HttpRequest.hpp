@@ -43,6 +43,7 @@ public:
 	std::map<std::string, std::string> const &get_params() const;
 	std::string const &get_post_req_file_name() const;
 	ReqLine const &get_req_line() const;
+	bool get_is_redirection() const;
 
 	// Setters
 	void set_body(std::vector<char> &buff);
@@ -68,6 +69,7 @@ private:
 	std::string _post_req_file_name;
 	ReqLine _req_line;
 	ReqErr _err;
+	bool _is_redirect;
 
 	void _parse_attr_line(std::string const &line);
 	void _parse_method(std::string &line);
@@ -81,6 +83,7 @@ private:
 
 	// Computed properties
 	bool _is_method_supported() const;
+	bool _is_target_redirection(std::string const &target) const;
 };
 
 // TODO remove when not required anymore
