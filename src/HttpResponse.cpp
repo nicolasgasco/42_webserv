@@ -126,32 +126,40 @@ void HttpResponse::_build_get_res(std::string method)
             content_len = res_body.length() - CRLF_LEN;
         }
     }
-    // If it's another type of asset
+    // It's a normal asset
     else
     {
         std::string file_path = this->_router.get_file_path(this->_req);
         std::ifstream file(file_path);
 
-        if (file)
-        {
-            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-            res_body = this->_http.build_file(file);
-            content_len = res_body.length() - CRLF_LEN;
-        }
+        if (this->_req.get_is_redirection())
+            this->set_status_line(HTTP_301_CODE, HTTP_301_REASON);
         else
         {
-            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-            if (this->_req.is_html_req())
+            if (file)
             {
-                std::ifstream file_404(this->_router.get_404_file_path());
-                res_body = this->_http.build_file(file_404);
+                this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
+                res_body = this->_http.build_file(file);
                 content_len = res_body.length() - CRLF_LEN;
+            }
+            else
+            {
+                this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
+                if (this->_req.is_html_req())
+                {
+                    std::ifstream file_404(this->_router.get_404_file_path());
+                    res_body = this->_http.build_file(file_404);
+                    content_len = res_body.length() - CRLF_LEN;
+                }
             }
         }
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name());
+    // TODO change with real redirection logic
+    if (this->_req.get_is_redirection())
+        this->_buff += "Location: " + std::string("/redirect/redirect_page.html") + "\r\n";
     if (method == "GET")
         this->_buff += res_body;
     else if (method == "HEAD")

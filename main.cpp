@@ -156,7 +156,6 @@ int main(int argc, char **argv)
 							responses.at(i).reset();
 							connections.at(i).reset();
 						}
-						// TODO add redirections here
 					}
 				}
 			}

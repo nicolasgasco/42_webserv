@@ -132,6 +132,10 @@ void HttpRequest::_parse_target(std::string &line)
             this->_set_err(HTTP_414_CODE, HTTP_414_REASON);
 
         line = ltrim(line.substr(first_whitespace));
+
+        // Checking if it's a redirected asset
+        if (this->_is_target_redirection(this->_req_line.target))
+            this->_is_redirect = true;
     }
     catch (const std::out_of_range &e)
     {
@@ -318,6 +322,11 @@ std::map<std::string, std::string> const &HttpRequest::get_attrs() const
     return this->_attrs;
 }
 
+bool HttpRequest::get_is_redirection() const
+{
+    return this->_is_redirect;
+}
+
 /**
  * Checks if request has a body.
  * It must have either Content-Length or Transfer-Encoding headers
@@ -410,6 +419,15 @@ bool HttpRequest::_is_method_supported() const
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
 
+bool HttpRequest::_is_target_redirection(std::string const &target) const
+{
+    // TODO change with logic from config file
+    std::string redirect_path = "/redirect/redirection.html";
+    if (target == redirect_path)
+        return true;
+    return false;
+}
+
 void HttpRequest::set_body(std::vector<char> &buff)
 {
     this->_body.insert(this->_body.end(), buff.begin(), buff.end());
@@ -442,6 +460,8 @@ void HttpRequest::reset()
 
     this->_err.code = -1;
     this->_err.message.clear();
+
+    this->_is_redirect = false;
 }
 
 void HttpRequest::output_status()
