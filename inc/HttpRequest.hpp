@@ -52,7 +52,7 @@ public:
 	// Methods
 	void parse_post_req_body();
 	void parse_post_req_file_name();
-	void parse_req(Server const *server, Webserver *webserver);
+	int parse_req(Server const *server, Webserver *webserver);
 	void output_status();
 	void reset();
 
@@ -78,7 +78,7 @@ private:
 	void _parse_method(std::string &line);
 	std::string const _parse_post_req_boundary() const;
 	void _parse_query_params(std::string &target);
-	void _parse_req_line(std::string &line, Webserver *webserver, Server const *server);
+	int _parse_req_line(std::string &line, Webserver *webserver, Server const *server);
 	void _parse_target(std::string &line);
 	void _parse_version(std::string &line);
 
