@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 							// If fd is new accepted connection (but not an active socket)
 							else if (!is_active_socket)
 							{
-								connections.at(i).receive_req(i, requests.at(i), servers.at(i));
+								connections.at(i).receive_req(i, requests.at(i), &webserver, servers.at(i));
 
 								if (connections.at(i).get_has_err())
 								{

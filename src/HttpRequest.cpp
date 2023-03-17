@@ -13,7 +13,7 @@ HttpRequest::~HttpRequest()
 /**
  * Parse request line and attributes.
  */
-void HttpRequest::parse_req(Webserver *webserver)
+void HttpRequest::parse_req(Server const *server, Webserver *webserver)
 {
     // TODO remove this when build is over
     std::cout << std::endl
@@ -31,7 +31,7 @@ void HttpRequest::parse_req(Webserver *webserver)
             continue;
         else
         {
-            this->_parse_req_line(line, webserver);
+            this->_parse_req_line(line, webserver, server);
             break;
         }
     }
@@ -79,8 +79,9 @@ void HttpRequest::_parse_attr_line(std::string const &line)
 /**
  * Parse request line, e.g. GET / HTTP/1.1.
  */
-void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver)
+void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server const *server)
 {
+	(void)server;
     this->_parse_method(line);
 
     this->_parse_target(line);
@@ -110,19 +111,6 @@ void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver)
 	std::cout << std::endl;
 
 	std::cout << "🔴  🔴 parse req line METHOD    -> " << _req_line.method << std::endl;
-   
-/*   for (std::map<std::string, std::string>::const_iterator it = this->get_attrs().begin(); it != this->get_attrs().end(); ++it)
-	{
-        std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
-		if (it->first == "Host")
-		{
-			std::string str = it->second;
-			std::cout << "⭐️ " << str << std::endl;
-			std::size_t pos = str.find(":");   
-			std::string port_browser = str.substr (pos+1);   
-			std::cout << "⭐️ " << port_browser << std::endl;
-		}
-	}*/
 
 	for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
 	{
