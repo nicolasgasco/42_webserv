@@ -13,7 +13,7 @@ HttpRequest::~HttpRequest()
 /**
  * Parse request line and attributes.
  */
-void HttpRequest::parse_req(Server const *server, Webserver *webserver)
+int HttpRequest::parse_req(Server const *server, Webserver *webserver)
 {
     // TODO remove this when build is over
     std::cout << std::endl
@@ -31,7 +31,8 @@ void HttpRequest::parse_req(Server const *server, Webserver *webserver)
             continue;
         else
         {
-            this->_parse_req_line(line, webserver, server);
+            if (this->_parse_req_line(line, webserver, server) == 1)
+				return (1);
             break;
         }
     }
@@ -53,6 +54,7 @@ void HttpRequest::parse_req(Server const *server, Webserver *webserver)
     }
     // TODO delete this once build is over
     this->output_status();
+	return (0);
 }
 
 /**
@@ -79,7 +81,7 @@ void HttpRequest::_parse_attr_line(std::string const &line)
 /**
  * Parse request line, e.g. GET / HTTP/1.1.
  */
-void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server const *server)
+int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server const *server)
 {
 	(void)server;
     this->_parse_method(line);
@@ -90,8 +92,6 @@ void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Serve
         this->_parse_query_params(this->_req_line.target);
 
     this->_parse_version(line);
-    
-	std::cout << "🔴  🔴 parse req line TARGET    -> " << _req_line.target;
 	
 	std::string s = _req_line.target;
 	std::string *path_com = NULL;
@@ -109,8 +109,6 @@ void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Serve
 		init = end + 1;
 	}
 	std::cout << std::endl;
-
-	std::cout << "🔴  🔴 parse req line METHOD    -> " << _req_line.method << std::endl;
 
 	for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
 	{
@@ -148,12 +146,14 @@ void HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Serve
 					if (method_allowed == false)
 					{
 						std::cout << "❌  ❌  ❌ " << std::endl;
-        				_set_err(513, "Method Not Allowed");
+        		//		_set_err(513, "Method Not Allowed");
+						return (1);
 					}
 				}
 			}
 		}
 	}
+	return (0);
 }
 
 
