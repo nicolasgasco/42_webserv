@@ -63,6 +63,8 @@ public:
 	bool is_dir_req() const;
 	bool is_html_req() const;
 
+	std::string port_browser;
+
 private:
 	std::map<std::string, std::string> _attrs, _params;
 	std::vector<char> _body;
