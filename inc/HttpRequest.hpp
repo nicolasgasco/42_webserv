@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "HttpService.hpp"
+#include "Webserver.hpp"
 
 #include "dev_utils.hpp" // TODO remove this after build is done
 #include "macros.hpp"
@@ -51,7 +52,7 @@ public:
 	// Methods
 	void parse_post_req_body();
 	void parse_post_req_file_name();
-	void parse_req();
+	void parse_req(Webserver *webserver);
 	void output_status();
 	void reset();
 
@@ -62,6 +63,8 @@ public:
 	bool is_cgi_req() const;
 	bool is_dir_req() const;
 	bool is_html_req() const;
+
+	std::string port_browser;
 
 private:
 	std::map<std::string, std::string> _attrs, _params;
@@ -75,7 +78,7 @@ private:
 	void _parse_method(std::string &line);
 	std::string const _parse_post_req_boundary() const;
 	void _parse_query_params(std::string &target);
-	void _parse_req_line(std::string &line);
+	void _parse_req_line(std::string &line, Webserver *webserver);
 	void _parse_target(std::string &line);
 	void _parse_version(std::string &line);
 

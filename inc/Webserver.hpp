@@ -5,12 +5,14 @@
 class AddressInfo;
 class ServerConnection;
 class HttpService;
+class HttpRequest;
 
 class Webserver
 {
 	friend class AddressInfo;
 	friend class ServerConnection;
 	friend class HttpService;
+	friend class HttpRequest;
 
 	public:
     	Webserver();
