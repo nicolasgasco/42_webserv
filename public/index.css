@@ -35,6 +35,10 @@
   gap: 50px;
 }
 
+.hero-section__navigation > a {
+  text-decoration: none;
+}
+
 .method-too-long-form__message {
   color: green;
 }

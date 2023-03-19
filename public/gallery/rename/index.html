@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gallery - Webserv</title>
+    <title>Rename a picture - Webserv</title>
     <base href="/" />
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,8 +16,9 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <!-- Styles -->
-    <link rel="stylesheet" href="gallery/index.css" />
     <link rel="stylesheet" href="commons.css" />
+    <link rel="stylesheet" href="gallery/rename/index.css" />
+  </head>
   </head>
   <body>
     <div class="header">
@@ -29,19 +30,38 @@
       >
     </div>
     <main class="container centered padded">
-      <h1>Gallery page</h1>
-      <h2>Your uploaded pictures</h2>
+      <h2>Rename a picture</h2>
       <p>
-        To ease QA, server is always started with the same set of pictures.</br>You
-        can delete and upload pictures freely for this session.
+        Chose a picture the you want rename from the
+        <a href="gallery/pictures/">gallery/pictures/</a> folder.
       </p>
-      <nav class="hero-section__navigation container">
-        <a href="gallery/upload">➕ Upload a new picture</a>
-        <a href="gallery/rename">✏️ Rename an existing picture</a>
-      </nav>
-      {{pictures}}
-      
+      <form
+        id="rename-form"
+        action="/cgi_bin/rename_picture.py"
+        method="post"
+        enctype="application/x-www-form-urlencoded"
+      >
+      <div>
+        <label for="file">File name:</label>
+        <input
+          type="text"
+          id="file"
+          name="name"
+          value="jeremy-bishop-_CFv3bntQlQ-unsplash.jpg"
+        />
+      </div>
+      <div>
+        <label for="name">New name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value="new_name.jpg"
+        />
+      </div>
+      <button type="submit">Submit</button>
+      </form>
     </main>
   </body>
-  <script src="gallery/index.js"></script>
+  <script src="gallery/rename/index.js"></script>
 </html>

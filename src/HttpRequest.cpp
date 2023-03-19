@@ -156,7 +156,6 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
 	return (0);
 }
 
-
 /**
  * Parse request line method, e.g. GET.
  */
@@ -265,6 +264,10 @@ void HttpRequest::_parse_query_params(std::string &target)
  */
 void HttpRequest::parse_post_req_body()
 {
+    // If CGI request, there is no body to parse
+    if (this->is_cgi_req())
+        return;
+
     this->parse_post_req_file_name();
 
     std::vector<char> body = this->_body;

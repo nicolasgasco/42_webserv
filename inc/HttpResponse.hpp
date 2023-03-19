@@ -53,6 +53,7 @@ private:
     void _build_get_res(std::string method);
     void _build_error_res();
     void _build_post_res();
+    void _build_cgi_res(std::string &res_body, int &content_len);
 
     void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
 
