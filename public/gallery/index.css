@@ -1,6 +1,21 @@
+.hero-section__navigation {
+  margin-top: 25px;
+  padding: 20px 30px;
+  outline: 2px black solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+}
+
+.hero-section__navigation a {
+  text-decoration: none;
+}
+
 #pictures-container {
   margin-top: 50px;
 }
+
 #pictures-container > ul {
   list-style-type: none;
   max-width: 875px;
