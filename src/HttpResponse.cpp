@@ -202,6 +202,14 @@ void HttpResponse::_build_delete_res()
         this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
     else
     {
+        std::ifstream f(target.c_str());
+
+        // If file you want to DELETE exists
+        if (f.good())
+            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
+        else
+            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
+
         std::string cgi_script_path = build_path(PUBLIC_PATH, CGI_BIN_PATH, "delete_file.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
@@ -212,15 +220,7 @@ void HttpResponse::_build_delete_res()
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
 
-        std::string cgi_output = this->_cgi.build_cgi_output(args, envp);
-
-        // CGI script returns 404 error code when file to delete wasn't found
-        if (cgi_output.find(std::to_string(HTTP_404_CODE)) != std::string::npos)
-            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-        else
-            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-
-        res_body = cgi_output;
+        res_body = this->_cgi.build_cgi_output(args, envp);
         content_len = res_body.length() - CRLF_LEN;
     }
 
