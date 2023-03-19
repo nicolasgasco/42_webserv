@@ -98,34 +98,7 @@ void HttpResponse::_build_get_res(std::string method)
     }
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
-    {
-        std::string file_path = this->_router.get_file_path(this->_req);
-        std::ifstream file(file_path);
-
-        if (file)
-        {
-            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-
-            std::string executable = this->_cgi.get_cgi_executable(file_path);
-            char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
-
-            // Environment variables for CGI script
-            std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_server, this->_req);
-            char *envp[CGI_MAX_ENV_VARS];
-            for (size_t i = 0; i < envp_v.size(); i++)
-                envp[i] = const_cast<char *>(envp_v[i].c_str());
-            envp[envp_v.size()] = NULL;
-            res_body = this->_cgi.build_cgi_output(args, envp);
-            content_len = res_body.length() - CRLF_LEN;
-        }
-        else
-        {
-            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-            std::ifstream file_404(this->_router.get_404_file_path());
-            res_body = this->_http.build_file(file_404);
-            content_len = res_body.length() - CRLF_LEN;
-        }
-    }
+        this->_build_cgi_res(res_body, content_len);
     // It's a normal asset
     else
     {
@@ -174,34 +147,39 @@ void HttpResponse::_build_post_res()
     int content_len = 0;
     std::string res_body;
 
-    std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
-    std::ifstream f(file_path.c_str());
-
-    // If file you want to POST exists already
-    if (f.good())
-    {
-        this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
-
-        std::ifstream file(this->_router.get_def_err_file_path());
-
-        std::string err_page = this->_http.build_file(file);
-        replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
-        replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
-
-        res_body = err_page;
-        content_len = err_page.length() - CRLF_LEN;
-    }
+    if (this->_req.is_cgi_req())
+        this->_build_cgi_res(res_body, content_len);
     else
     {
-        std::stringstream file(file_path);
-        std::ofstream img(file.str().c_str(), std::ios::binary);
-        img.write(this->_req.get_body().data(), this->_req.get_body().size());
-        img.close();
+        std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
+        std::ifstream f(file_path.c_str());
 
-        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-        std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
-        res_body = this->_http.build_file(res_file);
-        content_len = res_body.length() - CRLF_LEN;
+        // If file you want to POST exists already
+        if (f.good())
+        {
+            this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
+
+            std::ifstream file(this->_router.get_def_err_file_path());
+
+            std::string err_page = this->_http.build_file(file);
+            replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
+            replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
+
+            res_body = err_page;
+            content_len = err_page.length() - CRLF_LEN;
+        }
+        else
+        {
+            std::stringstream file(file_path);
+            std::ofstream img(file.str().c_str(), std::ios::binary);
+            img.write(this->_req.get_body().data(), this->_req.get_body().size());
+            img.close();
+
+            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
+            std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
+            res_body = this->_http.build_file(res_file);
+            content_len = res_body.length() - CRLF_LEN;
+        }
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
@@ -249,6 +227,39 @@ void HttpResponse::_build_delete_res()
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name());
     this->_buff += res_body;
+}
+
+/**
+ * Execute CGI script and return its output.
+ */
+void HttpResponse::_build_cgi_res(std::string &res_body, int &content_len)
+{
+    std::string file_path = this->_router.get_file_path(this->_req);
+    std::ifstream file(file_path);
+
+    if (file)
+    {
+        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
+
+        std::string executable = this->_cgi.get_cgi_executable(file_path);
+        char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
+
+        // Environment variables for CGI script
+        std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_server, this->_req);
+        char *envp[CGI_MAX_ENV_VARS];
+        for (size_t i = 0; i < envp_v.size(); i++)
+            envp[i] = const_cast<char *>(envp_v[i].c_str());
+        envp[envp_v.size()] = NULL;
+        res_body = this->_cgi.build_cgi_output(args, envp);
+        content_len = res_body.length() - CRLF_LEN;
+    }
+    else
+    {
+        this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
+        std::ifstream file_404(this->_router.get_404_file_path());
+        res_body = this->_http.build_file(file_404);
+        content_len = res_body.length() - CRLF_LEN;
+    }
 }
 
 /**
