@@ -8,10 +8,21 @@ CgiService::~CgiService()
 {
 }
 
-std::string const CgiService::build_cgi_output(char *const *args, char *const *envp) const
+std::string const CgiService::build_cgi_output(char *const *args, char *const *envp, const char *body) const
 {
-    int fds[2];
-    if (pipe(fds) == -1)
+    int fds[2][2];
+
+    if (body)
+    {
+        if (pipe(fds[PIPE_BODY]) == -1)
+            std::cerr << "Error: pipe" << std::endl;
+
+        if (write(fds[PIPE_BODY][FD_WRITE], body, strlen(body)) < 0)
+            std::cerr << "Error: write " << strerror(errno) << std::endl;
+        close(fds[PIPE_BODY][FD_WRITE]);
+    }
+
+    if (pipe(fds[PIPE_RES]) == -1)
         std::cerr << "Error: pipe" << std::endl;
 
     pid_t pid = fork();
@@ -20,21 +31,31 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
 
     if (pid == 0)
     {
-        if (dup2(fds[PIPE_WRITE], STDOUT_FILENO) == -1)
+        if (dup2(fds[PIPE_RES][FD_WRITE], STDOUT_FILENO) == -1)
             std::cerr << "Error: dup2" << std::endl;
-        close(fds[PIPE_READ]);
-        close(fds[PIPE_WRITE]);
+        close(fds[PIPE_RES][FD_READ]);
+        close(fds[PIPE_RES][FD_WRITE]);
+
+        if (body)
+        {
+            if (dup2(fds[PIPE_BODY][FD_READ], STDIN_FILENO) == -1)
+                std::cerr << "Error: dup2" << std::endl;
+            close(fds[PIPE_BODY][FD_READ]);
+            close(fds[PIPE_BODY][FD_WRITE]);
+        }
 
         if (execve(args[0], args, envp))
             std::cerr << "Error: execve: " << strerror(errno) << std::endl;
     }
+    if (body)
+        close(fds[PIPE_BODY][FD_READ]);
 
-    close(fds[PIPE_WRITE]);
+    close(fds[PIPE_RES][FD_WRITE]);
 
     char buff[CGI_BUF_LEN] = {0};
-    read(fds[PIPE_READ], buff, CGI_BUF_LEN);
+    read(fds[PIPE_RES][FD_READ], buff, CGI_BUF_LEN);
 
-    close(fds[PIPE_READ]);
+    close(fds[PIPE_RES][FD_READ]);
 
     return std::string(buff);
 }

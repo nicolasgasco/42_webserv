@@ -92,13 +92,13 @@ void HttpResponse::_build_get_res(std::string method)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
 
-        res_body = this->_cgi.build_cgi_output(args, envp);
+        res_body = this->_cgi.build_cgi_output(args, envp, nullptr);
 
         content_len = res_body.length() - CRLF_LEN;
     }
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
-        this->_build_cgi_res(res_body, content_len);
+        this->_build_cgi_res(res_body, content_len, nullptr);
     // It's a normal asset
     else
     {
@@ -148,7 +148,7 @@ void HttpResponse::_build_post_res()
     std::string res_body;
 
     if (this->_req.is_cgi_req())
-        this->_build_cgi_res(res_body, content_len);
+        this->_build_cgi_res(res_body, content_len, this->_req.get_body().data());
     else
     {
         std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
@@ -220,7 +220,7 @@ void HttpResponse::_build_delete_res()
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
 
-        res_body = this->_cgi.build_cgi_output(args, envp);
+        res_body = this->_cgi.build_cgi_output(args, envp, nullptr);
         content_len = res_body.length() - CRLF_LEN;
     }
 
@@ -232,7 +232,7 @@ void HttpResponse::_build_delete_res()
 /**
  * Execute CGI script and return its output.
  */
-void HttpResponse::_build_cgi_res(std::string &res_body, int &content_len)
+void HttpResponse::_build_cgi_res(std::string &res_body, int &content_len, const char *body)
 {
     std::string file_path = this->_router.get_file_path(this->_req);
     std::ifstream file(file_path);
@@ -250,7 +250,7 @@ void HttpResponse::_build_cgi_res(std::string &res_body, int &content_len)
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
-        res_body = this->_cgi.build_cgi_output(args, envp);
+        res_body = this->_cgi.build_cgi_output(args, envp, body);
         content_len = res_body.length() - CRLF_LEN;
     }
     else
