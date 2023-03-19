@@ -13,8 +13,10 @@
 #define LONGEST_METHOD "DELETE" // Replace with computed value
 #define LONGEST_URI 124         // Replace with computed value
 #define MIN_FD 3
-#define PIPE_READ 0
-#define PIPE_WRITE 1
+#define PIPE_BODY 1
+#define PIPE_RES 0
+#define FD_READ 0
+#define FD_WRITE 1
 #define POST_BODY_FILENAME_DELIM "filename=\""
 #define POST_BODY_BOUNDARY "boundary="
 #define PUBLIC_PATH "public"

@@ -3,10 +3,15 @@ import sys
 
 print("\n")
 
-path_info = os.getenv("PATH_INFO")
-query_string = os.getenv("QUERY_STRING")
+body = ""
+for line in sys.stdin:
+    body += line
 
-file_name = query_string[query_string.find("file=") + 5:query_string.find("&")]
+body = body[body.find("\r\n\r\n") + 5:]
+
+path_info = os.getenv("PATH_INFO")
+
+file_name = body[body.find("file=") + 5:body.find("&")]
 
 file_path = path_info + "/" + file_name
 if (not os.path.isfile(file_path)):
@@ -15,7 +20,7 @@ if (not os.path.isfile(file_path)):
     print(error_template)
     sys.exit() 
 
-new_name = query_string[query_string.find("name=") + 5:]
+new_name = body[body.find("name=") + 5:]
 new_file_path = path_info + "/" + new_name
 
 os.rename(file_path, new_file_path)
