@@ -40,7 +40,7 @@
 #define HTTP_404_REASON "Not Found"
 // TODO use this when method not configured for route
 #define HTTP_405_CODE 405
-#define HTTP_405_REASON "Not Allowed"
+#define HTTP_405_REASON "Method Not Allowed"
 #define HTTP_409_CODE 409
 #define HTTP_409_REASON "Conflict"
 #define HTTP_414_CODE 414

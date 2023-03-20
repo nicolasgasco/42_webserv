@@ -1,7 +1,6 @@
 // Send DELETE request when clicking on delete button
 const deleteButtons = document.querySelectorAll(".delete-button");
 deleteButtons.forEach((item) => {
-  console.log(item);
   item.addEventListener("click", (e) => {
     const pictureToDelete = e.target.dataset.value;
 
@@ -10,17 +9,17 @@ deleteButtons.forEach((item) => {
         method: "DELETE",
       })
         .then(function (response) {
+          if (!response.ok) {
+            throw new Error(`${response.status} - ${response.statusText}`);
+          }
           return response.json();
         })
-        .then(function (data) {
-          if (data.status !== 200) {
-            window.alert("Error, try again!");
-          }
+        .then(function () {
           location.reload();
         })
         .catch(function (err) {
           // There was an error
-          console.warn("Something went wrong.", err);
+          window.alert(err);
         });
     }
   });
