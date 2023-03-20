@@ -75,15 +75,13 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
         req.set_body(buff);
 
         if (req.parse_req(server, webserver) == 1)
-		{
-			std::cout << "   🎪  🎪   " << std::endl;
-            req._set_err(501, "Method Not Allowed");
-			this->_read_done = true;
-		}
+        {
+            req._set_err(HTTP_405_CODE, HTTP_405_REASON);
+            this->_read_done = true;
+        }
 
         if (req.has_body())
         {
-
             // Check if there is Content-Length header
             try
             {
