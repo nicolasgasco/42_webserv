@@ -2,7 +2,7 @@
 
 #define ACCEPT_HTML "text/html,application/xhtml+xml,application/xml"
 #define BACKLOG_DEFAULT 100
-#define CGI_BIN_PATH "cgi_bin"
+#define CGI_BIN_PATH "cgi-bin"
 #define CGI_BUF_LEN 20000
 #define CGI_MAX_ENV_VARS 20
 #define CRLF_LEN 2
