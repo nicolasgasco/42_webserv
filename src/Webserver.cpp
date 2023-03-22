@@ -46,7 +46,7 @@ void Webserver::print_config_data()
 
         std::cout << "\n";
         std::cout << "💻  SERVER DATA\n";
-        std::cout << "Port > " << srv_data.get_port() << std::endl;
+		std::cout << "Port > " << srv_data.get_port() << std::endl;
         std::cout << "Host > " << srv_data.get_host() << std::endl;
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
         std::cout << "Root > " << srv_data.get_root() << std::endl;
