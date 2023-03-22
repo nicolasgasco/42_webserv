@@ -32,7 +32,7 @@ int HttpRequest::parse_req(Server const *server, Webserver *webserver)
         else
         {
             if (this->_parse_req_line(line, webserver, server) == 1)
-				return (1);
+                return (1);
             break;
         }
     }
@@ -54,7 +54,7 @@ int HttpRequest::parse_req(Server const *server, Webserver *webserver)
     }
     // TODO delete this once build is over
     this->output_status();
-	return (0);
+    return (0);
 }
 
 /**
@@ -83,7 +83,7 @@ void HttpRequest::_parse_attr_line(std::string const &line)
  */
 int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server const *server)
 {
-	(void)server;
+    (void)server;
     this->_parse_method(line);
 
     this->_parse_target(line);
@@ -92,68 +92,68 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
         this->_parse_query_params(this->_req_line.target);
 
     this->_parse_version(line);
-	
-	std::string s = _req_line.target;
-	std::string *path_com = NULL;
-	std::string path;
-	path_com = &path;
-	int init = 0;
-	int end = 0;
-	while( end = s.find("/", init ), end >= 0 )
-	{
- 		path = s.substr(init, end - init);
-		if (path.length() > 0)
-		{
-			path = "/" + path;
-		}
-		init = end + 1;
-	}
-	std::cout << std::endl;
 
-	for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
-	{
+    std::string s = _req_line.target;
+    std::string *path_com = NULL;
+    std::string path;
+    path_com = &path;
+    int init = 0;
+    int end = 0;
+    while (end = s.find("/", init), end >= 0)
+    {
+        path = s.substr(init, end - init);
+        if (path.length() > 0)
+        {
+            path = "/" + path;
+        }
+        init = end + 1;
+    }
+    std::cout << std::endl;
+
+    for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
+    {
         Server srv_data = *it;
 
-		std::cout << "⭕️ PORT config  " << srv_data.get_port() << std::endl;
-		std::cout << "⭕️ PORT browser " << port_browser <<  std::endl;
-		if (srv_data.get_port() == port_browser)
-		{
-        	std::vector<Location> location = srv_data.get_location_blocks();
-        	for (std::vector<Location>::iterator it = location.begin(); it != location.end(); it++)
-			{
-            	Location location = *it;
-				std::cout << "🟠 location -> " << location.get_location() << std::endl;
-				std::string new_path = *path_com;
-				std::cout << "PATH     " << new_path << std::endl;
-				std::cout << "LOCATION " << location.get_location() << std::endl;
-				if (new_path == location.get_location())
-				{
+        std::cout << "⭕️ PORT config  " << srv_data.get_port() << std::endl;
+        std::cout << "⭕️ PORT browser " << port_browser << std::endl;
+        if (srv_data.get_port() == port_browser)
+        {
+            std::vector<Location> location = srv_data.get_location_blocks();
+            for (std::vector<Location>::iterator it = location.begin(); it != location.end(); it++)
+            {
+                Location location = *it;
+                std::cout << "🟠 location -> " << location.get_location() << std::endl;
+                std::string new_path = *path_com;
+                std::cout << "PATH     " << new_path << std::endl;
+                std::cout << "LOCATION " << location.get_location() << std::endl;
+                if (new_path == location.get_location())
+                {
 
-					std::cout << "🟢 Path exists in location" << std::endl;
-           
-					bool method_allowed = false;
-					std::cout << method_allowed << std::endl;
-					std::vector<std::string> methods = location.get_method();
+                    std::cout << "🟢 Path exists in location" << std::endl;
 
-            		for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
-					{
-                		std::string method = *it1;
-						std::cout << "\tmethod -> " << method << std::endl;
-						if (std::string(_req_line.method) == method)
-							method_allowed = true;
-						std::cout << method_allowed << std::endl;
-            		}
-					if (method_allowed == false)
-					{
-						std::cout << "❌  ❌  ❌ " << std::endl;
-        		//		_set_err(513, "Method Not Allowed");
-						return (1);
-					}
-				}
-			}
-		}
-	}
-	return (0);
+                    bool method_allowed = false;
+                    std::cout << method_allowed << std::endl;
+                    std::vector<std::string> methods = location.get_method();
+
+                    for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
+                    {
+                        std::string method = *it1;
+                        std::cout << "\tmethod -> " << method << std::endl;
+                        if (std::string(_req_line.method) == method)
+                            method_allowed = true;
+                        std::cout << method_allowed << std::endl;
+                    }
+                    if (method_allowed == false)
+                    {
+                        std::cout << "❌  ❌  ❌ " << std::endl;
+                        //		_set_err(513, "Method Not Allowed");
+                        return (1);
+                    }
+                }
+            }
+        }
+    }
+    return (0);
 }
 
 /**
@@ -268,40 +268,68 @@ void HttpRequest::parse_post_req_body()
     if (this->is_cgi_req())
         return;
 
-    this->parse_post_req_file_name();
-
     std::vector<char> body = this->_body;
-
-    std::vector<char>::const_iterator start;
-    std::string start_pattern = "\r\n\r\n";
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_pattern.length()); ++it)
+    try
     {
-        if (find_in_vec(start_pattern, it))
-            start = it + start_pattern.length();
-    }
-    body.erase(body.begin(), start);
-
-    bool is_body_empty = true;
-    std::vector<char>::const_iterator end;
-    std::string end_pattern = this->_parse_post_req_boundary();
-    for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - end_pattern.length()); ++it)
-    {
-        if (find_in_vec(end_pattern, it))
+        if (this->_attrs.at("Content-Type").find("multipart/form-data") != std::string::npos)
         {
-            end = it;
-            is_body_empty = false;
-            break;
+            this->parse_post_req_file_name();
+
+            std::vector<char>::const_iterator start;
+            std::string start_pattern = "\r\n\r\n";
+            for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_pattern.length()); ++it)
+            {
+                if (find_in_vec(start_pattern, it))
+                    start = it + start_pattern.length();
+            }
+            body.erase(body.begin(), start);
+
+            bool is_body_empty = true;
+            std::vector<char>::const_iterator end;
+            std::string end_pattern = this->_parse_post_req_boundary();
+            for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - end_pattern.length()); ++it)
+            {
+                if (find_in_vec(end_pattern, it))
+                {
+                    end = it;
+                    is_body_empty = false;
+                    break;
+                }
+            }
+            this->_body.clear();
+
+            // If an empty POST request was sent from tester or Postman
+            if (is_body_empty)
+                this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+            else
+            {
+                body.erase(end, body.end());
+                this->_body = body;
+            }
+        }
+        // If Content-Type is not multipart/form-data, then it's a simple POST request
+        else
+        {
+            this->_post_req_file_name = build_path(PUBLIC_PATH, this->_req_line.target);
+
+            std::vector<char>::const_iterator start;
+            std::string start_pattern = "\r\n\r\n";
+            for (std::vector<char>::const_iterator it = body.begin(); it != (body.end() - start_pattern.length()); ++it)
+            {
+                if (find_in_vec(start_pattern, it))
+                    start = it + start_pattern.length();
+            }
+            body.erase(body.begin(), start);
+
+            if (body.empty())
+                this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+
+            this->_body = body;
         }
     }
-    this->_body.clear();
-
-    // If an empty POST request was sent from tester or Postman
-    if (is_body_empty)
-        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
-    else
+    catch (const std::out_of_range &e)
     {
-        body.erase(end, body.end());
-        this->_body = body;
+        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
     }
 }
 
@@ -341,7 +369,7 @@ void HttpRequest::parse_post_req_file_name()
         if (file_name.empty())
             this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
 
-        this->_post_req_file_name = file_name;
+        this->_post_req_file_name = build_path(GALLERY_STORAGE_PATH, file_name);
     }
 }
 
@@ -408,7 +436,7 @@ bool HttpRequest::has_body() const
     try
     {
         content_length = std::stoi(this->_attrs.at(CONTENT_LENGTH));
-        if (content_length <= 0)
+        if (content_length < 0)
             return false;
     }
     catch (const std::out_of_range &e)
@@ -556,15 +584,15 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
     std::cout << "OPTIONS:" << std::endl;
 
     for (std::map<std::string, std::string>::const_iterator it = std.get_attrs().begin(); it != std.get_attrs().end(); ++it)
-	{
+    {
         std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
-		if (it->first == "Host")
-		{
-			std::string str = it->second;
-			std::size_t pos = str.find(":");   
-			std.port_browser = str.substr (pos+1);   
-		}
-	}
+        if (it->first == "Host")
+        {
+            std::string str = it->second;
+            std::size_t pos = str.find(":");
+            std.port_browser = str.substr(pos + 1);
+        }
+    }
 
     if (std.get_params().size())
     {
