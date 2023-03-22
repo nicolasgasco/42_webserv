@@ -88,7 +88,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
                 int content_length = std::stoi(req.get_attrs().at(CONTENT_LENGTH));
 
                 int max_body_size = server->get_max_body_size();
-                if (content_length > server->get_max_body_size())
+                if (content_length > max_body_size)
                 {
                     std::cout << "⚠️ File to upload is bigger than 'max_body_size' " << std::endl;
                     std::cout << "Max file size allowed: " << max_body_size << std::endl;
