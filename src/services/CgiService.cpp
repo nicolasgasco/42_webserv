@@ -1,4 +1,5 @@
 #include "CgiService.hpp"
+#include <fcntl.h>
 
 CgiService::CgiService()
 {
@@ -8,56 +9,80 @@ CgiService::~CgiService()
 {
 }
 
-std::string const CgiService::build_cgi_output(char *const *args, char *const *envp, const char *body) const
+std::string const CgiService::build_cgi_output(char *const *args, char *const *envp, const std::vector<char> *req_body) const
 {
-    int fds[2][2];
+    std::string cgi_output;
+    std::vector<char> body;
+    if (req_body)
+        body = *req_body;
 
-    if (body)
+    bool finished_writing = false;
+    while (!finished_writing)
     {
-        if (pipe(fds[PIPE_BODY]) == -1)
-            std::cerr << "Error: pipe" << std::endl;
+        int fds[2][2];
 
-        if (write(fds[PIPE_BODY][FD_WRITE], body, strlen(body)) < 0)
-            std::cerr << "Error: write " << strerror(errno) << std::endl;
-        close(fds[PIPE_BODY][FD_WRITE]);
-    }
-
-    if (pipe(fds[PIPE_RES]) == -1)
-        std::cerr << "Error: pipe" << std::endl;
-
-    pid_t pid = fork();
-    if (pid == -1)
-        std::cerr << "Error: fork" << std::endl;
-
-    if (pid == 0)
-    {
-        if (dup2(fds[PIPE_RES][FD_WRITE], STDOUT_FILENO) == -1)
-            std::cerr << "Error: dup2" << std::endl;
-        close(fds[PIPE_RES][FD_READ]);
-        close(fds[PIPE_RES][FD_WRITE]);
-
-        if (body)
+        if (req_body)
         {
-            if (dup2(fds[PIPE_BODY][FD_READ], STDIN_FILENO) == -1)
-                std::cerr << "Error: dup2" << std::endl;
-            close(fds[PIPE_BODY][FD_READ]);
+            if (pipe(fds[PIPE_BODY]) == -1)
+                std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
+
+            fcntl(fds[PIPE_BODY][FD_WRITE], F_SETFL, O_NONBLOCK);
+            ssize_t bytes_written = write(fds[PIPE_BODY][FD_WRITE], body.data(), body.size() * sizeof(char));
             close(fds[PIPE_BODY][FD_WRITE]);
+
+            if (bytes_written < 0)
+            {
+                std::cerr << "Error: write: " << strerror(errno) << std::endl;
+                finished_writing = true;
+            }
+            else if (bytes_written < (ssize_t)body.size())
+                body.erase(body.begin(), body.begin() + bytes_written);
+            else
+                finished_writing = true;
         }
+        else
+            finished_writing = true;
 
-        if (execve(args[0], args, envp))
-            std::cerr << "Error: execve: " << strerror(errno) << std::endl;
+        if (pipe(fds[PIPE_RES]) == -1)
+            std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
+
+        pid_t pid = fork();
+        if (pid == -1)
+            std::cerr << "Error: fork: " << strerror(errno) << std::endl;
+        else if (pid == 0)
+        {
+            if (dup2(fds[PIPE_RES][FD_WRITE], STDOUT_FILENO) == -1)
+                std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
+            close(fds[PIPE_RES][FD_READ]);
+            close(fds[PIPE_RES][FD_WRITE]);
+
+            if (req_body)
+            {
+                if (dup2(fds[PIPE_BODY][FD_READ], STDIN_FILENO) == -1)
+                    std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
+                close(fds[PIPE_BODY][FD_READ]);
+                close(fds[PIPE_BODY][FD_WRITE]);
+            }
+
+            if (execve(args[0], args, envp))
+                std::cerr << "Error: execve: " << strerror(errno) << std::endl;
+        }
+        else
+        {
+            if (req_body)
+                close(fds[PIPE_BODY][FD_READ]);
+
+            close(fds[PIPE_RES][FD_WRITE]);
+
+            char buff[CGI_BUF_LEN] = {0};
+            read(fds[PIPE_RES][FD_READ], buff, CGI_BUF_LEN);
+            close(fds[PIPE_RES][FD_READ]);
+
+            if (finished_writing)
+                cgi_output = buff;
+        }
     }
-    if (body)
-        close(fds[PIPE_BODY][FD_READ]);
-
-    close(fds[PIPE_RES][FD_WRITE]);
-
-    char buff[CGI_BUF_LEN] = {0};
-    read(fds[PIPE_RES][FD_READ], buff, CGI_BUF_LEN);
-
-    close(fds[PIPE_RES][FD_READ]);
-
-    return std::string(buff);
+    return cgi_output;
 }
 
 std::vector<std::string> CgiService::build_envp(std::string path, Server const *server, HttpRequest const &req) const

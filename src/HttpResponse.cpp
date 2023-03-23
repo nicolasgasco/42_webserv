@@ -98,7 +98,7 @@ void HttpResponse::_build_get_res(std::string method)
     }
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
-        this->_build_cgi_res(res_body, content_len, nullptr);
+        this->_build_cgi_res(GALLERY_STORAGE_PATH, res_body, content_len, nullptr);
     // It's a normal asset
     else
     {
@@ -147,39 +147,31 @@ void HttpResponse::_build_post_res()
     int content_len = 0;
     std::string res_body;
 
-    if (this->_req.is_cgi_req())
-        this->_build_cgi_res(res_body, content_len, this->_req.get_body().data());
+    std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
+    std::ifstream f(file_path.c_str());
+    // If file you want to POST exists already
+    if (f.good())
+    {
+        this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
+
+        std::ifstream file(this->_router.get_def_err_file_path());
+
+        std::string err_page = this->_http.build_file(file);
+        replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
+        replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
+
+        res_body = err_page;
+        content_len = err_page.length() - CRLF_LEN;
+    }
     else
     {
-        std::string file_path = this->_req.get_post_req_file_name();
-        std::ifstream f(file_path.c_str());
+        std::vector<char> const body = this->_req.get_body();
+        this->_build_cgi_res(file_path, res_body, content_len, &body);
 
-        // If file you want to POST exists already
-        if (f.good())
-        {
-            this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
-
-            std::ifstream file(this->_router.get_def_err_file_path());
-
-            std::string err_page = this->_http.build_file(file);
-            replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
-            replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
-
-            res_body = err_page;
-            content_len = err_page.length() - CRLF_LEN;
-        }
-        else
-        {
-            std::stringstream file(file_path);
-            std::ofstream img(file.str().c_str(), std::ios::binary);
-            img.write(this->_req.get_body().data(), this->_req.get_body().size());
-            img.close();
-
-            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-            std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
-            res_body = this->_http.build_file(res_file);
-            content_len = res_body.length() - CRLF_LEN;
-        }
+        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
+        std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
+        res_body = this->_http.build_file(res_file);
+        content_len = res_body.length() - CRLF_LEN;
     }
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
@@ -232,7 +224,7 @@ void HttpResponse::_build_delete_res()
 /**
  * Execute CGI script and return its output.
  */
-void HttpResponse::_build_cgi_res(std::string &res_body, int &content_len, const char *body)
+void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body, int &content_len, const std::vector<char> *req_body)
 {
     std::string file_path = this->_router.get_file_path(this->_req);
     std::ifstream file(file_path);
@@ -245,12 +237,12 @@ void HttpResponse::_build_cgi_res(std::string &res_body, int &content_len, const
         char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
 
         // Environment variables for CGI script
-        std::vector<std::string> envp_v = this->_cgi.build_envp(GALLERY_STORAGE_PATH, this->_server, this->_req);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
-        res_body = this->_cgi.build_cgi_output(args, envp, body);
+        res_body = this->_cgi.build_cgi_output(args, envp, req_body);
         content_len = res_body.length() - CRLF_LEN;
     }
     else
