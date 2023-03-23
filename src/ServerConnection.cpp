@@ -75,22 +75,20 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
         req.set_body(buff);
 
         if (req.parse_req(server, webserver) == 1)
-		{
-			std::cout << "   🎪  🎪   " << std::endl;
-            req._set_err(501, "Method Not Allowed");
-			this->_read_done = true;
-		}
+        {
+            req._set_err(HTTP_405_CODE, HTTP_405_REASON);
+            this->_read_done = true;
+        }
 
         if (req.has_body())
         {
-
             // Check if there is Content-Length header
             try
             {
                 int content_length = std::stoi(req.get_attrs().at(CONTENT_LENGTH));
 
                 int max_body_size = server->get_max_body_size();
-                if (content_length > server->get_max_body_size())
+                if (content_length > max_body_size)
                 {
                     std::cout << "⚠️ File to upload is bigger than 'max_body_size' " << std::endl;
                     std::cout << "Max file size allowed: " << max_body_size << std::endl;

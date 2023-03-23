@@ -40,13 +40,26 @@ void	Webserver::load_config_file(char *config_file)
 
 void Webserver::print_config_data()
 {
+	std::vector <std::string> port_list;
     for (std::vector<Server>::iterator it = _server.begin(); it != _server.end(); it++)
 	{
         Server srv_data = *it;
 
         std::cout << "\n";
         std::cout << "💻  SERVER DATA\n";
-        std::cout << "Port > " << srv_data.get_port() << std::endl;
+
+		std::cout << "Port > " << srv_data.get_port() << std::endl;
+		port_list.push_back(srv_data.get_port());
+		unsigned long i;
+		for (i = 1; i < port_list.size(); i++) 
+		{
+  			if (srv_data.get_port() == port_list[i-1])
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Port in config_file is duplicate in different servers. It is not allowed to use the same port number.");
+				throw std::runtime_error(errorMessage);
+  			}
+		}
+
         std::cout << "Host > " << srv_data.get_host() << std::endl;
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
         std::cout << "Root > " << srv_data.get_root() << std::endl;

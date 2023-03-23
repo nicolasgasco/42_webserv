@@ -100,6 +100,7 @@ void check_words_config_file(std::vector<std::string> text_vector)
 	std::vector <std::string> tmp;
 	std::vector <std::string> first_word;
 	std::vector <std::string> tmp_iterator = text_vector;
+	bool flag_duplicate_port = false;
 	for(std::vector <std::string>::iterator it = tmp_iterator.begin();it != tmp_iterator.end();it++)
 	{
 		tmp.push_back(*it);
@@ -108,6 +109,19 @@ void check_words_config_file(std::vector<std::string> text_vector)
 		std::string my_str = first_word[0];
 		my_str.erase(std::remove(my_str.begin(), my_str.end(), '\t'), my_str.end());
 		check_directives_server(my_str);
+		
+		if (my_str == "port")
+		{
+
+			if (flag_duplicate_port == true)
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Wrong config_file formated (duplicate port value)");
+				throw std::runtime_error(errorMessage);
+			}
+			flag_duplicate_port = true;
+		}
+		if (my_str == "server")
+			flag_duplicate_port = false;
 		
 		tmp.clear();
        	first_word.clear();

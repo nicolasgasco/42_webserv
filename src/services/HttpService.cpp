@@ -32,7 +32,7 @@ std::string const HttpService::build_file(std::ifstream const &file) const
  * Build headers for a response.
  * @param content_len Len of content to be sent.
  */
-std::string const HttpService::build_headers(int const &content_len, std::string const &server_name) const
+std::string const HttpService::build_headers(int const &content_len, std::string const &server_name, std::string const &content_type) const
 {
     std::string headers;
 
@@ -42,13 +42,11 @@ std::string const HttpService::build_headers(int const &content_len, std::string
 
     std::string content_length = "Content-Length: " + std::to_string(content_len) + "\r\n";
 
-    // TODO check if Content-Type is creating issues
-    // std::string content_type = this->_get_content_type(this->_req.get_req_line().target);
-
     headers += date;
     headers += server;
     headers += content_length;
-    // headers += content_type;
+    if (content_type.size())
+        headers += content_type;
 
     return headers;
 }

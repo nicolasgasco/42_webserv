@@ -112,12 +112,9 @@ std::string const get_gmt_time()
  */
 std::string const get_mime_type(std::string target)
 {
-    std::string result;
-
-    // Images
     if (target.find(".png") != std::string::npos)
         return "image/x-png";
-    else if (target.find(".jpeg") != std::string::npos)
+    else if (target.find(".jpeg") != std::string::npos || target.find(".jpg") != std::string::npos)
         return "image/jpeg";
     else if (target.find(".ico") != std::string::npos)
         return "image/x-icon";
@@ -127,14 +124,31 @@ std::string const get_mime_type(std::string target)
         return "image/x-MS-bmp";
     else if (target.find(".gif") != std::string::npos)
         return "image/gif";
-
-    if (target.find(".css") != std::string::npos)
+    else if (target.find(".tiff") != std::string::npos)
+        return "image/tiff";
+    else if (target.find(".webp") != std::string::npos)
+        return "image/webp";
+    else if (target.find(".xbm") != std::string::npos)
+        return "image/x-xbitmap";
+    else if (target.find(".xpm") != std::string::npos)
+        return "image/x-xpixmap";
+    else if (target.find(".tif") != std::string::npos)
+        return "image/tiff";
+    else if (target.find(".css") != std::string::npos)
         return "text/css";
-
-    if (target.find(".js") != std::string::npos)
+    else if (target.find(".html") != std::string::npos)
+        return "text/html";
+    else if (target.find(".txt") != std::string::npos)
+        return "text/plain";
+    else if (target.find(".xml") != std::string::npos)
+        return "text/xml";
+    else if (target.find(".js") != std::string::npos)
         return "application/x-javascript";
-
-    return result;
+    else if (target.find(".json") != std::string::npos)
+        return "application/json";
+    else if (target.find(".pdf") != std::string::npos)
+        return "application/pdf";
+    return "";
 }
 
 /**

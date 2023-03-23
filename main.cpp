@@ -110,12 +110,15 @@ int main(int argc, char **argv)
 
 								if (client_fd > max_fd)
 								{
+									// Sometimes client_fd - max_fd is bigger than 1
+									for (int i = 0; i < (client_fd - max_fd); i++)
+									{
+										connections.push_back(ServerConnection());
+										requests.push_back(HttpRequest());
+										responses.push_back(HttpResponse(router));
+										servers.push_back(nullptr);
+									}
 									max_fd = client_fd;
-
-									connections.push_back(ServerConnection());
-									requests.push_back(HttpRequest());
-									responses.push_back(HttpResponse(router));
-									servers.push_back(nullptr);
 								}
 
 								// Save a pointer to the server for the client
