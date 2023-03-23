@@ -147,7 +147,7 @@ void HttpResponse::_build_post_res()
     int content_len = 0;
     std::string res_body;
 
-    std::string file_path = build_path(GALLERY_STORAGE_PATH, this->_req.get_post_req_file_name());
+    std::string file_path = this->_req.get_post_req_file_name();
     std::ifstream f(file_path.c_str());
     // If file you want to POST exists already
     if (f.good())
