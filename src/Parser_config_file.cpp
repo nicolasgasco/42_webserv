@@ -112,6 +112,7 @@ void check_words_config_file(std::vector<std::string> text_vector)
 		
 		if (my_str == "port")
 		{
+
 			if (flag_duplicate_port == true)
 			{
 				std::string errorMessage = std::string("🔴  FAILURE Wrong config_file formated (duplicate port value)");
