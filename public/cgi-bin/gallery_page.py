@@ -1,7 +1,6 @@
 import os
 from os import listdir
 from os.path import isfile, join
-import time
 
 print('\r\n')
 
@@ -30,6 +29,4 @@ with open('./public/gallery/index.html', 'r') as file:
 gallery_template = gallery_template.replace(
     '{{pictures}}', formatted_pictures_list)
 
-while True:
-    time.sleep(1)
 print(gallery_template)
