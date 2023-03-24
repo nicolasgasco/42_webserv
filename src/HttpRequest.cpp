@@ -16,9 +16,9 @@ HttpRequest::~HttpRequest()
 int HttpRequest::parse_req(Server const *server, Webserver *webserver)
 {
     // TODO remove this when build is over
-    std::cout << std::endl
-              << "RAW REQUEST:" << std::endl;
-    cout_explicit_whitespaces(std::string(this->_body.data()));
+    // std::cout << std::endl
+    //           << "RAW REQUEST:" << std::endl;
+    // cout_explicit_whitespaces(std::string(this->_body.data()));
 
     std::istringstream buff_stream(std::string(this->_body.data()));
     std::string line;

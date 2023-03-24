@@ -64,7 +64,7 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
                 close(fds[PIPE_BODY][FD_WRITE]);
             }
 
-            if (execve(args[0], args, envp))
+            if (execve(args[0], args, envp) < 0)
                 std::cerr << "Error: execve: " << strerror(errno) << std::endl;
         }
         else
