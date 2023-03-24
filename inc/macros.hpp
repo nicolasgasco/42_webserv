@@ -10,7 +10,7 @@
 #define ERRORS_PATH "error"
 #define GALLERY_STORAGE_PATH "public/gallery/pictures"
 #define HTTP_PROTOCOL "HTTP/1.1"
-#define LONGEST_METHOD "DELETE" // Replace with computed value
+#define LONGEST_METHOD "DELETE"
 #define LONGEST_URI 124         // Replace with computed value
 #define MIN_FD 3
 #define PIPE_BODY 1
@@ -22,7 +22,7 @@
 #define PUBLIC_PATH "public"
 #define PYTHON3_PATH "/usr/bin/python3"
 #define SHELL_PATH "/bin/bash"
-#define REC_BUFF_SIZE 300000 // TODO change to parametrized values
+#define REC_BUFF_SIZE 300000
 #define SERVER_TIMEOUT 30
 #define GALLERY_SUCCESS_TEMPLATE_PATH "public/gallery/upload/success.html"
 #define WHITESPACES " \t\v\f\r\n"
@@ -38,7 +38,6 @@
 #define HTTP_401_REASON "Not Authorized"
 #define HTTP_404_CODE 404
 #define HTTP_404_REASON "Not Found"
-// TODO use this when method not configured for route
 #define HTTP_405_CODE 405
 #define HTTP_405_REASON "Method Not Allowed"
 #define HTTP_409_CODE 409

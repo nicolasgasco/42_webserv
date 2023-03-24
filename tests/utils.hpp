@@ -165,10 +165,6 @@ bool is_strict_equal_addrinfo(const struct addrinfo info1, const struct addrinfo
     if (IS_DEBUG)
         std::cout << "ai_addrlen: " << info1.ai_addrlen << ", " << info2.ai_addrlen << std::endl;
 
-    // TODO check if this is required (not NULL)
-    // if (strcmp(info1.ai_canonname, info2.ai_canonname))
-    //     return false;
-
     // sockaddr
     if (info1.ai_addr->sa_family != info2.ai_addr->sa_family)
     {
