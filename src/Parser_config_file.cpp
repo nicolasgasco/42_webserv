@@ -155,7 +155,7 @@ int    location_block_size(vector_iterator it, vector_iterator end)
     for (int i = 0; it != end; it++)
 	{
         std::string str = *it;
-        if (str.find("}") != std::string::npos)
+        if (str.find('}') != std::string::npos)
             return (i);
         i++;
     }
