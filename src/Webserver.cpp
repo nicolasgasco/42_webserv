@@ -172,6 +172,16 @@ void    Webserver::inspect_config_data()
 			throw std::runtime_error(errorMessage);
 		}
 
+		if ( error_page_path.substr(error_page_path.size() - 5) != ".html")
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Error page path is not a valid path. Is not a valid file.");
+			throw std::runtime_error(errorMessage);
+		}
+
+
+
+
+
 
 		//Parsing CGI FILE EXTENSION
         std::vector<std::string> cgi = it->get_cgi_file_ext();
