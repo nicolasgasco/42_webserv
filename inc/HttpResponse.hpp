@@ -26,7 +26,7 @@ private:
     RouterService const &_router;
     HttpService _http;
     CgiService _cgi;
-    Server const *_server;
+    Server *_server;
 
     std::string _buff;
     HttpRequest _req;
@@ -45,7 +45,7 @@ public:
     void set_status_line(int const &code, std::string const &reason);
 
     // Methods
-    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, Server const *server);
+    void build_response(HttpRequest req, HttpService const &http, CgiService const &cgi, Server *server);
     void reset();
 
 private:

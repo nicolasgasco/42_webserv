@@ -47,7 +47,7 @@ class Server
     	std::string             	get_host();
     	std::string             	get_server_name() const;
     	std::string             	get_root();
-    	std::string             	get_error_page();
+    	std::string           		get_error_page();
 		std::vector<std::string>   	get_cgi_file_ext();
     	bool                        get_autoindex();
     	int                         get_max_body_size() const;
