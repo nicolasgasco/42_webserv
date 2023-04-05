@@ -76,14 +76,15 @@ void HttpResponse::_build_get_res(std::string method)
     std::string res_body;
 
     // If a folder is required, use CGI script to output folder content
-    if (this->_req.is_dir_req())
+    // If autoindex is 'off'
+    if (this->_req.is_dir_req() || this->_server->get_autoindex() == false)
     {
         std::string cgi_script_path = build_path(PUBLIC_PATH, CGI_BIN_PATH, "output_dir_content.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
         std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
-        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
+        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req)
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -122,16 +123,9 @@ void HttpResponse::_build_get_res(std::string method)
                 this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
                 if (this->_req.is_html_req())
                 {
-                //  std::ifstream file_404(this->_router.get_404_file_path());
-				//	std::cout << "🏆 " << _router.get_404_file_path() << std::endl;
-                    
 					std::string err_page_path = _server->get_error_page();
 					err_page_path.erase(0,1);
-				//	std::cout << "🏆 " << err_page_path << std::endl;
-
 					std::ifstream path_404(err_page_path.c_str());	
-						
-				//	res_body = this->_http.build_file(file_404);
 					res_body = this->_http.build_file(path_404);
                     content_len = res_body.length() - CRLF_LEN;
                 }
