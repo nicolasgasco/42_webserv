@@ -230,6 +230,40 @@ void    Webserver::inspect_config_data()
 				}
             }
 		}
+		//Parsing INDEX REDIRECTION
+        for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+		{
+            Location location = *it;
+
+			std::string index_page_path = location.get_index();
+/*			if (index_page_path.empty())
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Index page path does not exist in config_file");
+				throw std::runtime_error(errorMessage);
+			}*/
+
+			int spaces_index_page = std::count(index_page_path.begin(), index_page_path.end(), ' ');
+			if (spaces_index_page > 0)
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Index page path is not a valid path");
+				throw std::runtime_error(errorMessage);
+			}
+
+/*			if ( index_page_path.substr(error_page_path.size() - 5) != ".html")
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Index page path is not a valid path. Is not a valid file (extension).");
+				throw std::runtime_error(errorMessage);
+			}*/
+
+/*   			std::ifstream file;
+			std::string file_name = "." + index_page_path;
+    		file.open(file_name);
+			if (!file.is_open())
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Index page path is not a valid path. Is not a valid file (opening or reading).");
+				throw std::runtime_error(errorMessage);
+			}*/
+		}
 	}
 }
 
