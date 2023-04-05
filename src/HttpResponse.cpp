@@ -84,7 +84,7 @@ void HttpResponse::_build_get_res(std::string method)
 
         // Environment variables for CGI script
         std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
-        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req)
+        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
@@ -105,7 +105,7 @@ void HttpResponse::_build_get_res(std::string method)
     // It's a normal asset
     else
     {
-        std::string file_path = this->_router.get_file_path(this->_req);
+        std::string file_path = this->_router.get_file_path(this->_req, this->_server);
         std::ifstream file(file_path);
 
         if (this->_req.get_is_redirection())
@@ -136,8 +136,8 @@ void HttpResponse::_build_get_res(std::string method)
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
     // TODO change with real redirection logic
-    if (this->_req.get_is_redirection())
-        this->_buff += "Location: " + std::string("/redirect/redirect_page.html") + "\r\n";
+//    if (this->_req.get_is_redirection())
+  //      this->_buff += "Location: " + std::string("/redirect/redirect_page.html") + "\r\n";
     if (method == "GET")
         this->_buff += res_body;
     else if (method == "HEAD")
@@ -231,7 +231,7 @@ void HttpResponse::_build_delete_res()
  */
 void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body, int &content_len, const std::vector<char> *req_body)
 {
-    std::string file_path = this->_router.get_file_path(this->_req);
+    std::string file_path = this->_router.get_file_path(this->_req, this->_server);
     std::ifstream file(file_path);
 
     if (file)
