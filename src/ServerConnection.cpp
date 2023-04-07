@@ -45,6 +45,9 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     std::vector<char> buff(REC_BUFF_SIZE, 0);
     int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
 
+    // Resize buffer to the size of the actual bytes received
+    buff.resize(bytes_received);
+
     switch (bytes_received)
     {
     case -1:
