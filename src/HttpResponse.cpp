@@ -123,10 +123,10 @@ void HttpResponse::_build_get_res(std::string method)
                 this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
                 if (this->_req.is_html_req())
                 {
-					std::string err_page_path = _server->get_error_page();
-					err_page_path.erase(0,1);
-					std::ifstream path_404(err_page_path.c_str());	
-					res_body = this->_http.build_file(path_404);
+                    std::string err_page_path = _server->get_error_page();
+                    err_page_path.erase(0, 1);
+                    std::ifstream path_404(err_page_path.c_str());
+                    res_body = this->_http.build_file(path_404);
                     content_len = res_body.length() - CRLF_LEN;
                 }
             }
@@ -136,8 +136,8 @@ void HttpResponse::_build_get_res(std::string method)
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
     // TODO change with real redirection logic
-//    if (this->_req.get_is_redirection())
-  //      this->_buff += "Location: " + std::string("/redirect/redirect_page.html") + "\r\n";
+    //    if (this->_req.get_is_redirection())
+    //      this->_buff += "Location: " + std::string("/redirect/redirect_page.html") + "\r\n";
     if (method == "GET")
         this->_buff += res_body;
     else if (method == "HEAD")
@@ -156,31 +156,17 @@ void HttpResponse::_build_post_res()
     std::ifstream f(file_path.c_str());
     // If file you want to POST exists already
     if (f.good())
-    {
         this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
-
-        std::ifstream file(this->_router.get_def_err_file_path());
-
-        std::string err_page = this->_http.build_file(file);
-        replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_409_CODE));
-        replace_var_in_page(err_page, "{{message}}", HTTP_409_REASON);
-
-        res_body = err_page;
-        content_len = err_page.length() - CRLF_LEN;
-    }
     else
-    {
-        std::vector<char> const body = this->_req.get_body();
-        this->_build_cgi_res(file_path, res_body, content_len, &body);
-
         this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-        std::ifstream res_file(GALLERY_SUCCESS_TEMPLATE_PATH);
-        res_body = this->_http.build_file(res_file);
-        content_len = res_body.length() - CRLF_LEN;
-    }
+
+    std::vector<char> const body = this->_req.get_body();
+    this->_build_cgi_res(file_path, res_body, content_len, &body);
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+    content_len = res_body.length() - CRLF_LEN;
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+    this->_buff += "\r\n";
     this->_buff += res_body;
 }
 
@@ -253,13 +239,13 @@ void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body
     else
     {
         this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-    //  std::ifstream file_404(this->_router.get_404_file_path());
-    //  res_body = this->_http.build_file(file_404);
-                    
-		std::string err_page_path = _server->get_error_page();
-		err_page_path.erase(0,1);
-		std::ifstream path_404(err_page_path.c_str());	
-		res_body = this->_http.build_file(path_404);
+        //  std::ifstream file_404(this->_router.get_404_file_path());
+        //  res_body = this->_http.build_file(file_404);
+
+        std::string err_page_path = _server->get_error_page();
+        err_page_path.erase(0, 1);
+        std::ifstream path_404(err_page_path.c_str());
+        res_body = this->_http.build_file(path_404);
 
         content_len = res_body.length() - CRLF_LEN;
     }
