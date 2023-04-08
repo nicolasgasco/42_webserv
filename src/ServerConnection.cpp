@@ -67,10 +67,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
 
         // If read all there was to read
         if (bytes_received < REC_BUFF_SIZE)
-        {
-            req.parse_post_req_body();
             this->_read_done = true;
-        }
     }
     // No body or request wasn't parsed yet
     else
@@ -104,10 +101,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
 
                 // If req has body but is still smaller than REC_BUFF_SIZE
                 if (content_length < REC_BUFF_SIZE && this->_bytes_received < REC_BUFF_SIZE)
-                {
-                    req.parse_post_req_body();
                     this->_read_done = true;
-                }
                 // If req has body but it cannot be read in only one go
                 else
                     this->_read_done = false;
@@ -122,7 +116,6 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
                 {
                     if (find_in_vec(search_pattern, it))
                     {
-                        req.parse_post_req_body();
                         this->_read_done = true;
                         break;
                     }

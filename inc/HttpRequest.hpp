@@ -50,7 +50,6 @@ public:
 	void set_body(std::vector<char> &buff);
 
 	// Methods
-	void parse_post_req_body();
 	void parse_post_req_file_name();
 	int parse_req(Server const *server, Webserver *webserver);
 	void output_status();
