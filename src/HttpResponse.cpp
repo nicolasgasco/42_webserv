@@ -90,7 +90,7 @@ void HttpResponse::_build_get_res(std::string method)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
 
-        res_body = this->_cgi.build_cgi_output(args, envp, nullptr);
+        res_body = this->_cgi.build_cgi_output(args, envp);
 
         if (res_body.find(std::to_string(HTTP_404_CODE)) != std::string::npos)
             this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
@@ -203,7 +203,7 @@ void HttpResponse::_build_delete_res()
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
 
-        res_body = this->_cgi.build_cgi_output(args, envp, nullptr);
+        res_body = this->_cgi.build_cgi_output(args, envp);
         content_len = res_body.length() - CRLF_LEN;
     }
 
