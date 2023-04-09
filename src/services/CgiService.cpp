@@ -85,6 +85,59 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
     return cgi_output;
 }
 
+std::string const CgiService::build_cgi_output(char *const *args, char *const *envp) const
+{
+    std::string cgi_output;
+
+    int fds[2];
+
+    if (pipe(fds) == -1)
+    {
+        std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
+        // TODO Add 500 error page
+        return cgi_output;
+    }
+
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        std::cerr << "Error: fork: " << strerror(errno) << std::endl;
+        // TODO Add 500 error page
+        return cgi_output;
+    }
+
+    if (pid == 0)
+    {
+        if (dup2(fds[FD_WRITE], STDOUT_FILENO) == -1)
+        {
+            std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
+            // TODO Add 500 error page
+            return cgi_output;
+        }
+        close(fds[FD_READ]);
+        close(fds[FD_WRITE]);
+
+        if (execve(args[0], args, envp) < 0)
+        {
+            std::cerr << "Error: execve: " << strerror(errno) << std::endl;
+            // TODO Add 500 error page
+            return cgi_output;
+        }
+    }
+    else
+    {
+        close(fds[FD_WRITE]);
+
+        char buff[CGI_BUF_LEN] = {0};
+        read(fds[FD_READ], buff, CGI_BUF_LEN);
+        close(fds[FD_READ]);
+
+        cgi_output = buff;
+    }
+
+    return cgi_output;
+}
+
 std::vector<std::string> CgiService::build_envp(std::string path, Server const *server, HttpRequest const &req) const
 {
     std::vector<std::string> envp;
