@@ -233,7 +233,7 @@ void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
-        res_body = this->_cgi.build_cgi_output(args, envp, req_body);
+        res_body = req_body ? this->_cgi.build_cgi_output(args, envp, req_body) : this->_cgi.build_cgi_output(args, envp);
         content_len = res_body.length() - CRLF_LEN;
     }
     else

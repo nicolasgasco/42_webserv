@@ -11,77 +11,49 @@ CgiService::~CgiService()
 
 std::string const CgiService::build_cgi_output(char *const *args, char *const *envp, const std::vector<char> *req_body) const
 {
-    std::string cgi_output;
-    std::vector<char> body;
-    if (req_body)
-        body = *req_body;
+    std::vector<char> body = *req_body;
 
-    bool finished_writing = false;
-    while (!finished_writing)
+    int fds[2];
+    if (pipe(fds) < 0)
+        std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
+
+    pid_t pid = fork();
+    if (pid < 0)
+        std::cerr << "Error: fork: " << strerror(errno) << std::endl;
+    else if (pid == 0)
     {
-        int fds[2][2];
+        if (dup2(fds[FD_READ], STDIN_FILENO) < 0)
+            std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
+        close(fds[FD_READ]);
+        if (dup2(fds[FD_WRITE], STDOUT_FILENO) < 0)
+            std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
 
-        if (req_body)
-        {
-            if (pipe(fds[PIPE_BODY]) == -1)
-                std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
-
-            fcntl(fds[PIPE_BODY][FD_WRITE], F_SETFL, O_NONBLOCK);
-            ssize_t bytes_written = write(fds[PIPE_BODY][FD_WRITE], body.data(), body.size() * sizeof(char));
-            close(fds[PIPE_BODY][FD_WRITE]);
-
-            if (bytes_written < 0)
-            {
-                std::cerr << "Error: write: " << strerror(errno) << std::endl;
-                finished_writing = true;
-            }
-            else if (bytes_written < (ssize_t)body.size())
-                body.erase(body.begin(), body.begin() + bytes_written);
-            else
-                finished_writing = true;
-        }
-        else
-            finished_writing = true;
-
-        if (pipe(fds[PIPE_RES]) == -1)
-            std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
-
-        pid_t pid = fork();
-        if (pid == -1)
-            std::cerr << "Error: fork: " << strerror(errno) << std::endl;
-        else if (pid == 0)
-        {
-            if (dup2(fds[PIPE_RES][FD_WRITE], STDOUT_FILENO) == -1)
-                std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
-            close(fds[PIPE_RES][FD_READ]);
-            close(fds[PIPE_RES][FD_WRITE]);
-
-            if (req_body)
-            {
-                if (dup2(fds[PIPE_BODY][FD_READ], STDIN_FILENO) == -1)
-                    std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
-                close(fds[PIPE_BODY][FD_READ]);
-                close(fds[PIPE_BODY][FD_WRITE]);
-            }
-
-            if (execve(args[0], args, envp) < 0)
-                std::cerr << "Error: execve: " << strerror(errno) << std::endl;
-        }
-        else
-        {
-            if (req_body)
-                close(fds[PIPE_BODY][FD_READ]);
-
-            close(fds[PIPE_RES][FD_WRITE]);
-
-            char buff[CGI_BUF_LEN] = {0};
-            read(fds[PIPE_RES][FD_READ], buff, CGI_BUF_LEN);
-            close(fds[PIPE_RES][FD_READ]);
-
-            if (finished_writing)
-                cgi_output = buff;
-        }
+        if (execve(args[0], args, envp) < 0)
+            std::cerr << "Error: execve: " << strerror(errno) << std::endl;
     }
+    else
+    {
+        fcntl(fds[FD_WRITE], F_SETFL, O_NONBLOCK);
+        while (ssize_t bytes = write(fds[FD_WRITE], body.data(), body.size()))
+        {
+            if (bytes < 0)
+                continue;
+            else if (bytes < (ssize_t)body.size())
+
+                body.erase(body.begin(), body.begin() + bytes);
+            else
+                break;
+        }
+        close(fds[FD_WRITE]);
+    }
+
+    if (waitpid(pid, NULL, 0) < 0)
+        std::cerr << "Error: waitpid: " << strerror(errno) << std::endl;
+
+    char cgi_output[CGI_BUF_LEN] = {0};
+    read(fds[FD_READ], cgi_output, CGI_BUF_LEN);
+    close(fds[FD_READ]);
+
     return cgi_output;
 }
 
