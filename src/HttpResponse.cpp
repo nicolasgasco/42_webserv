@@ -151,23 +151,12 @@ void HttpResponse::_build_post_res()
 {
     int content_len = 0;
     std::string res_body;
-
     std::string file_path = this->_req.get_post_req_file_name();
-    std::ifstream f(file_path.c_str());
-    // If file you want to POST exists already
-    if (f.good())
-        this->set_status_line(HTTP_409_CODE, HTTP_409_REASON);
-    else
-        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
     std::vector<char> const body = this->_req.get_body();
     this->_build_cgi_res(file_path, res_body, content_len, &body);
 
-    this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    content_len = res_body.length() - CRLF_LEN;
-    this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
-    this->_buff += "\r\n";
-    this->_buff += res_body;
+    this->_buff = res_body;
 }
 
 /**
