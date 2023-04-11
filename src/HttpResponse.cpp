@@ -171,17 +171,15 @@ void HttpResponse::_build_delete_res()
     // TODO add real logic to check if DELETE is allowed on route
     bool is_allowed_path = target.find(GALLERY_STORAGE_PATH) != std::string::npos;
     if (!is_allowed_path)
+    {
         this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
+        this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+        this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+        this->_buff += res_body;
+        return;
+    }
     else
     {
-        std::ifstream f(target.c_str());
-
-        // If file you want to DELETE exists
-        if (f.good())
-            this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
-        else
-            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-
         std::string cgi_script_path = build_path(CGI_BIN_PATH, "delete_file.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
@@ -193,12 +191,9 @@ void HttpResponse::_build_delete_res()
         envp[envp_v.size()] = NULL;
 
         res_body = this->_cgi.build_cgi_output(args, envp);
-        content_len = res_body.length() - CRLF_LEN;
     }
 
-    this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-    this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
-    this->_buff += res_body;
+    this->_buff = res_body;
 }
 
 /**
