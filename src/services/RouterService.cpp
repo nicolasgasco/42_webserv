@@ -56,7 +56,8 @@ std::string const RouterService::get_file_path(HttpRequest const &req, Server *s
     bool does_contain_dot = target.find(".") != std::string::npos;
 
     if (req.is_cgi_req())
-        return build_path(PUBLIC_PATH, target);
+        // cgi-bin is at the root of the server
+        return build_path("./", target);
     // If it contains a dot, it means it has an extension and doesn't need to append index.html
     else if (req.is_html_req() && !does_contain_dot)
         //return build_path(PUBLIC_PATH, target, "index.html");

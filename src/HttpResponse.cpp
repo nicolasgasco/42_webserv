@@ -79,7 +79,7 @@ void HttpResponse::_build_get_res(std::string method)
     // If autoindex is 'off'
     if (this->_req.is_dir_req() || this->_server->get_autoindex() == false)
     {
-        std::string cgi_script_path = build_path(PUBLIC_PATH, CGI_BIN_PATH, "output_dir_content.py");
+        std::string cgi_script_path = build_path(CGI_BIN_PATH, "output_dir_content.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
@@ -193,7 +193,7 @@ void HttpResponse::_build_delete_res()
         else
             this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
 
-        std::string cgi_script_path = build_path(PUBLIC_PATH, CGI_BIN_PATH, "delete_file.py");
+        std::string cgi_script_path = build_path(CGI_BIN_PATH, "delete_file.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
         // Environment variables for CGI script
