@@ -30,4 +30,4 @@ while IFS= read -r line; do
 done < public/env/index.html
 
 # Output page
-printf "\r\n%s" "$page"
+printf "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n%s" "$page"

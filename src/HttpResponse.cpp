@@ -101,7 +101,11 @@ void HttpResponse::_build_get_res(std::string method)
     }
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
+    {
         this->_build_cgi_res(GALLERY_STORAGE_PATH, res_body, content_len, nullptr);
+        this->_buff = res_body;
+        return;
+    }
     // It's a normal asset
     else
     {

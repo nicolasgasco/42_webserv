@@ -20,8 +20,8 @@ try:
                 error_page = file.read()
                 error_page = error_page.replace("{{code}}", "409")
                 error_page = error_page.replace("{{message}}", "Conflict")
-                
-                print ("HTTP/1.1 409 Conflict\r")
+
+                print("HTTP/1.1 409 Conflict\r")
                 print("Content-Length: " + str(len(error_page)) + "\r")
                 print("Content-Type: text/html\r")
                 print("\r\n")
@@ -42,8 +42,8 @@ except:
         error_page = error_page.replace("{{code}}", "500")
         error_page = error_page.replace("{{message}}", "Internal Server Error")
 
-    print ("HTTP/1.1 500 Internal Server Error\r")
+    print("HTTP/1.1 500 Internal Server Error\r")
     print("Content-Length: " + str(len(error_page)) + "\r")
     print("Content-Type: text/html\r")
-    print("\r\n")
-    print(error_page)  
+    print("\r")
+    print(error_page)
