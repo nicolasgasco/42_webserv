@@ -8,7 +8,19 @@ try:
 
     # Get filename here
     fileitem = form['image']
+except:
+    with open('./public/error/default.html', 'r') as file:
+        error_page = file.read()
+    error_page = error_page.replace("{{code}}", "400")
+    error_page = error_page.replace("{{message}}", "Bad Request")
 
+    print("HTTP/1.1 400 Bad Request\r")
+    print("Content-Length: " + str(len(error_page)) + "\r")
+    print("Content-Type: text/html\r")
+    print("\r")
+    print(error_page)
+
+try:
     # Test if the file was uploaded
     if fileitem.filename:
         file_path = os.getcwd() + '/public/gallery/pictures/' + \
@@ -36,6 +48,17 @@ try:
             print("Content-Type: text/html\r")
             print("\r")
             print(success_page)
+    else:
+        with open('./public/error/default.html', 'r') as file:
+            error_page = file.read()
+        error_page = error_page.replace("{{code}}", "400")
+        error_page = error_page.replace("{{message}}", "Bad Request")
+
+        print("HTTP/1.1 400 Bad Request\r")
+        print("Content-Length: " + str(len(error_page)) + "\r")
+        print("Content-Type: text/html\r")
+        print("\r")
+        print(error_page)
 except:
     with open('./public/error/default.html', 'r') as file:
         error_page = file.read()
