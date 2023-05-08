@@ -1,4 +1,5 @@
 import datetime
+import os
 
 
 def print_error_page(error_code, error_message):
@@ -13,6 +14,7 @@ def print_error_page(error_code, error_message):
     print("Content-Type: text/html\r")
     print("Content-Length: " + str(len(error_page)) + "\r")
     print("Date: " + str(get_formatted_date()) + "\r")
+    print("Server: " + os.getenv("SERVER_SOFTWARE") + "\r")
 
     print("\r")
     print(error_page)
@@ -31,6 +33,7 @@ def print_template(page_template):
     print("Content-Type: text/html\r")
     print("Content-Length: " + str(len(page_template)) + "\r")
     print("Date: " + str(get_formatted_date()) + "\r")
+    print("Server: " + os.getenv("SERVER_SOFTWARE") + "\r")
 
     print("\r")
     print(page_template)

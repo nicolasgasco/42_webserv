@@ -12,6 +12,7 @@ try:
     print("HTTP/1.1 200 OK\r")
     print("Content-Type: application/json\r")
     print("Content-Length: " + str(len(json.dumps(result, indent=4))) + "\r")
+    print("Server: " + os.getenv("SERVER_SOFTWARE") + "\r")
     print("\r")
 
     print(json.dumps(result, indent=4))
@@ -21,4 +22,5 @@ except OSError:
     print("HTTP/1.1 404 Not Found\r")
     print("Content-Type: application/json\r")
     print("Content-Length: " + str(len(json.dumps(result, indent=4))) + "\r")
+    print("Server: " + os.getenv("SERVER_SOFTWARE") + "\r")
     print("\r")

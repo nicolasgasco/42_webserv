@@ -44,6 +44,7 @@ try:
     # len(gallery_template) is actually less than the actual length of the response
     # using it will cause the response to be truncated
     print("Date: " + str(get_formatted_date()) + "\r")
+    print("Server: " + os.getenv("SERVER_SOFTWARE") + "\r")
 
     print("\r")
     print(gallery_template)
