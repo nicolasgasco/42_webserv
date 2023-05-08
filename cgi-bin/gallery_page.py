@@ -1,26 +1,20 @@
+import datetime
 import os
 from os import listdir
 from os.path import isfile, join
 import sys
+from cgi_utils import print_error_page, get_formatted_date, print_template
 
 try:
     # Open template for showing directory content
     path = os.getenv("PATH_TRANSLATED")
 
+    # If PATH_TRANSLATED is not a valid path, return 404
     if (not os.path.exists(path)):
-        with open('./public/error/default.html', 'r') as file:
-            error_page = file.read()
-            error_page = error_page.replace("{{code}}", "404")
-            error_page = error_page.replace("{{message}}", "Not Found")
-
-        print("HTTP/1.1 404 Not Found\r")
-        print("Content-Length: " + str(len(error_page)) + "\r")
-        print("Content-Type: text/html\r")
-        print("\r")
-        print(error_page)
+        print_error_page("404", "Not Found")
         sys.exit(0)
 
-    # Get href for each file
+    # Compute list with href for each file
     pictures_href_list = [
         f'{path.replace("public/", "")}/{f}' for f in listdir(path) if isfile(join(path, f))]
 
@@ -34,7 +28,7 @@ try:
         # Add parent UL tag
         formatted_pictures_list = f'<div id="pictures-container"><ul>{"".join(formatted_pictures)}</ul></div>'
 
-    # Open template for gallery
+    # Open gallery template file
     with open('./public/gallery/index.html', 'r') as file:
         gallery_template = file.read()
 
@@ -42,20 +36,7 @@ try:
     gallery_template = gallery_template.replace(
         '{{pictures}}', formatted_pictures_list)
 
-    print("HTTP/1.1 200 OK\r")
-    # Content length is leading to content being truncated
-    print("Content-Type: text/html\r")
-    print("\r")
-    print(gallery_template)
+    print_template(gallery_template)
 
 except:
-    with open('./public/error/default.html', 'r') as file:
-        error_page = file.read()
-        error_page = error_page.replace("{{code}}", "500")
-        error_page = error_page.replace("{{message}}", "Internal Server Error")
-
-    print("HTTP/1.1 500 Internal Server Error\r")
-    print("Content-Length: " + str(len(error_page)) + "\r")
-    print("Content-Type: text/html\r")
-    print("\r")
-    print(error_page)
+    print_error_page("500", "Internal Server Error")
