@@ -10,8 +10,8 @@ def print_error_page(error_code, error_message):
 
     print("HTTP/1.1 404 Not Found\r")
 
-    print("Content-Length: " + str(len(error_page)) + "\r")
     print("Content-Type: text/html\r")
+    print("Content-Length: " + str(len(error_page)) + "\r")
     print("Date: " + str(get_formatted_date()) + "\r")
 
     print("\r")
@@ -29,6 +29,7 @@ def print_template(page_template):
 
     # TODO Content length is leading to content being truncated
     print("Content-Type: text/html\r")
+    print("Content-Length: " + str(len(page_template)) + "\r")
     print("Date: " + str(get_formatted_date()) + "\r")
 
     print("\r")
