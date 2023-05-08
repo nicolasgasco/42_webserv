@@ -3,7 +3,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 import sys
-from cgi_utils import print_error_page, get_formatted_date, print_template
+from cgi_utils import print_error_page, get_formatted_date
 
 try:
     # Open template for showing directory content
@@ -36,7 +36,16 @@ try:
     gallery_template = gallery_template.replace(
         '{{pictures}}', formatted_pictures_list)
 
-    print_template(gallery_template)
+    print("HTTP/1.1 200 OK\r")
 
+    print("Content-Type: text/html\r")
+    # Content length does not work in this case
+    # Some extra whitespaces are being appended automatically in the response
+    # len(gallery_template) is actually less than the actual length of the response
+    # using it will cause the response to be truncated
+    print("Date: " + str(get_formatted_date()) + "\r")
+
+    print("\r")
+    print(gallery_template)
 except:
     print_error_page("500", "Internal Server Error")
