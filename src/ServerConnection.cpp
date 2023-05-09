@@ -77,7 +77,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
 
         if (req.parse_req(server, webserver) == 1)
         {
-            req._set_err(HTTP_405_CODE, HTTP_405_REASON);
+            req.set_err(HTTP_405_CODE, HTTP_405_REASON);
             this->_read_done = true;
         }
 
@@ -95,7 +95,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
                     std::cout << "Max file size allowed: " << max_body_size << std::endl;
                     std::cout << "File size to upload:   " << content_length << std::endl;
 
-                    req._set_err(413, "Content Too Large");
+                    req.set_err(HTTP_413_CODE, HTTP_413_REASON);
 
                     this->_read_done = true;
                 }
