@@ -54,6 +54,7 @@ public:
 	int parse_req(Server const *server, Webserver *webserver);
 	void output_status();
 	void reset();
+	void set_err(int const &code, std::string const &message);
 
 	// Computed properties
 	bool has_body() const;
@@ -80,8 +81,6 @@ private:
 	int _parse_req_line(std::string &line, Webserver *webserver, Server const *server);
 	void _parse_target(std::string &line);
 	void _parse_version(std::string &line);
-
-	void _set_err(int const &code, std::string const &message);
 
 	// Computed properties
 	bool _is_method_supported() const;

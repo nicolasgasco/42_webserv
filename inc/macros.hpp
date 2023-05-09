@@ -11,7 +11,7 @@
 #define GALLERY_STORAGE_PATH "public/gallery/pictures"
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define LONGEST_METHOD "DELETE"
-#define LONGEST_URI 124         // Replace with computed value
+#define LONGEST_URI 124 // Replace with computed value
 #define MIN_FD 3
 #define PIPE_BODY 1
 #define PIPE_RES 0
@@ -42,6 +42,8 @@
 #define HTTP_405_REASON "Method Not Allowed"
 #define HTTP_409_CODE 409
 #define HTTP_409_REASON "Conflict"
+#define HTTP_413_CODE 413
+#define HTTP_413_REASON "Content Too Large"
 #define HTTP_414_CODE 414
 #define HTTP_414_REASON "URI Too Long"
 #define HTTP_501_CODE 501

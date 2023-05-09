@@ -66,14 +66,14 @@ void HttpRequest::_parse_attr_line(std::string const &line)
     // any received request message that contains whitespace between a header field name and colon
     bool is_space_before_colon = line.find(" :") != std::string::npos;
     if (is_space_before_colon)
-        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+        this->set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     size_t colon_delim = line.find(":");
     std::string key = ltrim(line.substr(0, colon_delim));
     std::string value = trim(line.substr(colon_delim + 1));
 
     if (key.empty() || value.empty())
-        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+        this->set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     this->_attrs.insert(std::pair<std::string, std::string>(key, value));
 }
@@ -157,7 +157,7 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
                     if (method_allowed == false)
                     {
                         std::cout << "❌  ❌  ❌ " << std::endl;
-                        //		_set_err(513, "Method Not Allowed");
+                        //		set_err(513, "Method Not Allowed");
                         return (1);
                     }
                 }
@@ -181,7 +181,7 @@ void HttpRequest::_parse_method(std::string &line)
 
     bool is_method_too_long = this->_req_line.method.length() > std::string(LONGEST_METHOD).length();
     if (is_method_too_long || !this->_is_method_supported()) // 501 - Method is too long or not supported
-        this->_set_err(HTTP_501_CODE, HTTP_501_REASON);
+        this->set_err(HTTP_501_CODE, HTTP_501_REASON);
 
     line = ltrim(line.substr(first_whitespace));
 }
@@ -202,10 +202,10 @@ void HttpRequest::_parse_target(std::string &line)
         this->_req_line.target = http.decode_whitespace(target);
 
         if (this->_req_line.target.empty())
-            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+            this->set_err(HTTP_400_CODE, HTTP_400_REASON);
 
         if (this->_req_line.target.length() > LONGEST_URI)
-            this->_set_err(HTTP_414_CODE, HTTP_414_REASON);
+            this->set_err(HTTP_414_CODE, HTTP_414_REASON);
 
         line = ltrim(line.substr(first_whitespace));
 
@@ -235,7 +235,7 @@ void HttpRequest::_parse_version(std::string &line)
         this->_req_line.version = trim(version);
 
         if (this->_req_line.version.empty() || this->_req_line.version != HTTP_PROTOCOL)
-            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+            this->set_err(HTTP_400_CODE, HTTP_400_REASON);
     }
     catch (const std::out_of_range &e)
     {
@@ -291,7 +291,7 @@ void HttpRequest::parse_post_req_file_name()
     }
 
     if (is_filename_found == false)
-        this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+        this->set_err(HTTP_400_CODE, HTTP_400_REASON);
     else
     {
         std::string end_delim = "\"";
@@ -304,7 +304,7 @@ void HttpRequest::parse_post_req_file_name()
 
         // If name doesn't exist, it's impossible to save the file
         if (file_name.empty())
-            this->_set_err(HTTP_400_CODE, HTTP_400_REASON);
+            this->set_err(HTTP_400_CODE, HTTP_400_REASON);
 
         this->_post_req_file_name = build_path(GALLERY_STORAGE_PATH, file_name);
     }
@@ -467,7 +467,7 @@ void HttpRequest::set_body(std::vector<char> &buff)
     this->_body.insert(this->_body.end(), buff.begin(), buff.end());
 }
 
-void HttpRequest::_set_err(int const &code, std::string const &message)
+void HttpRequest::set_err(int const &code, std::string const &message)
 {
     if (this->_err.code == -1)
     {
