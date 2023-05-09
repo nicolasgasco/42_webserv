@@ -87,8 +87,8 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
     this->_parse_method(line);
 
     this->_parse_target(line);
-    
-	if (this->has_query_params())
+
+    if (this->has_query_params())
         this->_parse_query_params(this->_req_line.target);
 
     this->_parse_version(line);
@@ -108,13 +108,12 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
     }
     std::cout << std::endl;
 
-
     for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
     {
         Server srv_data = *it;
 
-		std::string path_to_find = this->get_req_line().target;
-		std::cout << "🔵 PATH to find: " << path_to_find << std::endl;
+        std::string path_to_find = this->get_req_line().target;
+        std::cout << "🔵 PATH to find: " << path_to_find << std::endl;
         std::cout << "⭕️ PORT config_file: " << srv_data.get_port() << std::endl;
         std::cout << "⭕️ PORT browser:     " << port_browser << std::endl;
         if (srv_data.get_port() == port_browser)
@@ -129,16 +128,17 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
                 std::cout << "LOCATION " << location.get_location() << std::endl;
                 std::vector<std::string> methods = location.get_method();
                 std::string alias = location.get_alias();
-						
-				std::cout << "🔵 ALIAS: " << " -> " << alias << std::endl;
-				
-				if (path_to_find == alias)
-				{
-					this->_req_line.target = location.get_location();
-					std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << _req_line.target << std::endl;
-				}
-                
-				if (new_path == location.get_location())
+
+                std::cout << "🔵 ALIAS: "
+                          << " -> " << alias << std::endl;
+
+                if (path_to_find == alias)
+                {
+                    this->_req_line.target = location.get_location();
+                    std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << _req_line.target << std::endl;
+                }
+
+                if (new_path == location.get_location())
                 {
 
                     std::cout << "🟢 Path exists in location" << std::endl;
@@ -153,7 +153,6 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
                         if (std::string(_req_line.method) == method)
                             method_allowed = true;
                         std::cout << method_allowed << std::endl;
-						
                     }
                     if (method_allowed == false)
                     {
@@ -211,8 +210,8 @@ void HttpRequest::_parse_target(std::string &line)
         line = ltrim(line.substr(first_whitespace));
 
         // Checking if it's a redirected asset
-		if (this->_is_target_redirection(this->_req_line.target))
-	      	this->_is_redirect = true;
+        if (this->_is_target_redirection(this->_req_line.target))
+            this->_is_redirect = true;
     }
     catch (const std::out_of_range &e)
     {
