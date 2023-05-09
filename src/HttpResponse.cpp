@@ -221,8 +221,6 @@ void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body
     else
     {
         this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-        //  std::ifstream file_404(this->_router.get_404_file_path());
-        //  res_body = this->_http.build_file(file_404);
 
         std::string err_page_path = _server->get_error_page();
         err_page_path.erase(0, 1);
