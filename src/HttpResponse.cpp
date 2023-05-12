@@ -149,20 +149,11 @@ void HttpResponse::_build_post_res()
 {
     int content_len = 0;
     std::string res_body;
-    std::string file_path = this->_req.get_post_req_file_name();
+    std::string file_path = "/cgi-bin/gallery_page.py";
 
-    // If no file was uploaded
-    if (file_path.empty())
-    {
-        this->_req.set_err(HTTP_400_CODE, HTTP_400_REASON);
-        this->_build_error_res();
-    }
-    else
-    {
-        std::vector<char> const body = this->_req.get_body();
-        this->_build_cgi_res(file_path, res_body, content_len, &body);
-        this->_buff = res_body;
-    }
+    std::vector<char> const body = this->_req.get_body();
+    this->_build_cgi_res(file_path, res_body, content_len, &body);
+    this->_buff = res_body;
 }
 
 /**

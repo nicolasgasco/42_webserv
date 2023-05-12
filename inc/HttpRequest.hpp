@@ -42,7 +42,6 @@ public:
 	std::vector<char> const &get_body() const;
 	ReqErr const &gett_err() const;
 	std::map<std::string, std::string> const &get_params() const;
-	std::string const &get_post_req_file_name() const;
 	ReqLine const &get_req_line() const;
 	bool get_is_redirection() const;
 
@@ -50,7 +49,6 @@ public:
 	void set_body(std::vector<char> &buff);
 
 	// Methods
-	void parse_post_req_file_name();
 	int parse_req(Server const *server, Webserver *webserver);
 	void output_status();
 	void reset();
@@ -69,7 +67,6 @@ public:
 private:
 	std::map<std::string, std::string> _attrs, _params;
 	std::vector<char> _body;
-	std::string _post_req_file_name;
 	ReqLine _req_line;
 	ReqErr _err;
 	bool _is_redirect;
