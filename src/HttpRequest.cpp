@@ -271,46 +271,6 @@ void HttpRequest::_parse_query_params(std::string &target)
 }
 
 /**
- * Parse file name of binary data sent in POST request.
- */
-void HttpRequest::parse_post_req_file_name()
-{
-    std::string file_name;
-
-    bool is_filename_found = false;
-    std::string start_delim = POST_BODY_FILENAME_DELIM;
-    std::vector<char>::const_iterator start;
-    for (std::vector<char>::const_iterator it = this->_body.begin(); it != (this->_body.end() - start_delim.length()); ++it)
-    {
-        if (find_in_vec(start_delim, it))
-        {
-            start = it + start_delim.length();
-            is_filename_found = true;
-            break;
-        }
-    }
-
-    if (is_filename_found == false)
-        this->set_err(HTTP_400_CODE, HTTP_400_REASON);
-    else
-    {
-        std::string end_delim = "\"";
-        for (std::vector<char>::const_iterator it = start; it != (this->_body.end() - end_delim.length()); ++it)
-        {
-            if (find_in_vec(end_delim, it))
-                break;
-            file_name.push_back(*it);
-        }
-
-        // If name doesn't exist, it's impossible to save the file
-        if (file_name.empty())
-            this->set_err(HTTP_400_CODE, HTTP_400_REASON);
-
-        this->_post_req_file_name = build_path(GALLERY_STORAGE_PATH, file_name);
-    }
-}
-
-/**
  * Parse boundary used by browser when sending post request.
  * @returns Parsed boundary.
  */
@@ -329,11 +289,6 @@ std::string const HttpRequest::_parse_post_req_boundary() const
 std::vector<char> const &HttpRequest::get_body() const
 {
     return this->_body;
-}
-
-std::string const &HttpRequest::get_post_req_file_name() const
-{
-    return this->_post_req_file_name;
 }
 
 std::map<std::string, std::string> const &HttpRequest::get_params() const
@@ -485,7 +440,6 @@ void HttpRequest::reset()
     this->_attrs.clear();
     this->_params.clear();
     this->_body.clear();
-    this->_post_req_file_name.clear();
 
     this->_req_line.method.clear();
     this->_req_line.target.clear();
