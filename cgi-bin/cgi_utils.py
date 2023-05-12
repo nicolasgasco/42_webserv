@@ -9,7 +9,7 @@ def print_error_page(error_code, error_message):
         error_page = error_page.replace("{{code}}", error_code)
         error_page = error_page.replace("{{message}}", error_message)
 
-    print("HTTP/1.1 404 Not Found\r")
+    print(f"HTTP/1.1 {error_code} {error_message}\r")
 
     print("Content-Type: text/html\r")
     print("Content-Length: " + str(len(error_page)) + "\r")
