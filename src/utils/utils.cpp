@@ -58,7 +58,7 @@ bool str_ends_with(std::string const &value, std::string const &ending)
 std::string build_path(std::string const &frag1, std::string const &frag2)
 {
     std::string result = frag1;
-    if (frag2.at(0) != '/')
+    if (frag2.at(0) != '/' && frag1.back() != '/')
         result += "/";
     result += frag2;
     return result;
@@ -75,10 +75,10 @@ std::string build_path(std::string const &frag1, std::string const &frag2)
 std::string build_path(std::string const &frag1, std::string const &frag2, std::string const &frag3)
 {
     std::string result = frag1;
-    if (frag2.at(0) != '/')
+    if (frag2.at(0) != '/' && frag1.back() != '/')
         result += "/";
     result += frag2;
-    if (frag3.at(0) != '/')
+    if (frag3.at(0) != '/' && frag2.back() != '/')
         result += "/";
     result += frag3;
     return result;

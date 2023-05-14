@@ -17,6 +17,8 @@ try:
     # Get all files in PATH_INFO directory
     dir_path = os.getenv("PATH_TRANSLATED")
     public_dir_path = dir_path.replace("./public", "")
+    if not public_dir_path.endswith("/"):
+        public_dir_path += "/"
 
     if not os.path.exists(dir_path):
         print_error_page("404", "Not Found")
