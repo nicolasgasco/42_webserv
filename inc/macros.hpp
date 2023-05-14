@@ -6,6 +6,7 @@
 #define CGI_BUF_LEN 20000
 #define CGI_MAX_ENV_VARS 20
 #define CRLF_LEN 2
+#define DEFAULT_INDEX_PAGE "index.html"
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"
 #define GALLERY_STORAGE_PATH "public/gallery/pictures"
