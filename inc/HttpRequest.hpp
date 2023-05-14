@@ -81,8 +81,9 @@ private:
 	void _parse_version(std::string &line);
 
 	// Computed properties
-	bool _is_method_supported() const;
+	bool _is_method_supported(std::string method) const;
 	bool _is_target_redirection(std::string const &target, Server *server) const;
+
 };
 
 // TODO remove when not required anymore
