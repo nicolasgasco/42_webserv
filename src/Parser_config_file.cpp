@@ -74,21 +74,22 @@ int check_directives_server(std::string word)
 	errorMessage = "🔴  FAILURE: [";
     errorMessage += word;
     errorMessage += "] directives in config_file is not a valid syntax";
-    if (word != "server" && 
-		word != "port" && 
-		word != "host" && 
-		word != "server_name" && 
-		word != "root" && 
-		word != "error_page" && 
-		word != "cgi_file_ext" && 
-		word != "autoindex" && 
-		word != "max_body_size" && 
-		word != "location" && 
-		word != "alias" && 
-		word != "accepted_methods" && 
-		word != "index" && 
-		word != "{" && 
-		word != "}") 
+	if (word != "server" &&
+		word != "port" &&
+		word != "host" &&
+		word != "server_name" &&
+		word != "root" &&
+		word != "error_page" &&
+		word != "cgi_file_ext" &&
+		word != "autoindex" &&
+		word != "max_body_size" &&
+		word != "location" &&
+		word != "alias" &&
+		word != "accepted_methods" &&
+		word != "index" &&
+		word != "redirect" &&
+		word != "{" &&
+		word != "}")
 	{
 		throw std::runtime_error(errorMessage);
 	}

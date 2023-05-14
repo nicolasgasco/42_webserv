@@ -92,8 +92,9 @@ void Webserver::print_config_data()
                 std::cout << method << " ";
             }
             std::cout << "\n";
-            std::cout << "Index > " << location.get_index() << std::endl;
-        }
+			std::cout << "Index > " << location.get_index() << std::endl;
+			std::cout << "Redirect > " << location.get_redirect() << std::endl;
+		}
         std::cout << "\n\n";
     }
 }
@@ -266,9 +267,44 @@ void    Webserver::inspect_config_data()
 				}
 			}
 		}
+		// Parsing REDIRECT
+		for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+		{
+			Location location = *it;
+			std::string location_name = location.get_location();
+
+			std::string redirect_page_path = location.get_redirect();
+
+			int spaces_redirect_page = std::count(redirect_page_path.begin(), redirect_page_path.end(), ' ');
+			if (spaces_redirect_page > 0)
+			{
+				std::string errorMessage = std::string("🔴  FAILURE Redirect page path is not a valid path");
+				throw std::runtime_error(errorMessage);
+			}
+
+			if (!redirect_page_path.empty())
+			{
+				if (redirect_page_path.substr(redirect_page_path.size() - 5) != ".html")
+				{
+					std::string errorMessage = std::string("🔴  FAILURE Redirect page path is not a valid path. Is not a valid file (extension).");
+					throw std::runtime_error(errorMessage);
+				}
+			}
+
+			if (!redirect_page_path.empty())
+			{
+				std::ifstream file;
+				std::string file_name = "./public" + location_name + "/" + redirect_page_path;
+				file.open(file_name);
+				if (!file.is_open())
+				{
+					std::string errorMessage = std::string("🔴  FAILURE Redirect page path is not a valid path. Is not a valid file (opening or reading).");
+					throw std::runtime_error(errorMessage);
+				}
+			}
+		}
 	}
 }
-
 
 std::vector<Server> &Webserver::get_server()
 {

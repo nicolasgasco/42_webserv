@@ -4,7 +4,8 @@ Location::Location() :
 	_location(), 
 	_alias(), 
 	_accepted_method(0), 
-	_index()
+	_index(),
+	_redirect()
 {
 }
 
@@ -12,14 +13,15 @@ Location::~Location() {}
 
 void Location::create_location(vector_iterator it, vector_iterator end)
 {
-    configure configure_array[4] =
+	configure configure_array[5] =
 	{
 		&Location::configure_alias,
-      	&Location::configure_accepted_method,
-     	&Location::configure_index,
- 	    &Location::failed_element
+		&Location::configure_accepted_method,
+		&Location::configure_index,
+		&Location::configure_redirect,
+		&Location::failed_element
 	};
-    reset_location();
+	reset_location();
 	configure_location(*it);
     for(; it != end; it++)
 	{
@@ -35,6 +37,7 @@ void    Location::reset_location()
 	_alias.clear();
 	_accepted_method.clear();
 	_index.clear();
+	_redirect.clear();
 }
 
 int     Location::identify_location_value(const std::string &str)
@@ -45,6 +48,8 @@ int     Location::identify_location_value(const std::string &str)
         return method_;
     else if (str.find("index") != std::string::npos)
         return index_;
+	else if (str.find("redirect") != std::string::npos)
+		return redirect_;
 	return failed_;
 }
 
@@ -70,11 +75,15 @@ void    Location::configure_index(const std::string &str)
 	_index = parser_str(str);
 }
 
+void Location::configure_redirect(const std::string &str)
+{
+	_redirect = parser_str(str);
+}
+
 void    Location::failed_element(const std::string &str) 
 {
 	parser_fail(str);
 }
-
 
 std::string Location::get_location()
 {
@@ -94,4 +103,9 @@ std::vector<std::string> Location::get_method()
 std::string Location::get_index()
 {
 	return _index;
+}
+
+std::string Location::get_redirect()
+{
+	return _redirect;
 }
