@@ -45,26 +45,18 @@ void HttpResponse::_build_error_res()
 {
     this->set_status_line(this->_req.gett_err().code, this->_req.gett_err().message);
 
-    int content_len = 0;
-    std::string res_body;
+    std::ifstream file(this->_router.get_def_err_file_path());
+    std::string err_page = this->_http.build_file(file);
+    replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
+    replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
 
-    // If the request was for an HTML page, sends error page
-    if (this->_req.is_html_req())
-    {
-        std::ifstream file(this->_router.get_def_err_file_path());
-
-        std::string err_page = this->_http.build_file(file);
-        replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
-        replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
-
-        res_body = err_page;
-        content_len = err_page.length() - CRLF_LEN;
-    }
+    std::string res_body = err_page;
+    int content_len = err_page.length();
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
-    // Required for empty body POST request
-    this->_buff += res_body.empty() ? "\r\n" : res_body;
+    this->_buff += "\r\n";
+    this->_buff += res_body;
 }
 
 /**
