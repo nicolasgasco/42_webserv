@@ -13,7 +13,7 @@ HttpRequest::~HttpRequest()
 /**
  * Parse request line and attributes.
  */
-int HttpRequest::parse_req(Server const *server, Webserver *webserver)
+void HttpRequest::parse_req(Server const *server, Webserver *webserver)
 {
     std::string body_str;
     body_str.reserve(this->_body.size());
@@ -30,8 +30,8 @@ int HttpRequest::parse_req(Server const *server, Webserver *webserver)
             continue;
         else
         {
-            if (this->_parse_req_line(line, webserver, server) == 1)
-                return (1);
+            if (this->_parse_req_line(line, server) == 1)
+                return;
             break;
         }
     }
@@ -51,9 +51,80 @@ int HttpRequest::parse_req(Server const *server, Webserver *webserver)
         else
             this->_parse_attr_line(line);
     }
+
+    this->_validate_req_with_config(webserver);
+
     // TODO delete this once build is over
     this->output_status();
-    return (0);
+}
+
+void HttpRequest::_validate_req_with_config(Webserver *webserver)
+{
+    std::string s = _req_line.target;
+    std::string *path_com = NULL;
+    std::string path;
+    path_com = &path;
+    int init = 0;
+    int end = 0;
+    while (end = s.find("/", init), end >= 0)
+    {
+        path = s.substr(init, end - init);
+        if (path.length() > 0)
+            path = "/" + path;
+        init = end + 1;
+    }
+    std::cout << std::endl;
+
+    try
+    {
+        std::string host = this->get_attrs().at("Host");
+        this->port_browser = host.substr(host.find(":") + 1);
+    }
+    catch (std::out_of_range &e)
+    {
+        this->set_err(HTTP_400_CODE, HTTP_400_REASON);
+        return;
+    }
+
+    for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
+    {
+        Server srv_data = *it;
+
+        std::string path_to_find = this->get_req_line().target;
+        std::cout << "🔵 PATH to find: " << path_to_find << std::endl;
+        std::cout << "⭕️ PORT config_file: " << srv_data.get_port() << std::endl;
+        std::cout << "⭕️ PORT browser:     " << port_browser << std::endl;
+        if (srv_data.get_port() == this->port_browser)
+        {
+            std::vector<Location> locations = srv_data.get_location_blocks();
+            for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+            {
+                Location location = *it;
+                std::cout << "🟠 location -> " << location.get_location() << std::endl;
+                std::string new_path = *path_com;
+                std::cout << "PATH     " << new_path << std::endl;
+                std::cout << "LOCATION " << location.get_location() << std::endl;
+                std::vector<std::string> methods = location.get_method();
+                std::string alias = location.get_alias();
+
+                std::cout << "🔵 ALIAS: "
+                          << " -> " << alias << std::endl;
+
+                if (path_to_find == alias)
+                {
+                    this->_req_line.target = location.get_location();
+                    std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << _req_line.target << std::endl;
+                }
+
+                if (this->_req_line.target == location.get_location())
+                {
+                    std::cout << "🟢 Path exists in location" << std::endl;
+                    if (std::find(methods.begin(), methods.end(), this->_req_line.method) == methods.end())
+                        this->set_err(HTTP_405_CODE, HTTP_405_REASON);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -80,11 +151,12 @@ void HttpRequest::_parse_attr_line(std::string const &line)
 /**
  * Parse request line, e.g. GET / HTTP/1.1.
  */
-int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server const *server)
+int HttpRequest::_parse_req_line(std::string &line, Server const *server)
 {
-    (void)server;
-    
     this->_parse_method(line);
+    // If method is longer than the longest supported method
+    if (this->has_error())
+        return (1);
 
     this->_parse_target(line, server);
 
@@ -93,82 +165,6 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
 
     this->_parse_version(line);
 
-    std::string s = _req_line.target;
-    std::string *path_com = NULL;
-    std::string path;
-    path_com = &path;
-    int init = 0;
-    int end = 0;
-    while (end = s.find("/", init), end >= 0)
-    {
-        path = s.substr(init, end - init);
-        if (path.length() > 0)
-            path = "/" + path;
-        init = end + 1;
-    }
-    std::cout << std::endl;
-
-    for (std::vector<Server>::iterator it = webserver->_server.begin(); it != webserver->_server.end(); it++)
-    {
-        Server srv_data = *it;
-
-        std::string path_to_find = this->get_req_line().target;
-        std::cout << "🔵 PATH to find: " << path_to_find << std::endl;
-        std::cout << "⭕️ PORT config_file: " << srv_data.get_port() << std::endl;
-        std::cout << "⭕️ PORT browser:     " << port_browser << std::endl;
-        if (srv_data.get_port() == port_browser)
-        {
-            std::vector<Location> location = srv_data.get_location_blocks();
-            for (std::vector<Location>::iterator it = location.begin(); it != location.end(); it++)
-            {
-                Location location = *it;
-                std::cout << "🟠 location -> " << location.get_location() << std::endl;
-                std::string new_path = *path_com;
-                std::cout << "PATH     " << new_path << std::endl;
-                std::cout << "LOCATION " << location.get_location() << std::endl;
-                std::vector<std::string> methods = location.get_method();
-                std::string alias = location.get_alias();
-
-                std::cout << "🔵 ALIAS: "
-                          << " -> " << alias << std::endl;
-
-                if (path_to_find == alias)
-                {
-                    this->_req_line.target = location.get_location();
-                    std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << _req_line.target << std::endl;
-                }
-
-                if (new_path == location.get_location())
-                {
-
-                    std::cout << "🟢 Path exists in location" << std::endl;
-
-                    bool method_allowed = false;
-                    std::cout << method_allowed << std::endl;
-
-                    for (std::vector<std::string>::iterator it1 = methods.begin(); it1 != methods.end(); it1++)
-                    {
-                        std::string method = *it1;
-                        std::cout << "\tmethod -> " << method << std::endl;
-                        if (std::string(_req_line.method) == method)
-                        {
-                            this->_is_method_supported(method);
-                            method_allowed = true;
-                            std::cout << method_allowed << std::endl;
-                        }
-                        //else
-                           // this->set_err(HTTP_501_CODE, HTTP_501_REASON);
-                    }
-                    if (method_allowed == false)
-                    {
-                        std::cout << "❌  ❌  ❌ " << std::endl;
-                        this->set_err(HTTP_501_CODE, HTTP_501_REASON);
-                        return (1);
-                    }
-                }
-            }
-        }
-    }
     return (0);
 }
 

@@ -75,11 +75,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     {
         req.set_body(buff);
 
-        if (req.parse_req(server, webserver) == 1)
-        {
-            req.set_err(HTTP_405_CODE, HTTP_405_REASON);
-            this->_read_done = true;
-        }
+        req.parse_req(server, webserver);
 
         if (req.has_body())
         {

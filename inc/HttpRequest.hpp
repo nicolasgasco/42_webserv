@@ -50,7 +50,7 @@ public:
 	void set_body(std::vector<char> &buff);
 
 	// Methods
-	int parse_req(Server const *server, Webserver *webserver);
+	void parse_req(Server const *server, Webserver *webserver);
 	void output_status();
 	void reset();
 	void set_err(int const &code, std::string const &message);
@@ -76,9 +76,10 @@ private:
 	void _parse_method(std::string &line);
 	std::string const _parse_post_req_boundary() const;
 	void _parse_query_params(std::string &target);
-	int _parse_req_line(std::string &line, Webserver *webserver, Server const *server);
+	int _parse_req_line(std::string &line, Server const *server);
 	void _parse_target(std::string &line, Server const *server);
 	void _parse_version(std::string &line);
+	void _validate_req_with_config(Webserver *webserver);
 
 	// Computed properties
 	bool _is_method_supported(std::string method) const;
