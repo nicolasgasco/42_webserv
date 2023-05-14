@@ -15,12 +15,11 @@ HttpRequest::~HttpRequest()
  */
 int HttpRequest::parse_req(Server const *server, Webserver *webserver)
 {
-    // TODO remove this when build is over
-    // std::cout << std::endl
-    //           << "RAW REQUEST:" << std::endl;
-    // cout_explicit_whitespaces(std::string(this->_body.data()));
+    std::string body_str;
+    body_str.reserve(this->_body.size());
+    body_str.insert(body_str.begin(), this->_body.begin(), this->_body.end());
 
-    std::istringstream buff_stream(std::string(this->_body.data()));
+    std::istringstream buff_stream(body_str);
     std::string line;
 
     // In the interest of robustness, a server that is expecting to receive and parse a request-line
