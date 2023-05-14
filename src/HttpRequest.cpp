@@ -366,12 +366,11 @@ bool HttpRequest::is_cgi_req() const
 
 /**
  * Checks if request is for a directory.
- * Root folder is not included.
+ * If it doesn't have a file extension, it is a directory.
  */
 bool HttpRequest::is_dir_req() const
 {
-    // Ends with / but it's not root folder request
-    return (this->_req_line.target.back() == '/' && this->_req_line.target.length() != 1);
+    return this->_req_line.target.find(".") == std::string::npos;
 }
 
 /**
