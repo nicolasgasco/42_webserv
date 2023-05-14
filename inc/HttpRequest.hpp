@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "HttpService.hpp"
+#include "Location.hpp"
 #include "Webserver.hpp"
 
 #include "dev_utils.hpp" // TODO remove this after build is done
@@ -76,12 +77,12 @@ private:
 	std::string const _parse_post_req_boundary() const;
 	void _parse_query_params(std::string &target);
 	int _parse_req_line(std::string &line, Webserver *webserver, Server const *server);
-	void _parse_target(std::string &line);
+	void _parse_target(std::string &line, Server const *server);
 	void _parse_version(std::string &line);
 
 	// Computed properties
 	bool _is_method_supported() const;
-	bool _is_target_redirection(std::string const &target) const;
+	bool _is_target_redirection(std::string const &target, Server *server) const;
 };
 
 // TODO remove when not required anymore
