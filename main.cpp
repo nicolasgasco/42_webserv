@@ -171,5 +171,6 @@ int main(int argc, char **argv)
 			std::cerr << "🔴  Failed -> " << e.what() << std::endl;
 		}
 	}
+
 	return (0);
 }
