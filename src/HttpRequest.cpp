@@ -83,6 +83,7 @@ void HttpRequest::_parse_attr_line(std::string const &line)
 int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server const *server)
 {
     (void)server;
+    
     this->_parse_method(line);
 
     this->_parse_target(line);
@@ -150,13 +151,18 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
                         std::string method = *it1;
                         std::cout << "\tmethod -> " << method << std::endl;
                         if (std::string(_req_line.method) == method)
+                        {
+                            this->_is_method_supported(method);
                             method_allowed = true;
-                        std::cout << method_allowed << std::endl;
+                            std::cout << method_allowed << std::endl;
+                        }
+                        //else
+                           // this->set_err(HTTP_501_CODE, HTTP_501_REASON);
                     }
                     if (method_allowed == false)
                     {
                         std::cout << "❌  ❌  ❌ " << std::endl;
-                        //		set_err(513, "Method Not Allowed");
+                        this->set_err(HTTP_501_CODE, HTTP_501_REASON);
                         return (1);
                     }
                 }
@@ -179,7 +185,7 @@ void HttpRequest::_parse_method(std::string &line)
     this->_req_line.method = trim(method);
 
     bool is_method_too_long = this->_req_line.method.length() > std::string(LONGEST_METHOD).length();
-    if (is_method_too_long || !this->_is_method_supported()) // 501 - Method is too long or not supported
+    if (is_method_too_long || !this->_is_method_supported("ALL")) // 501 - Method is too long or not supported
         this->set_err(HTTP_501_CODE, HTTP_501_REASON);
 
     line = ltrim(line.substr(first_whitespace));
@@ -396,13 +402,40 @@ bool HttpRequest::is_html_req() const
     return (is_sec_fetch_dest_document || is_root_target);
 }
 
-bool HttpRequest::_is_method_supported() const
+bool HttpRequest::_is_method_supported(std::string method) const
 {
     std::vector<std::string> supported_methods;
-    supported_methods.push_back("GET");
-    supported_methods.push_back("POST");
-    supported_methods.push_back("DELETE");
-    supported_methods.push_back("HEAD");
+    supported_methods.clear();
+   
+    if (method == "GET")
+    {
+        supported_methods.clear();
+        supported_methods.push_back("GET");
+        supported_methods.push_back("HEAD");
+    }
+    if (method == "POST")
+    {
+        supported_methods.clear();
+        supported_methods.push_back("GET");
+        supported_methods.push_back("POST");
+        supported_methods.push_back("HEAD");
+    }
+    if (method == "DELETE")
+    {
+        supported_methods.clear();
+        supported_methods.push_back("GET");
+        supported_methods.push_back("POST");
+        supported_methods.push_back("DELETE");
+        supported_methods.push_back("HEAD");
+    }
+    if (method == "ALL")
+    {
+        supported_methods.clear();
+        supported_methods.push_back("GET");
+        supported_methods.push_back("POST");
+        supported_methods.push_back("DELETE");
+        supported_methods.push_back("HEAD");
+    }
 
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
