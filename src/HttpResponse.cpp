@@ -110,14 +110,11 @@ void HttpResponse::_build_get_res(std::string method)
             else
             {
                 this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
-                if (this->_req.is_html_req())
-                {
-                    std::string err_page_path = _server->get_error_page();
-                    err_page_path.erase(0, 1);
-                    std::ifstream path_404(err_page_path.c_str());
-                    res_body = this->_http.build_file(path_404);
-                    content_len = res_body.length() - CRLF_LEN;
-                }
+                std::string err_page_path = _server->get_error_page();
+                err_page_path.erase(0, 1);
+                std::ifstream path_404(err_page_path.c_str());
+                res_body = this->_http.build_file(path_404);
+                content_len = res_body.length() - CRLF_LEN;
             }
         }
     }
