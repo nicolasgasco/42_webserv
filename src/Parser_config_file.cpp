@@ -99,6 +99,7 @@ int check_directives_server(std::string word)
 void check_words_config_file(std::vector<std::string> text_vector)
 {
 	std::vector <std::string> tmp;
+	tmp.reserve(text_vector.size());
 	std::vector <std::string> first_word;
 	std::vector <std::string> tmp_iterator = text_vector;
 	bool flag_duplicate_port = false;
@@ -113,20 +114,20 @@ void check_words_config_file(std::vector<std::string> text_vector)
 		
 		if (my_str == "port")
 		{
-
 			if (flag_duplicate_port == true)
 			{
 				std::string errorMessage = std::string("🔴  FAILURE Wrong config_file formated (duplicate port value)");
 				throw std::runtime_error(errorMessage);
 			}
-			flag_duplicate_port = true;
+			else
+				flag_duplicate_port = true;
 		}
 		if (my_str == "server")
 			flag_duplicate_port = false;
 		
-		tmp.clear();
        	first_word.clear();
     }
+	tmp.clear();
 	std::cout << "🟢  SUCCESS All instructions in config_file are valid directives" << std::endl;
 }
 
