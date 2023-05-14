@@ -90,13 +90,15 @@ $(OBJ_DIR_SAN)%.o: $(SRC_DIR_SE)%.cpp
 	@mkdir -p $(OBJ_DIR_SAN)
 	$(CC) $(CFLAGS_SAN) $(INCLUDES) -c $< -o $@
 
-run: re 
+load_gallery:
 	@# Copy all assets from backup so that they can be deleted
 	@rm -rf public/gallery/pictures/*
 	@cp -a public/gallery/backup/. public/gallery/pictures
+
+run: re load_gallery
 	./webserv config/init.conf
 
-run-san: fclean san 
+run-san: fclean san load_gallery
 	./webserv_san config/init.conf
 
 test:
