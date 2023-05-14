@@ -86,7 +86,7 @@ int HttpRequest::_parse_req_line(std::string &line, Webserver *webserver, Server
     
     this->_parse_method(line);
 
-    this->_parse_target(line);
+    this->_parse_target(line, server);
 
     if (this->has_query_params())
         this->_parse_query_params(this->_req_line.target);
@@ -194,7 +194,7 @@ void HttpRequest::_parse_method(std::string &line)
 /**
  * Parse request line target, e.g. /index.hmtl.
  */
-void HttpRequest::_parse_target(std::string &line)
+void HttpRequest::_parse_target(std::string &line, Server const *server)
 {
     try
     {
@@ -215,7 +215,7 @@ void HttpRequest::_parse_target(std::string &line)
         line = ltrim(line.substr(first_whitespace));
 
         // Checking if it's a redirected asset
-        if (this->_is_target_redirection(this->_req_line.target))
+        if (this->_is_target_redirection(this->_req_line.target, const_cast<Server *>(server)))
             this->_is_redirect = true;
     }
     catch (const std::out_of_range &e)
@@ -440,12 +440,22 @@ bool HttpRequest::_is_method_supported(std::string method) const
     return (std::find(supported_methods.begin(), supported_methods.end(), this->_req_line.method) != supported_methods.end());
 }
 
-bool HttpRequest::_is_target_redirection(std::string const &target) const
+bool HttpRequest::_is_target_redirection(std::string const &target, Server *server) const
 {
-    // TODO change with logic from config file
-    std::string redirect_path = "/redirect/redirection.html";
-    if (target == redirect_path)
-        return true;
+    // Check if the current route has redirect directive
+    std::vector<Location> locations = server->get_location_blocks();
+    for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+    {
+        std::string index_page = it->get_index();
+        if (index_page.size() == 0)
+            continue;
+        else
+        {
+            std::string config_target = build_path(it->get_location(), index_page);
+            if (target == config_target)
+                return true;
+        }
+    }
     return false;
 }
 

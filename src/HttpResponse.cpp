@@ -133,9 +133,24 @@ void HttpResponse::_build_get_res(std::string method)
 
     this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
-    // TODO change with real redirection logic
+    // Find redirect value and send it with Location header
     if (this->_req.get_is_redirection())
-        this->_buff += "Location: " + std::string("/redirect/redirect_page.html") + "\r\n";
+    {
+        std::vector<Location> locations = this->_server->get_location_blocks();
+        for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+        {
+            std::string index_page = it->get_index();
+            if (index_page.size() > 0)
+            {
+                if (this->_req.get_req_line().target == build_path(it->get_location(), index_page))
+                {
+                    this->_buff += "Location: " + build_path(it->get_location(), it->get_redirect()) + "\r\n";
+                    break;
+                }
+            }
+        }
+    }
+
     if (method == "GET")
         this->_buff += res_body;
     else if (method == "HEAD")
