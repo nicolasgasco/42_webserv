@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dgerwig- <dgerwig-@student.42urduli>       +#+  +:+       +#+         #
+#    By: dgerwig- <dgerwig-@student.42urduliz.co    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/03/07 19:59:28 by dgerwig-         ###   ########.fr        #
+#    Updated: 2023/05/14 17:58:46 by dgerwig-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -100,6 +100,9 @@ run: re load_gallery
 
 run-san: fclean san load_gallery
 	./webserv_san config/init.conf
+
+leaks: re load_gallery
+	valgrind --leak-check=full ./webserv config/init.conf
 
 test:
 	make -C tests run

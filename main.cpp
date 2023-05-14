@@ -7,6 +7,7 @@
 #include "Config.hpp"
 #include "Webserver.hpp"
 #include "Server.hpp"
+#include "Signal.hpp"
 
 #include <sys/select.h>
 #include <unistd.h>
@@ -36,6 +37,8 @@ int main(int argc, char **argv)
 			{
 				config.process_config_file(argv[1]);
 			}
+
+			signal(SIGINT, signal_handler);
 
 			Webserver webserver;
 			webserver.load_config_file(argv[1]);
