@@ -15,7 +15,7 @@ except:
 try:
     # Test if the file was uploaded
     if fileitem.filename:
-        file_path = os.getcwd() + '/public/gallery/pictures/' + \
+        file_path = os.getcwd() + '/public/pictures/' + \
             os.path.basename(fileitem.filename)
 
         # If file already exists, return 409 Conflict
