@@ -35,17 +35,3 @@ methodTooLongForm.addEventListener("submit", function (e) {
       console.warn("Something went wrong.", err);
     });
 });
-
-// Query params
-const queryParamsForm = document.querySelector(".query-params__form");
-const codeInput = document.getElementById("code");
-const messageInput = document.getElementById("message");
-
-queryParamsForm.addEventListener("change", function () {
-  const queryParamsLink = document.getElementById("query-params__link");
-  const newTarget =
-    "/error/default.html?" +
-    `code=${codeInput.value}&message=${messageInput.value}`;
-  queryParamsLink.href = newTarget;
-  queryParamsLink.innerText = newTarget;
-});
