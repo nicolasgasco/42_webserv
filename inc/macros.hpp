@@ -9,7 +9,7 @@
 #define DEFAULT_INDEX_PAGE "index.html"
 #define DIR_PATH "dir"
 #define ERRORS_PATH "error"
-#define GALLERY_STORAGE_PATH "public/gallery/pictures"
+#define GALLERY_STORAGE_PATH "public/pictures"
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define LONGEST_METHOD "DELETE"
 #define LONGEST_URI 124 // Replace with computed value

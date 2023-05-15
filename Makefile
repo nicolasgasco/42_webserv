@@ -92,8 +92,8 @@ $(OBJ_DIR_SAN)%.o: $(SRC_DIR_SE)%.cpp
 
 load_gallery:
 	@# Copy all assets from backup so that they can be deleted
-	@rm -rf public/gallery/pictures/*
-	@cp -a public/gallery/backup/. public/gallery/pictures
+	@rm -rf public/pictures/*
+	@cp -a backup/. public/pictures
 
 run: re load_gallery
 	./webserv config/init.conf
