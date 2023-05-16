@@ -77,7 +77,9 @@ void    Location::configure_index(const std::string &str)
 
 void Location::configure_redirect(const std::string &str)
 {
-	_redirect = parser_str(str);
+	// No need to parse redirect directive if file has no extension
+	if (str.find(".") != std::string::npos)
+		_redirect = parser_str(str);
 }
 
 void    Location::failed_element(const std::string &str) 

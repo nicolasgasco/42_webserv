@@ -4,6 +4,7 @@
 HttpRequest::HttpRequest()
 {
     this->_err.code = -1;
+    this->_is_redirect = false;
 }
 
 HttpRequest::~HttpRequest()
@@ -415,7 +416,7 @@ bool HttpRequest::_is_target_redirection(std::string const &target, Server *serv
         else
         {
             std::string config_target = build_path(it->get_location(), index_page);
-            if (target == config_target)
+            if (target == config_target && !it->get_redirect().empty())
                 return true;
         }
     }
