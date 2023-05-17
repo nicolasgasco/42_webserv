@@ -151,7 +151,6 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     }
 
     // Remote adress
-    // TODO change this to the real remote address
     std::string remote_address = "REMOTE_ADDR=127.0.0.0";
     envp.push_back(remote_address);
 

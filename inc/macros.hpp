@@ -12,7 +12,7 @@
 #define GALLERY_STORAGE_PATH "public/pictures"
 #define HTTP_PROTOCOL "HTTP/1.1"
 #define LONGEST_METHOD "DELETE"
-#define LONGEST_URI 124 // Replace with computed value
+#define LONGEST_URI 124
 #define MIN_FD 3
 #define PIPE_BODY 1
 #define PIPE_RES 0

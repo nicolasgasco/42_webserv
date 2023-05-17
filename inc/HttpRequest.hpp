@@ -10,7 +10,6 @@
 #include "Location.hpp"
 #include "Webserver.hpp"
 
-#include "dev_utils.hpp" // TODO remove this after build is done
 #include "macros.hpp"
 #include "utils.hpp"
 
@@ -86,6 +85,5 @@ private:
 	bool _is_target_redirection(std::string const &target, Server *server) const;
 };
 
-// TODO remove when not required anymore
 std::ostream &operator<<(std::ostream &os, HttpRequest &std);
 std::ostream &operator<<(std::ostream &os, ReqErr &std);

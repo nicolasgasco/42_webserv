@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CgiService.hpp"
-#include "dev_utils.hpp" // TODO remove this after build is done
 #include "HttpRequest.hpp"
 #include "HttpService.hpp"
 #include "macros.hpp"
@@ -64,5 +63,4 @@ public:
     std::string test_build_headers(int const &content_len) const;
 };
 
-// TODO remove when not required anymore
 std::ostream &operator<<(std::ostream &os, HttpResponse &std);
