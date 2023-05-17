@@ -33,7 +33,6 @@ void HttpResponse::build_response(HttpRequest req, HttpService const &http, CgiS
             this->_build_delete_res();
     }
 
-    // TODO delete this when build is done
     std::cout << *this << std::endl
               << std::endl;
 }
@@ -168,7 +167,6 @@ void HttpResponse::_build_delete_res()
     std::string res_body;
     std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
 
-    // TODO add real logic to check if DELETE is allowed on route
     bool is_allowed_path = target.find(GALLERY_STORAGE_PATH) != std::string::npos;
     if (!is_allowed_path)
     {

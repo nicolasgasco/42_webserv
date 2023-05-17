@@ -55,7 +55,6 @@ void HttpRequest::parse_req(Server const *server, Webserver *webserver)
 
     this->_validate_req_with_config(webserver);
 
-    // TODO delete this once build is over
     this->output_status();
 }
 
