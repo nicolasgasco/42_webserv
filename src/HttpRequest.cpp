@@ -116,8 +116,8 @@ void HttpRequest::_validate_req_with_config(Webserver *webserver)
                     this->_req_line.target = location.get_location();
                     std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << _req_line.target << std::endl;
                 }
-
-                if (this->_req_line.target == location.get_location())
+      
+                if (this->_req_line.target.find(location.get_location()) != std::string::npos) 
                 {
                     std::cout << "🟢 Path exists in location" << std::endl;
                     if (std::find(methods.begin(), methods.end(), this->_req_line.method) == methods.end())
