@@ -26,7 +26,8 @@ std::string const RouterService::get_file_path(HttpRequest const &req, Server *s
         for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
         {
             std::string index_page = it->get_index();
-            if (req.get_req_line().target == it->get_location() && index_page.size() > 0)
+            bool is_location_in_target = static_cast<bool>(req.get_req_line().target.find(it->get_location()) != std::string::npos);
+            if (is_location_in_target && index_page.size() > 0)
                 return build_path(PUBLIC_PATH, target, index_page);
         }
         return build_path(PUBLIC_PATH, target, DEFAULT_INDEX_PAGE);
