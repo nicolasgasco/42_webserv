@@ -18,7 +18,7 @@ std::string const RouterService::get_file_path(HttpRequest const &req, Server *s
 
     if (req.is_cgi_req())
         // cgi-bin is at the root of the target
-        return build_path("./", target);
+        return target.front() == '/' ? "." + target : "./" + target;
     // If index page needs to be appended to the target, compute it
     else if (req.is_html_req() && (req.is_dir_req() && server->get_autoindex() == true))
     {

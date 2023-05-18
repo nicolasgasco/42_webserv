@@ -66,6 +66,8 @@ void HttpResponse::_build_get_res(std::string method)
     int content_len = 0;
     std::string res_body;
 
+    std::string file_path = this->_router.get_file_path(this->_req, this->_server);
+
     // If a folder is required and autoindex is off, use CGI script to output folder content
     if (this->_req.is_dir_req() && this->_server->get_autoindex() == false)
     {
@@ -86,14 +88,12 @@ void HttpResponse::_build_get_res(std::string method)
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
     {
-        this->_build_cgi_res(GALLERY_STORAGE_PATH, res_body, content_len, nullptr);
-        this->_buff = res_body;
+        this->_buff = this->_build_cgi_res(GALLERY_STORAGE_PATH, nullptr);
         return;
     }
-    // It's a normal asset
+    // It's an asset request
     else
     {
-        std::string file_path = this->_router.get_file_path(this->_req, this->_server);
         std::ifstream file(file_path);
 
         if (this->_req.get_is_redirection())
@@ -149,13 +149,10 @@ void HttpResponse::_build_get_res(std::string method)
  */
 void HttpResponse::_build_post_res()
 {
-    int content_len = 0;
-    std::string res_body;
     std::string file_path = "/cgi-bin/gallery_page.py";
 
     std::vector<char> const body = this->_req.get_body();
-    this->_build_cgi_res(file_path, res_body, content_len, &body);
-    this->_buff = res_body;
+    this->_buff = this->_build_cgi_res(file_path, &body);
 }
 
 /**
@@ -197,12 +194,13 @@ void HttpResponse::_build_delete_res()
 /**
  * Execute CGI script and return its output.
  */
-void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body, int &content_len, const std::vector<char> *req_body)
+std::string const HttpResponse::_build_cgi_res(std::string const &path, const std::vector<char> *req_body)
 {
     std::string file_path = this->_router.get_file_path(this->_req, this->_server);
     std::ifstream file(file_path);
 
-    if (file)
+    // If file exists and it's not a folder
+    if (file && file_path.substr(1).find(".") != std::string::npos)
     {
         this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
 
@@ -215,20 +213,22 @@ void HttpResponse::_build_cgi_res(std::string const &path, std::string &res_body
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
-        res_body = req_body ? this->_cgi.build_cgi_output(args, envp, req_body) : this->_cgi.build_cgi_output(args, envp);
-        content_len = res_body.length() - CRLF_LEN;
+        return req_body ? this->_cgi.build_cgi_output(args, envp, req_body) : this->_cgi.build_cgi_output(args, envp);
     }
-    else
-    {
-        this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
 
-        std::string err_page_path = _server->get_error_page();
-        err_page_path.erase(0, 1);
-        std::ifstream path_404(err_page_path.c_str());
-        res_body = this->_http.build_file(path_404);
+    this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
 
-        content_len = res_body.length() - CRLF_LEN;
-    }
+    std::string err_page_path = trim_trailing_leading_slash(_server->get_error_page());
+    std::ifstream path_404(err_page_path.c_str());
+    std::string err_page_body = this->_http.build_file(path_404);
+    int content_len = err_page_body.size();
+
+    std::string res_body = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+    res_body += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+    res_body += "\r\n";
+
+    res_body += err_page_body;
+    return res_body;
 }
 
 /**
