@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 {
 	if (argc > 2)
 	{
-		std::cout << "❌  WRONG USAGE!!!.\n⚠️   Use: ./webserv [configuration file]" << std::endl;
+		std::cout << "❌  WRONG USAGE!!!.\n⭐️  Use: ./webserv [configuration file]" << std::endl;
 		return (-1);
 	}
 	else
@@ -30,8 +30,8 @@ int main(int argc, char **argv)
 
 			if (argc == 1)
 			{
-				char *config_file_path = (char *)"./config/default.conf";
-				config.process_config_file(config_file_path);
+				argv[1]	= (char*)"./config/default.conf";
+				config.process_config_file(argv[1]);
 			}
 			else
 			{
