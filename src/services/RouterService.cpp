@@ -27,12 +27,7 @@ std::string const RouterService::get_file_path(HttpRequest const &req, Server *s
         {
             std::string index_page = it->get_index();
 
-            std::string location = it->get_location();
-            // Remove slash at beginning of location
-            location = location.front() == '/' ? location.substr(1) : location;
-            // Remove slash at end of location
-            location = location.back() == '/' ? location.substr(0, location.size() - 1) : location;
-
+            std::string location = trim_trailing_leading_slash(it->get_location());
             bool is_location_in_target = static_cast<bool>(req.get_req_line().target.find(location) != std::string::npos);
             if (is_location_in_target && index_page.size() > 0)
                 return build_path(PUBLIC_PATH, target, index_page);
