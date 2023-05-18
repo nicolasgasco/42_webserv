@@ -73,7 +73,6 @@ private:
 
 	void _parse_attr_line(std::string const &line);
 	void _parse_method(std::string &line);
-	std::string const _parse_post_req_boundary() const;
 	void _parse_query_params(std::string &target);
 	int _parse_req_line(std::string &line, Server const *server);
 	void _parse_target(std::string &line, Server const *server);
@@ -86,4 +85,3 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, HttpRequest &std);
-std::ostream &operator<<(std::ostream &os, ReqErr &std);
