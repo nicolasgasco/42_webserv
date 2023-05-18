@@ -179,9 +179,6 @@ int HttpRequest::_parse_req_line(std::string &line, Server const *server)
 
     this->_parse_target(line, server);
 
-    if (this->has_query_params())
-        this->_parse_query_params(this->_req_line.target);
-
     this->_parse_version(line);
 
     return (0);
@@ -263,33 +260,6 @@ void HttpRequest::_parse_version(std::string &line)
     }
 }
 
-/**
- * Parse query params in target, e.g. /index.hmtl&user=bar.
- */
-void HttpRequest::_parse_query_params(std::string &target)
-{
-    size_t question_mark_sign_pos = target.find("?");
-    std::string raw_params = target.substr(question_mark_sign_pos + 1);
-
-    while (true)
-    {
-        size_t equal_sign_pos = raw_params.find("=");
-        size_t ampersand_sign_pos = raw_params.find("&");
-
-        std::string key = raw_params.substr(0, equal_sign_pos);
-        std::string value = raw_params.substr(equal_sign_pos + 1, ampersand_sign_pos - equal_sign_pos - 1);
-
-        this->_params.insert(std::pair<std::string, std::string>(key, value));
-
-        raw_params = raw_params.substr(ampersand_sign_pos + 1);
-
-        if (ampersand_sign_pos == std::string::npos)
-            break;
-    }
-
-    target = target.substr(0, question_mark_sign_pos);
-}
-
 std::vector<char> const &HttpRequest::get_body() const
 {
     return this->_body;
@@ -357,11 +327,6 @@ bool HttpRequest::has_body() const
 bool HttpRequest::has_error() const
 {
     return this->_err.code != -1;
-}
-
-bool HttpRequest::has_query_params() const
-{
-    return this->_req_line.target.find("?") != std::string::npos;
 }
 
 bool HttpRequest::is_cgi_req() const
