@@ -110,9 +110,7 @@ void HttpRequest::_validate_req_with_config(Webserver *webserver)
                 if (!alias.empty())
                 {
                     // Preappend / to alias if it doesn't have it
-                    alias = location.get_alias().front() == '/' ? location.get_alias().substr(1) : location.get_alias();
-                    // Postappend / to alias if it doesn't have it
-                    alias = alias.back() == '/' ? alias.substr(0, alias.length() - 1) : alias;
+                    alias = trim_trailing_leading_slash(location.get_alias());
 
                     std::cout << "🔵 ALIAS: "
                               << " -> " << alias << std::endl;
@@ -134,11 +132,14 @@ void HttpRequest::_validate_req_with_config(Webserver *webserver)
                     }
                 }
 
-                if (this->_req_line.target.find(location.get_location()) != std::string::npos)
+                if (this->_req_line.target.find(trim_trailing_leading_slash(location.get_location())) != std::string::npos)
                 {
-                    std::cout << "🟢 Path exists in location" << std::endl;
                     if (std::find(methods.begin(), methods.end(), this->_req_line.method) == methods.end())
+                    {
+                        std::cout << "🔴  Method not allowed: " << this->_req_line.method << std::endl;
                         this->set_err(HTTP_405_CODE, HTTP_405_REASON);
+                        return;
+                    }
                 }
             }
         }
