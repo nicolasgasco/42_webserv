@@ -1,5 +1,7 @@
 #!/bin/sh
 
+make re
+
 DEBUG=""
 
 while getopts d flag

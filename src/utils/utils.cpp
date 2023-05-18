@@ -191,3 +191,19 @@ bool find_in_vec(std::string const &pattern, std::vector<char>::const_iterator i
     }
     return true;
 }
+
+/**
+ * Removes trailing and leading slash from a string.
+ *
+ * @param str String to be trimmed.
+ * @returns Trimmed string.
+ */
+std::string trim_trailing_leading_slash(std::string const &str)
+{
+    std::string result = str;
+    if (result.front() == '/')
+        result.erase(0, 1);
+    if (result.back() == '/')
+        result.pop_back();
+    return result;
+}
