@@ -57,7 +57,6 @@ public:
 	// Computed properties
 	bool has_body() const;
 	bool has_error() const;
-	bool has_query_params() const;
 	bool is_cgi_req() const;
 	bool is_dir_req() const;
 	bool is_html_req() const;
@@ -73,7 +72,6 @@ private:
 
 	void _parse_attr_line(std::string const &line);
 	void _parse_method(std::string &line);
-	void _parse_query_params(std::string &target);
 	int _parse_req_line(std::string &line, Server const *server);
 	void _parse_target(std::string &line, Server const *server);
 	void _parse_version(std::string &line);
