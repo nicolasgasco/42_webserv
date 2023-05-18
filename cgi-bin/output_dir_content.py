@@ -35,9 +35,10 @@ try:
         formatted_files_in_dir = list(
             map(lambda item: f'<li><a href="{public_dir_path}{format_directory(item)}">{format_directory(item)}</a></li>', files_in_dir))
         # Inject directory list in template
+        formatted_files_in_dir = '\n'.join(formatted_files_in_dir)
+        formatted_files_in_dir = f"<ul>{formatted_files_in_dir}</ul>"
         dir_content_template = dir_content_template.replace(
-            '{{dir_content}}', '\n'.join(formatted_files_in_dir))
-        dir_content_template = f"<ul>{dir_content_template}</ul>"
+            '{{dir_content}}', formatted_files_in_dir)
     else:
         formatted_files_in_dir = ["<p>This directory is currently empty.</p>"]
         dir_content_template = dir_content_template.replace(
