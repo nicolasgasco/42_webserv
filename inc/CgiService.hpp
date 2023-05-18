@@ -20,4 +20,7 @@ public:
     std::vector<std::string> build_envp(std::string path, Server const *server, HttpRequest const &req) const;
 
     std::string const get_cgi_executable(std::string const &path) const;
+
+private:
+    std::string const _build_500_error_page() const;
 };

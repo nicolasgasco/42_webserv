@@ -15,21 +15,36 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
 
     int fds[2];
     if (pipe(fds) < 0)
+    {
         std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
+        return this->_build_500_error_page();
+    }
 
     pid_t pid = fork();
     if (pid < 0)
+    {
         std::cerr << "Error: fork: " << strerror(errno) << std::endl;
+        return this->_build_500_error_page();
+    }
     else if (pid == 0)
     {
         if (dup2(fds[FD_READ], STDIN_FILENO) < 0)
+        {
             std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
+            return this->_build_500_error_page();
+        }
         close(fds[FD_READ]);
         if (dup2(fds[FD_WRITE], STDOUT_FILENO) < 0)
+        {
             std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
+            return this->_build_500_error_page();
+        }
 
         if (execve(args[0], args, envp) < 0)
+        {
             std::cerr << "Error: execve: " << strerror(errno) << std::endl;
+            return this->_build_500_error_page();
+        }
     }
     else
     {
@@ -39,7 +54,6 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
             if (bytes < 0)
                 continue;
             else if (bytes < (ssize_t)body.size())
-
                 body.erase(body.begin(), body.begin() + bytes);
             else
                 break;
@@ -48,10 +62,17 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
     }
 
     if (waitpid(pid, NULL, 0) < 0)
+    {
         std::cerr << "Error: waitpid: " << strerror(errno) << std::endl;
+        return this->_build_500_error_page();
+    }
 
     char cgi_output[CGI_BUF_LEN] = {0};
-    read(fds[FD_READ], cgi_output, CGI_BUF_LEN);
+    if (read(fds[FD_READ], cgi_output, CGI_BUF_LEN) == -1)
+    {
+        std::cerr << "Error: read: " << strerror(errno) << std::endl;
+        return this->_build_500_error_page();
+    }
     close(fds[FD_READ]);
 
     return cgi_output;
@@ -66,16 +87,14 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
     if (pipe(fds) == -1)
     {
         std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
-        // TODO Add 500 error page
-        return cgi_output;
+        return this->_build_500_error_page();
     }
 
     pid_t pid = fork();
     if (pid == -1)
     {
         std::cerr << "Error: fork: " << strerror(errno) << std::endl;
-        // TODO Add 500 error page
-        return cgi_output;
+        return this->_build_500_error_page();
     }
 
     if (pid == 0)
@@ -83,8 +102,7 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
         if (dup2(fds[FD_WRITE], STDOUT_FILENO) == -1)
         {
             std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
-            // TODO Add 500 error page
-            return cgi_output;
+            return this->_build_500_error_page();
         }
         close(fds[FD_READ]);
         close(fds[FD_WRITE]);
@@ -92,8 +110,7 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
         if (execve(args[0], args, envp) < 0)
         {
             std::cerr << "Error: execve: " << strerror(errno) << std::endl;
-            // TODO Add 500 error page
-            return cgi_output;
+            return this->_build_500_error_page();
         }
     }
     else
@@ -101,7 +118,11 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
         close(fds[FD_WRITE]);
 
         char buff[CGI_BUF_LEN] = {0};
-        read(fds[FD_READ], buff, CGI_BUF_LEN);
+        if (read(fds[FD_READ], buff, CGI_BUF_LEN) < 1)
+        {
+            std::cerr << "Error: read: " << strerror(errno) << std::endl;
+            return this->_build_500_error_page();
+        }
         close(fds[FD_READ]);
 
         cgi_output = buff;
@@ -180,6 +201,26 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     envp.push_back(server_software);
 
     return envp;
+}
+
+std::string const CgiService::_build_500_error_page() const
+{
+    std::ifstream file(build_path(PUBLIC_PATH, ERRORS_PATH, "default.html"));
+
+    std::ostringstream data_stream;
+    data_stream << file.rdbuf();
+
+    std::string response = "HTTP/1.1 " + std::to_string(HTTP_500_CODE) + " " + HTTP_500_REASON + "\r\nContent-Type: text/html\r\n";
+
+    std::string response_body = data_stream.str();
+    replace_var_in_page(response_body, "{{code}}", std::to_string(HTTP_500_CODE));
+    replace_var_in_page(response_body, "{{message}}", HTTP_500_REASON);
+
+    int content_length = response_body.size();
+    response += "Content-Length: " + std::to_string(content_length) + "\r\n\r\n";
+
+    response += response_body;
+    return response;
 }
 
 std::string const CgiService::get_cgi_executable(std::string const &path) const

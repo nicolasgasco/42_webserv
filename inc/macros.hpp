@@ -39,6 +39,8 @@
 #define HTTP_413_REASON "Content Too Large"
 #define HTTP_414_CODE 414
 #define HTTP_414_REASON "URI Too Long"
+#define HTTP_500_CODE 500
+#define HTTP_500_REASON "Internal Server Error"
 #define HTTP_501_CODE 501
 #define HTTP_501_REASON "Not Implemented"
 
