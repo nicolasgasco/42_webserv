@@ -105,18 +105,36 @@ void HttpRequest::_validate_req_with_config(Webserver *webserver)
                 std::cout << "PATH     " << new_path << std::endl;
                 std::cout << "LOCATION " << location.get_location() << std::endl;
                 std::vector<std::string> methods = location.get_method();
+
                 std::string alias = location.get_alias();
-
-                std::cout << "🔵 ALIAS: "
-                          << " -> " << alias << std::endl;
-
-                if (path_to_find == alias)
+                if (!alias.empty())
                 {
-                    this->_req_line.target = location.get_location();
-                    std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << _req_line.target << std::endl;
+                    // Preappend / to alias if it doesn't have it
+                    alias = location.get_alias().front() == '/' ? location.get_alias().substr(1) : location.get_alias();
+                    // Postappend / to alias if it doesn't have it
+                    alias = alias.back() == '/' ? alias.substr(0, alias.length() - 1) : alias;
+
+                    std::cout << "🔵 ALIAS: "
+                              << " -> " << alias << std::endl;
+
+                    size_t pos = path_to_find.find(alias);
+                    if (pos != std::string::npos)
+                    {
+                        // Preappend / to location if it doesn't have it
+                        std::string location_path = location.get_location().front() == '/' ? location.get_location().substr(1) : location.get_location();
+                        // Postappend / to location if it doesn't have it
+                        location_path = location_path.back() == '/' ? location_path.substr(0, location_path.length() - 1) : location_path;
+
+                        // Compute new path based on alias
+                        std::string aliased_path_to_find = path_to_find.erase(pos, alias.length());
+                        aliased_path_to_find.insert(pos, location_path);
+
+                        this->_req_line.target = aliased_path_to_find;
+                        std::cout << "🟢 🟢  Alias exists in location: " << path_to_find << " & " << alias << "    Path changed to -> " << this->_req_line.target << std::endl;
+                    }
                 }
-      
-                if (this->_req_line.target.find(location.get_location()) != std::string::npos) 
+
+                if (this->_req_line.target.find(location.get_location()) != std::string::npos)
                 {
                     std::cout << "🟢 Path exists in location" << std::endl;
                     if (std::find(methods.begin(), methods.end(), this->_req_line.method) == methods.end())

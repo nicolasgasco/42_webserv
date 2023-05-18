@@ -73,36 +73,41 @@
               </form>
             </li>
             <li>
-              <p>
-                Go to
-                <a href="redirection/redirect_page.html"
-                  >page with active redirection</a
-                >
-                to see redirection
-              </p>
+              Go to
+              <a href="redirection/redirect_page.html"
+                >page with active redirection</a
+              >
+              to see redirection
             </li>
             <li>
-              <p>Go to <a href="/video">page with video</a></p>
+              Go to aliased paged (<b>/assets</b> aliased to <b>/my-assets</b>)
+              <ul class="alias-list">
+                <li>
+                  Go to <a href="/my-assets">/my-assets</a> configured index
+                  page
+                </li>
+                <li>
+                  Go to
+                  <a href="/my-assets/success.png">/my-assets/success.png</a>
+                </li>
+              </ul>
             </li>
+            <li>Go to <a href="/video">page with video</a></li>
           </ul>
         </div>
         <div class="centered container">
           <h2>Error states</h2>
           <ul class="w-600">
             <li>
-              <p>
-                Route that does not exist:
-                <a href="/does-not-exist">/does-not-exist</a>
-              </p>
+              Route that does not exist:
+              <a href="/does-not-exist">/does-not-exist</a>
             </li>
             <li>
-              <p>
-                Go to very long route
-                <a
-                  href="/uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_"
-                  >/uri_that_is_way_too_long... (125 characters)</a
-                >
-              </p>
+              Go to very long route
+              <a
+                href="/uri_that_is_way_too_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_long_"
+                >/uri_that_is_way_too_long... (125 characters)</a
+              >
             </li>
           </ul>
         </div>
