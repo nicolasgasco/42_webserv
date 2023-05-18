@@ -77,7 +77,7 @@ void HttpRequest::_validate_req_with_config(Webserver *webserver)
 
     try
     {
-        std::string host = this->get_attrs().at("Host");
+        std::string host = this->get_attrs().at(HOST);
         this->port_browser = host.substr(host.find(":") + 1);
     }
     catch (std::out_of_range &e)
@@ -290,22 +290,6 @@ void HttpRequest::_parse_query_params(std::string &target)
     target = target.substr(0, question_mark_sign_pos);
 }
 
-/**
- * Parse boundary used by browser when sending post request.
- * @returns Parsed boundary.
- */
-std::string const HttpRequest::_parse_post_req_boundary() const
-{
-    std::string body_str = std::string(this->_body.data());
-
-    std::string delim = POST_BODY_BOUNDARY;
-    body_str = body_str.substr(body_str.find(delim) + delim.length());
-
-    std::string boundary = body_str.substr(0, body_str.find("\r\n"));
-
-    return boundary;
-}
-
 std::vector<char> const &HttpRequest::get_body() const
 {
     return this->_body;
@@ -481,7 +465,7 @@ void HttpRequest::output_status()
     std::cout << *this << std::endl;
 
     if (this->_err.code != -1)
-        std::cerr << this->_err << std::endl;
+        std::cerr << "Invalid request parsed: " << this->_err.code << " " << this->_err.message << "..." << std::endl;
     else
         std::cout << YELLOW << "Valid request parsed..." << NC << std::endl;
 }
@@ -518,11 +502,5 @@ std::ostream &operator<<(std::ostream &os, HttpRequest &std)
             std::cout << it->first << ": " << YELLOW << "." << NC << it->second << YELLOW << "." << NC << std::endl;
     }
 
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, ReqErr &std)
-{
-    std::cerr << RED << std.code << ": " << std.message << NC;
     return os;
 }

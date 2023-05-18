@@ -117,7 +117,7 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     // Content Length
     try
     {
-        std::string content_length = "CONTENT_LENGTH=" + req.get_attrs().at("Content-Length");
+        std::string content_length = "CONTENT_LENGTH=" + req.get_attrs().at(CONTENT_LENGTH);
         envp.push_back(content_length);
     }
     catch (std::out_of_range &e)
@@ -127,7 +127,7 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     // Content Type
     try
     {
-        std::string content_type = "CONTENT_TYPE=" + req.get_attrs().at("Content-Type");
+        std::string content_type = "CONTENT_TYPE=" + req.get_attrs().at(CONTENT_TYPE);
         envp.push_back(content_type);
     }
     catch (std::out_of_range &e)
@@ -161,7 +161,7 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     envp.push_back(script_name);
     try
     {
-        std::string server_name = "SERVER_NAME=" + req.get_attrs().at("Host");
+        std::string server_name = "SERVER_NAME=" + req.get_attrs().at(HOST);
         if (server_name.size() && server_name.find(":") != std::string::npos)
             server_name = server_name.substr(0, server_name.find(":"));
         envp.push_back(server_name);
