@@ -20,8 +20,14 @@ struct addrinfo *AddressInfo::get_serv_info() const
 void AddressInfo::_fill_addr_info(std::string const &port, std::string const &host_name)
 {
     struct addrinfo hints = this->_fill_hints();
-	
-	int status = getaddrinfo(host_name == "localhost" ? NULL : host_name.c_str(), port.c_str(), &hints, &(this->_serv_info));
+
+    const char *computed_host_name = (host_name == "localhost" ? nullptr : nullptr);
+    if (computed_host_name)
+    {
+        // Project doesn't accept hosts other than localhost
+        // continue
+    }
+    int status = getaddrinfo(NULL, port.c_str(), &hints, &(this->_serv_info));
 
     this->_check_addr_info_status(status);
 }
