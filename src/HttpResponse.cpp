@@ -108,9 +108,7 @@ void HttpResponse::_build_get_res(std::string method)
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
     {
-        std::string gallery_path = this->_server->get_storage().size() ? build_path(PUBLIC_PATH, trim_trailing_leading_slash(this->_server->get_storage())) : GALLERY_STORAGE_PATH;
-
-        std::cout << "GALLERY PATH: " << gallery_path << std::endl;
+        std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(this->_server->get_storage()) : GALLERY_STORAGE_PATH;
         this->_buff = this->_build_cgi_res(gallery_path, nullptr, nullptr);
         return;
     }
@@ -185,7 +183,7 @@ void HttpResponse::_build_post_res()
 
     if ((this->_req.has_body() || body_size > 0) && (is_cgi_target && has_file_extension))
     {
-        std::string gallery_path = this->_server->get_storage().size() ? build_path(PUBLIC_PATH, trim_trailing_leading_slash(this->_server->get_storage())) : GALLERY_STORAGE_PATH;
+        std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(this->_server->get_storage()) : GALLERY_STORAGE_PATH;
         std::string user_defined_env = "GALLERY_PATH=" + gallery_path;
         this->_buff = this->_build_cgi_res(file_path, &user_defined_env, &req_body);
     }
@@ -217,7 +215,10 @@ void HttpResponse::_build_delete_res()
     std::string res_body;
     std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
 
-    std::string gallery_path = this->_server->get_storage().size() ? build_path(PUBLIC_PATH, trim_trailing_leading_slash(this->_server->get_storage())) : GALLERY_STORAGE_PATH;
+    std::string storage_path = this->_server->get_storage();
+    // Remove leading point if exists
+    storage_path = storage_path.at(0) == '.' ? storage_path.substr(1) : storage_path;
+    std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(storage_path) : GALLERY_STORAGE_PATH;
     bool is_allowed_path = target.find(gallery_path) != std::string::npos;
     if (!is_allowed_path)
     {

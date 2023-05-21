@@ -161,7 +161,9 @@ std::vector<std::string> CgiService::build_envp(std::string path, Server const *
     std::string path_info = "PATH_INFO=" + path;
     envp.push_back(path_info);
 
-    std::string path_translated = "PATH_TRANSLATED=./" + path;
+    // Don't preappend ./ if path is already absolute
+    path = (path.find("./") == std::string::npos) ? ("./" + path) : path;
+    std::string path_translated = "PATH_TRANSLATED=" + path;
     envp.push_back(path_translated);
 
     std::string raw_target = req.get_req_line().raw_target;
