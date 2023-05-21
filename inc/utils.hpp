@@ -7,6 +7,7 @@
 std::string ltrim(std::string const &str);
 std::string rtrim(std::string const &str);
 std::string trim(std::string const &str);
+std::string convert_attr_key_to_title_case(std::string const &str);
 bool str_isspace(std::string const &str);
 bool str_ends_with(std::string const &value, std::string const &ending);
 
