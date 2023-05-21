@@ -14,21 +14,21 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
     std::vector<char> body = *req_body;
 
     int fds[2];
-    if (pipe(fds) < 0)
+    if (pipe(fds) == -1)
     {
         std::cerr << "Error: pipe: " << strerror(errno) << std::endl;
         return this->_build_500_error_page();
     }
 
     pid_t pid = fork();
-    if (pid < 0)
+    if (pid == -1)
     {
         std::cerr << "Error: fork: " << strerror(errno) << std::endl;
         return this->_build_500_error_page();
     }
     else if (pid == 0)
     {
-        if (dup2(fds[FD_READ], STDIN_FILENO) < 0)
+        if (dup2(fds[FD_READ], STDIN_FILENO) == -1)
         {
             std::cerr << "Error: dup2: " << strerror(errno) << std::endl;
             return this->_build_500_error_page();
@@ -40,7 +40,7 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
             return this->_build_500_error_page();
         }
 
-        if (execve(args[0], args, envp) < 0)
+        if (execve(args[0], args, envp) == -1)
         {
             std::cerr << "Error: execve: " << strerror(errno) << std::endl;
             return this->_build_500_error_page();
@@ -61,7 +61,7 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
         close(fds[FD_WRITE]);
     }
 
-    if (waitpid(pid, NULL, 0) < 0)
+    if (waitpid(pid, NULL, 0) == -1)
     {
         std::cerr << "Error: waitpid: " << strerror(errno) << std::endl;
         return this->_build_500_error_page();
@@ -107,7 +107,7 @@ std::string const CgiService::build_cgi_output(char *const *args, char *const *e
         close(fds[FD_READ]);
         close(fds[FD_WRITE]);
 
-        if (execve(args[0], args, envp) < 0)
+        if (execve(args[0], args, envp) == -1)
         {
             std::cerr << "Error: execve: " << strerror(errno) << std::endl;
             return this->_build_500_error_page();

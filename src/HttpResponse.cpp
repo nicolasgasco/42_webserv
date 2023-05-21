@@ -176,7 +176,25 @@ void HttpResponse::_build_post_res()
     std::string req_body_str = std::string(req_body.data());
     size_t body_size = req_body_str.substr(req_body_str.find("\r\n\r\n") + 4).size();
 
-    this->_buff = (body_size > 0) ? this->_build_cgi_res(file_path, &req_body) : this->_build_cgi_res(file_path, nullptr);
+    if (this->_req.has_body() || body_size > 0)
+        this->_buff = this->_build_cgi_res(file_path, &req_body);
+    else
+    {
+        this->set_status_line(HTTP_400_CODE, HTTP_400_REASON);
+
+        std::ifstream file(this->_router.get_def_err_file_path());
+        std::string err_page = this->_http.build_file(file);
+        replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
+        replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
+
+        std::string res_body = err_page;
+        int content_len = err_page.length();
+
+        this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+        this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+        this->_buff += "\r\n";
+        this->_buff += res_body;
+    }
 }
 
 /**

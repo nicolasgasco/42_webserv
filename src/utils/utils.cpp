@@ -31,6 +31,28 @@ std::string trim(std::string const &str)
     return r_trimmed;
 }
 
+/**
+ * Converts a string to title case.
+ *
+ * @param str String to be converted.
+ * @returns Converted string.
+ */
+std::string convert_attr_key_to_title_case(std::string const &str)
+{
+    std::string result = str;
+    if (islower(result[0]))
+        result[0] = toupper(result[0]);
+
+    if (result.find("-") == std::string::npos)
+        return result;
+
+    size_t char_after_dash_post = result.find("-") + 1;
+    if (islower(result.at(char_after_dash_post)))
+        result[char_after_dash_post] = toupper(result[char_after_dash_post]);
+
+    return result;
+}
+
 bool str_isspace(std::string const &str)
 {
     for (unsigned int i = 0; i < str.size(); i++)

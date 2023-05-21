@@ -158,7 +158,7 @@ void HttpRequest::_parse_attr_line(std::string const &line)
         this->set_err(HTTP_400_CODE, HTTP_400_REASON);
 
     size_t colon_delim = line.find(":");
-    std::string key = ltrim(line.substr(0, colon_delim));
+    std::string key = convert_attr_key_to_title_case(ltrim(line.substr(0, colon_delim)));
     std::string value = trim(line.substr(colon_delim + 1));
 
     if (key.empty() || value.empty())
