@@ -24,7 +24,7 @@ class Server
 			port_ = 0, 
 			host_ = 1, 
 			server_name_ = 2, 
-			root_ = 3, 
+			storage_ = 3, 
 			error_page_ = 4,
         	cgi_file_ext_ = 5, 
 			autoindex_ = 6, 
@@ -36,7 +36,7 @@ class Server
     	void    configure_port(const std::string &str);
     	void    configure_host(const std::string &str);
     	void    configure_server_name(const std::string &str);
-    	void    configure_root(const std::string &str);
+    	void    configure_storage(const std::string &str);
     	void    configure_error_page(const std::string &str);
     	void    configure_cgi_file_ext(const std::string &str);
     	void    configure_autoindex(const std::string &str);
@@ -46,7 +46,7 @@ class Server
     	std::string					get_port() const;
     	std::string             	get_host();
     	std::string             	get_server_name() const;
-    	std::string             	get_root();
+    	std::string             	get_storage();
     	std::string           		get_error_page();
 		std::vector<std::string>   	get_cgi_file_ext();
     	bool                        get_autoindex();
@@ -65,7 +65,7 @@ class Server
 		std::string					_port;
     	std::string         	    _host;
     	std::string         	    _server_name;
-    	std::string                 _root;
+    	std::string                 _storage;
     	std::string        		    _error_page;
     	std::vector<std::string>   	_cgi_file_ext;
     	bool                        _autoindex;

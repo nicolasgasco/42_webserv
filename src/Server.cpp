@@ -4,7 +4,7 @@ Server::Server() :
 		_port(), 
 		_host(), 
 		_server_name(), 
-		_root(), 
+		_storage(), 
 		_error_page(), 
 		_cgi_file_ext(),
 		_autoindex(false), 
@@ -24,7 +24,7 @@ void Server::create_server(std::vector <std::string> &server_config)
 		&Server::configure_port,
         &Server::configure_host,
         &Server::configure_server_name,
-        &Server::configure_root,
+        &Server::configure_storage,
         &Server::configure_error_page,
         &Server::configure_cgi_file_ext,
       	&Server::configure_autoindex,
@@ -53,7 +53,7 @@ void    Server::reset_server()
     _port.clear();
     _host.clear();
     _server_name.clear();
-    _root.clear();
+    _storage.clear();
     _error_page.clear();
     _cgi_file_ext.clear();
 	_autoindex = false;
@@ -69,8 +69,8 @@ int     Server::identify_server_value(const std::string &str)
         return host_;
     else if (str.find("server_name") != std::string::npos)
         return server_name_;
-    else if (str.find("root") != std::string::npos)
-        return root_;
+    else if (str.find("storage") != std::string::npos)
+        return storage_;
     else if (str.find("error_page") != std::string::npos)
         return error_page_;
     else if (str.find("cgi_file_ext") != std::string::npos)
@@ -99,9 +99,9 @@ void    Server::configure_server_name(const std::string &str)
 	_server_name = parser_str(str);
 }
 
-void    Server::configure_root(const std::string &str)
+void    Server::configure_storage(const std::string &str)
 {
-	_root = parser_str(str);
+	_storage = parser_str(str);
 }
 
 void    Server::configure_error_page(const std::string &str)
@@ -145,9 +145,9 @@ std::string	Server::get_server_name() const
 	return _server_name;
 }
 
-std::string	Server::get_root()
+std::string	Server::get_storage()
 {
-	return _root;
+	return _storage;
 }
 
 std::string	Server::get_error_page()

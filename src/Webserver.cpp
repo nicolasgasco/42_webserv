@@ -6,6 +6,7 @@
 #include "HttpService.hpp"
 
 #include <fstream>
+#include <dirent.h>
 
 Webserver::Webserver() :
 	_server()
@@ -62,7 +63,7 @@ void Webserver::print_config_data()
 
         std::cout << "Host > " << srv_data.get_host() << std::endl;
         std::cout << "Server name > " << srv_data.get_server_name() << std::endl;
-        std::cout << "Root > " << srv_data.get_root() << std::endl;
+        std::cout << "Storage > " << srv_data.get_storage() << std::endl;
         std::cout << "Error page > " << srv_data.get_error_page() << std::endl;
         std::vector<std::string> cgi = srv_data.get_cgi_file_ext();
         std::cout << "CGI files allowed > ";
@@ -97,6 +98,20 @@ void Webserver::print_config_data()
 		}
         std::cout << "\n\n";
     }
+}
+
+bool is_dir(char* dir)
+{
+	DIR *pDir;
+
+	pDir = opendir(dir);
+	if (pDir == NULL)
+	{
+		printf("Cannot open directory '%s'\n", dir);
+		return 1;
+	}
+	closedir(pDir);
+	return 0;
 }
 
 void    Webserver::inspect_config_data()
@@ -145,27 +160,28 @@ void    Webserver::inspect_config_data()
 			throw std::runtime_error(errorMessage);
 		}
 
-		//Parsing ROOT
-		std::string root_path = it->_root;
-		if (root_path.empty())
+		//Parsing STORAGE
+		std::string storage_path = it->_storage;
+		if (storage_path.empty())
 		{
-			std::string errorMessage = std::string("🔴  FAILURE Root path does not exist in config_file");
+			std::string errorMessage = std::string("🔴  FAILURE Storage path does not exist in config_file");
 			throw std::runtime_error(errorMessage);
 		}
-		int spaces_root = std::count(root_path.begin(), root_path.end(), ' ');
-		if (spaces_root > 0)
+		int spaces_storage = std::count(storage_path.begin(), storage_path.end(), ' ');
+		if (spaces_storage > 0)
 		{
-			std::string errorMessage = std::string("🔴  FAILURE Root path is not a valid path");
+			std::string errorMessage = std::string("🔴  FAILURE Storage path is not a valid path");
 			throw std::runtime_error(errorMessage);
 		}
-		// if (root_path != "/public")
-		// {
-		// 	std::string errorMessage = std::string("🔴  FAILURE Only '/public' is the valid root path");
-		// 	throw std::runtime_error(errorMessage);
-		// }
-
-			// Parsing ERROR PAGE
-			std::string error_page_path = it->_error_page;
+		char* store_path = const_cast<char *> (storage_path.c_str());
+		if (is_dir(store_path))
+		{
+			std::string errorMessage = std::string("🔴  FAILURE Storage path does not exist");
+			throw std::runtime_error(errorMessage);
+		}
+		
+		// Parsing ERROR PAGE
+		std::string error_page_path = it->_error_page;
 		if (error_page_path.empty())
 		{
 			std::string errorMessage = std::string("🔴  FAILURE Error page path does not exist in config_file");
@@ -236,6 +252,7 @@ void    Webserver::inspect_config_data()
 				}
             }
 		}
+
 		//Parsing INDEX REDIRECTION
         for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
@@ -272,6 +289,7 @@ void    Webserver::inspect_config_data()
 				}
 			}
 		}
+
 		// Parsing REDIRECT
 		for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
