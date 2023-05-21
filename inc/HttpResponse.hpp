@@ -52,7 +52,7 @@ private:
     void _build_get_res(std::string method);
     void _build_error_res();
     void _build_post_res();
-    std::string const _build_cgi_res(std::string const &path, const std::vector<char> *req_body);
+    std::string const _build_cgi_res(std::string const &path, std::string *user_defined_env, const std::vector<char> *req_body);
 
     void _replace_var_in_page(std::string &file, std::string const var, std::string const value) const;
 

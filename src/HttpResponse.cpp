@@ -108,7 +108,10 @@ void HttpResponse::_build_get_res(std::string method)
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
     {
-        this->_buff = this->_build_cgi_res(GALLERY_STORAGE_PATH, nullptr);
+        std::string gallery_path = this->_server->get_root().size() ? build_path(PUBLIC_PATH, trim_trailing_leading_slash(this->_server->get_root())) : GALLERY_STORAGE_PATH;
+
+        std::cout << "GALLERY PATH: " << gallery_path << std::endl;
+        this->_buff = this->_build_cgi_res(gallery_path, nullptr, nullptr);
         return;
     }
     // It's an asset request
@@ -181,7 +184,11 @@ void HttpResponse::_build_post_res()
     bool has_file_extension = target.substr(1).find(".") != std::string::npos;
 
     if ((this->_req.has_body() || body_size > 0) && (is_cgi_target && has_file_extension))
-        this->_buff = this->_build_cgi_res(file_path, &req_body);
+    {
+        std::string gallery_path = this->_server->get_root().size() ? build_path(PUBLIC_PATH, trim_trailing_leading_slash(this->_server->get_root())) : GALLERY_STORAGE_PATH;
+        std::string user_defined_env = "GALLERY_PATH=" + gallery_path;
+        this->_buff = this->_build_cgi_res(file_path, &user_defined_env, &req_body);
+    }
     else
     {
         this->set_status_line(HTTP_400_CODE, HTTP_400_REASON);
@@ -210,7 +217,8 @@ void HttpResponse::_build_delete_res()
     std::string res_body;
     std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
 
-    bool is_allowed_path = target.find(GALLERY_STORAGE_PATH) != std::string::npos;
+    std::string gallery_path = this->_server->get_root().size() ? build_path(PUBLIC_PATH, trim_trailing_leading_slash(this->_server->get_root())) : GALLERY_STORAGE_PATH;
+    bool is_allowed_path = target.find(gallery_path) != std::string::npos;
     if (!is_allowed_path)
     {
         this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
@@ -242,7 +250,7 @@ void HttpResponse::_build_delete_res()
 /**
  * Execute CGI script and return its output.
  */
-std::string const HttpResponse::_build_cgi_res(std::string const &path, const std::vector<char> *req_body)
+std::string const HttpResponse::_build_cgi_res(std::string const &path, std::string *user_defined_env, const std::vector<char> *req_body)
 {
     std::string file_path = this->_router.get_file_path(this->_req, this->_server);
     std::ifstream file(file_path);
@@ -257,6 +265,8 @@ std::string const HttpResponse::_build_cgi_res(std::string const &path, const st
 
         // Environment variables for CGI script
         std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
+        if (user_defined_env)
+            envp_v.push_back(*user_defined_env);
         char *envp[CGI_MAX_ENV_VARS];
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
