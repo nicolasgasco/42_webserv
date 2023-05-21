@@ -158,11 +158,11 @@ void    Webserver::inspect_config_data()
 			std::string errorMessage = std::string("🔴  FAILURE Root path is not a valid path");
 			throw std::runtime_error(errorMessage);
 		}
-		if (root_path != "/public")
-		{
-			std::string errorMessage = std::string("🔴  FAILURE Only '/public' is the valid root path");
-			throw std::runtime_error(errorMessage);
-		}
+		// if (root_path != "/public")
+		// {
+		// 	std::string errorMessage = std::string("🔴  FAILURE Only '/public' is the valid root path");
+		// 	throw std::runtime_error(errorMessage);
+		// }
 
 			// Parsing ERROR PAGE
 			std::string error_page_path = it->_error_page;

@@ -13,13 +13,19 @@ except:
     print_error_page("400", "Bad Request")
 
 try:
-    if fileitem.filename.find("png") and fileitem.filename.find("jpg") and fileitem.filename.find("gif"):
+    if fileitem.filename.find("png") == -1 and fileitem.filename.find("jpg") == -1 and fileitem.filename.find("gif") == -1:
         print_error_page("400", "Bad Request")
         sys.exit(0)
 
+    gallery_path_env = os.getenv("GALLERY_PATH")
+    if gallery_path_env:
+        gallery_path = gallery_path_env
+    else:
+        gallery_path = 'public/pictures'
+
     # Test if the file was uploaded
     if fileitem.filename:
-        file_path = os.getcwd() + '/public/pictures/' + \
+        file_path = os.getcwd() + '/' + gallery_path + '/' + \
             os.path.basename(fileitem.filename)
 
         # If file already exists, return 409 Conflict
