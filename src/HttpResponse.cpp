@@ -171,8 +171,12 @@ void HttpResponse::_build_post_res()
 {
     std::string file_path = "/cgi-bin/gallery_page.py";
 
-    std::vector<char> const body = this->_req.get_body();
-    this->_buff = this->_build_cgi_res(file_path, &body);
+    std::vector<char> req_body = this->_req.get_body();
+
+    std::string req_body_str = std::string(req_body.data());
+    size_t body_size = req_body_str.substr(req_body_str.find("\r\n\r\n") + 4).size();
+
+    this->_buff = (body_size > 0) ? this->_build_cgi_res(file_path, &req_body) : this->_build_cgi_res(file_path, nullptr);
 }
 
 /**
@@ -195,6 +199,8 @@ void HttpResponse::_build_delete_res()
     }
     else
     {
+        this->set_status_line(0, "N/A");
+
         std::string cgi_script_path = build_path(CGI_BIN_PATH, "delete_file.py");
         char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
@@ -222,7 +228,7 @@ std::string const HttpResponse::_build_cgi_res(std::string const &path, const st
     // If file exists and it's not a folder
     if (file && file_path.substr(1).find(".") != std::string::npos)
     {
-        this->set_status_line(HTTP_200_CODE, HTTP_200_REASON);
+        this->set_status_line(0, "N/A");
 
         std::string executable = this->_cgi.get_cgi_executable(file_path);
         char *args[] = {const_cast<char *>(executable.c_str()), const_cast<char *>(file_path.c_str()), NULL};
