@@ -71,19 +71,39 @@ void HttpResponse::_build_get_res(std::string method)
     // If a folder is required and autoindex is off, use CGI script to output folder content
     if (this->_req.is_dir_req() && this->_server->get_autoindex() == false)
     {
-        std::string cgi_script_path = build_path(CGI_BIN_PATH, "output_dir_content.py");
-        char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
+        std::ifstream file(file_path);
 
-        // Environment variables for CGI script
-        std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
-        std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
-        char *envp[CGI_MAX_ENV_VARS];
-        for (size_t i = 0; i < envp_v.size(); i++)
-            envp[i] = const_cast<char *>(envp_v[i].c_str());
-        envp[envp_v.size()] = NULL;
+        if (!file)
+        {
+            this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
 
-        this->_buff = this->_cgi.build_cgi_output(args, envp);
-        return;
+            std::string err_page_path = trim_trailing_leading_slash(_server->get_error_page());
+            std::ifstream path_404(err_page_path.c_str());
+            std::string err_page_body = this->_http.build_file(path_404);
+            int content_len = err_page_body.size();
+
+            this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+            this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+            this->_buff += "\r\n";
+            this->_buff += err_page_body;
+            return;
+        }
+        else
+        {
+            std::string cgi_script_path = build_path(CGI_BIN_PATH, "output_dir_content.py");
+            char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
+
+            // Environment variables for CGI script
+            std::string path = build_path(PUBLIC_PATH, this->_req.get_req_line().target);
+            std::vector<std::string> envp_v = this->_cgi.build_envp(path, this->_server, this->_req);
+            char *envp[CGI_MAX_ENV_VARS];
+            for (size_t i = 0; i < envp_v.size(); i++)
+                envp[i] = const_cast<char *>(envp_v[i].c_str());
+            envp[envp_v.size()] = NULL;
+
+            this->_buff = this->_cgi.build_cgi_output(args, envp);
+            return;
+        }
     }
     // If a CGI script is required
     else if (this->_req.is_cgi_req())
