@@ -13,6 +13,10 @@ except:
     print_error_page("400", "Bad Request")
 
 try:
+    if fileitem.filename.find("png") and fileitem.filename.find("jpg") and fileitem.filename.find("gif"):
+        print_error_page("400", "Bad Request")
+        sys.exit(0)
+
     # Test if the file was uploaded
     if fileitem.filename:
         file_path = os.getcwd() + '/public/pictures/' + \
