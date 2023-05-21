@@ -176,7 +176,11 @@ void HttpResponse::_build_post_res()
     std::string req_body_str = std::string(req_body.data());
     size_t body_size = req_body_str.substr(req_body_str.find("\r\n\r\n") + 4).size();
 
-    if (this->_req.has_body() || body_size > 0)
+    std::string target = this->_router.get_file_path(this->_req, this->_server);
+    bool is_cgi_target = target.find(CGI_BIN_PATH) != std::string::npos;
+    bool has_file_extension = target.substr(1).find(".") != std::string::npos;
+
+    if ((this->_req.has_body() || body_size > 0) && (is_cgi_target && has_file_extension))
         this->_buff = this->_build_cgi_res(file_path, &req_body);
     else
     {
@@ -184,8 +188,8 @@ void HttpResponse::_build_post_res()
 
         std::ifstream file(this->_router.get_def_err_file_path());
         std::string err_page = this->_http.build_file(file);
-        replace_var_in_page(err_page, "{{code}}", std::to_string(this->_req.gett_err().code));
-        replace_var_in_page(err_page, "{{message}}", this->_req.gett_err().message);
+        replace_var_in_page(err_page, "{{code}}", std::to_string(HTTP_400_CODE));
+        replace_var_in_page(err_page, "{{message}}", HTTP_400_REASON);
 
         std::string res_body = err_page;
         int content_len = err_page.length();
@@ -257,21 +261,24 @@ std::string const HttpResponse::_build_cgi_res(std::string const &path, const st
         for (size_t i = 0; i < envp_v.size(); i++)
             envp[i] = const_cast<char *>(envp_v[i].c_str());
         envp[envp_v.size()] = NULL;
+
         return req_body ? this->_cgi.build_cgi_output(args, envp, req_body) : this->_cgi.build_cgi_output(args, envp);
     }
 
-    this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
+    this->set_status_line(HTTP_400_CODE, HTTP_400_REASON);
 
-    std::string err_page_path = trim_trailing_leading_slash(_server->get_error_page());
-    std::ifstream path_404(err_page_path.c_str());
-    std::string err_page_body = this->_http.build_file(path_404);
-    int content_len = err_page_body.size();
+    std::ifstream err_file(this->_router.get_def_err_file_path());
+    std::string err_page_body = this->_http.build_file(err_file);
+    replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_400_CODE));
+    replace_var_in_page(err_page_body, "{{message}}", HTTP_400_REASON);
+
+    int content_len = err_page_body.length();
 
     std::string res_body = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
     res_body += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
     res_body += "\r\n";
-
     res_body += err_page_body;
+
     return res_body;
 }
 
