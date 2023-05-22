@@ -214,19 +214,45 @@ void HttpResponse::_build_delete_res()
     int content_len = 0;
     std::string res_body;
     std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
+    std::ifstream target_file(target);
 
     std::string storage_path = this->_server->get_storage();
     // Remove leading point if exists
     storage_path = storage_path.at(0) == '.' ? storage_path.substr(1) : storage_path;
     std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(storage_path) : GALLERY_STORAGE_PATH;
+
     bool is_allowed_path = target.find(gallery_path) != std::string::npos;
     if (!is_allowed_path)
     {
         this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
-        this->_buff = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
-        this->_buff += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
-        this->_buff += res_body;
-        return;
+
+        std::ifstream err_file(this->_router.get_def_err_file_path());
+        std::string err_page_body = this->_http.build_file(err_file);
+        replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_401_CODE));
+        replace_var_in_page(err_page_body, "{{message}}", HTTP_401_REASON);
+
+        content_len = err_page_body.length();
+
+        res_body = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+        res_body += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+        res_body += "\r\n";
+        res_body += err_page_body;
+    }
+    else if (!target_file || target.find(".") == std::string::npos)
+    {
+        this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
+
+        std::ifstream err_file(this->_router.get_def_err_file_path());
+        std::string err_page_body = this->_http.build_file(err_file);
+        replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_404_CODE));
+        replace_var_in_page(err_page_body, "{{message}}", HTTP_404_REASON);
+
+        content_len = err_page_body.length();
+
+        res_body = this->_http.build_status_line(this->_status_line.version, this->_status_line.code, this->_status_line.reason);
+        res_body += this->_http.build_headers(content_len, this->_server->get_server_name(), this->_get_content_type(this->_req.get_req_line().target));
+        res_body += "\r\n";
+        res_body += err_page_body;
     }
     else
     {
