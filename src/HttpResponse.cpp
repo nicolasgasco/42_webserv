@@ -216,7 +216,6 @@ void HttpResponse::_build_delete_res()
     int content_len = 0;
     std::string res_body;
     std::string target = PUBLIC_PATH + this->_req.get_req_line().target;
-    std::ifstream target_file(target);
 
     std::string storage_path = this->_server->get_storage();
     // Remove leading point if exists
@@ -240,14 +239,14 @@ void HttpResponse::_build_delete_res()
         res_body += "\r\n";
         res_body += err_page_body;
     }
-    else if (!target_file || target.find(".") == std::string::npos)
+    else if (target.find(".") == std::string::npos)
     {
-        this->set_status_line(HTTP_404_CODE, HTTP_404_REASON);
+        this->set_status_line(HTTP_400_CODE, HTTP_400_REASON);
 
         std::ifstream err_file(this->_router.get_def_err_file_path());
         std::string err_page_body = this->_http.build_file(err_file);
-        replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_404_CODE));
-        replace_var_in_page(err_page_body, "{{message}}", HTTP_404_REASON);
+        replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_400_CODE));
+        replace_var_in_page(err_page_body, "{{message}}", HTTP_400_REASON);
 
         content_len = err_page_body.length();
 
