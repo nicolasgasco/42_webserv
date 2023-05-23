@@ -224,12 +224,12 @@ void HttpResponse::_build_delete_res()
     bool is_allowed_path = target.find(gallery_path) != std::string::npos;
     if (!is_allowed_path)
     {
-        this->set_status_line(HTTP_401_CODE, HTTP_401_REASON);
+        this->set_status_line(HTTP_403_CODE, HTTP_403_REASON);
 
         std::ifstream err_file(this->_router.get_def_err_file_path());
         std::string err_page_body = this->_http.build_file(err_file);
-        replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_401_CODE));
-        replace_var_in_page(err_page_body, "{{message}}", HTTP_401_REASON);
+        replace_var_in_page(err_page_body, "{{code}}", std::to_string(HTTP_403_CODE));
+        replace_var_in_page(err_page_body, "{{message}}", HTTP_403_REASON);
 
         content_len = err_page_body.length();
 
