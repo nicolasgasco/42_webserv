@@ -29,8 +29,8 @@
 #define HTTP_301_REASON "Moved Permanently"
 #define HTTP_400_CODE 400
 #define HTTP_400_REASON "Bad Request"
-#define HTTP_401_CODE 401
-#define HTTP_401_REASON "Not Authorized"
+#define HTTP_403_CODE 403
+#define HTTP_403_REASON "Forbidden"
 #define HTTP_404_CODE 404
 #define HTTP_404_REASON "Not Found"
 #define HTTP_405_CODE 405
