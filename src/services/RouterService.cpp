@@ -20,7 +20,7 @@ std::string const RouterService::get_file_path(HttpRequest const &req, Server *s
         // cgi-bin is at the root of the target
         return target.front() == '/' ? "." + target : "./" + target;
     // If index page needs to be appended to the target, compute it
-    else if (req.is_html_req() && (req.is_dir_req() && server->get_autoindex() == true))
+    else if (req.is_dir_req() && server->get_autoindex() == true)
     {
         std::vector<Location> locations = server->get_location_blocks();
         for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
