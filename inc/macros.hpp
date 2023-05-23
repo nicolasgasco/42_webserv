@@ -22,6 +22,7 @@
 #define SERVER_TIMEOUT 30
 #define WHITESPACES " \t\v\f\r\n"
 #define OUTPUT_DIR_SCRIPT "output_dir_content.py"
+#define GALLERY_PAGE_SCRIPT "/cgi-bin/gallery_page.py"
 
 // HTTP CODES
 #define HTTP_200_CODE 200
