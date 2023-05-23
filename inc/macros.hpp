@@ -21,6 +21,7 @@
 #define REC_BUFF_SIZE 300000
 #define SERVER_TIMEOUT 30
 #define WHITESPACES " \t\v\f\r\n"
+#define OUTPUT_DIR_SCRIPT "output_dir_content.py"
 
 // HTTP CODES
 #define HTTP_200_CODE 200

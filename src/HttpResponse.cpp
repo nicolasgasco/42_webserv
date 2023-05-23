@@ -90,7 +90,9 @@ void HttpResponse::_build_get_res(std::string method)
         }
         else
         {
-            std::string cgi_script_path = build_path(CGI_BIN_PATH, "output_dir_content.py");
+            this->set_status_line(0, "N/A");
+
+            std::string cgi_script_path = build_path(CGI_BIN_PATH, OUTPUT_DIR_SCRIPT);
             char *args[] = {const_cast<char *>(PYTHON3_PATH), const_cast<char *>(cgi_script_path.c_str()), NULL};
 
             // Environment variables for CGI script
