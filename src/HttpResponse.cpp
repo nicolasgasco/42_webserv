@@ -181,7 +181,7 @@ void HttpResponse::_build_post_res()
     bool is_cgi_target = target.find(CGI_BIN_PATH) != std::string::npos;
     bool has_file_extension = target.substr(1).find(".") != std::string::npos;
 
-    if ((this->_req.has_body() || body_size > 0) && (is_cgi_target && has_file_extension))
+    if ((this->_req.has_body() && body_size > 0) && (is_cgi_target && has_file_extension))
     {
         std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(this->_server->get_storage()) : GALLERY_STORAGE_PATH;
         std::string user_defined_env = "GALLERY_PATH=" + gallery_path;
