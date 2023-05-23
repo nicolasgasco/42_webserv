@@ -144,11 +144,13 @@ void    Webserver::inspect_config_data()
 			throw std::runtime_error(errorMessage);
 		}
 
-		//Parsing HOST
-        std::string host = srv_data.get_host();
-		if (host != "localhost" && host !="example.com")
+		// Parsing HOST
+		std::string host = srv_data.get_host();
+		// If host is not localhost
+		// and host does not contain a dot or host contains more than 3 characters after the dot
+		if (host != std::string("localhost") && (host.find(".") == std::string::npos || host.find(".") == 0 || host.substr(host.find(".") + 1).size() > 3))
 		{
-			std::string errorMessage = std::string("🔴  FAILURE Invalid host: 'localhost' is the only valid host in 42 network");
+			std::string errorMessage = std::string("🔴  FAILURE Invalid host: " + host + ": format not valid");
 			throw std::runtime_error(errorMessage);
 		}
 
