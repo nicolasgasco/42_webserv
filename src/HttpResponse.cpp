@@ -172,7 +172,7 @@ void HttpResponse::_build_get_res(std::string method)
  */
 void HttpResponse::_build_post_res()
 {
-    std::string file_path = "/cgi-bin/gallery_page.py";
+    std::string file_path = GALLERY_PAGE_SCRIPT;
 
     std::vector<char> req_body = this->_req.get_body();
 
@@ -182,8 +182,17 @@ void HttpResponse::_build_post_res()
     std::string target = this->_router.get_file_path(this->_req, this->_server);
     bool is_cgi_target = target.find(CGI_BIN_PATH) != std::string::npos;
     bool has_file_extension = target.substr(1).find(".") != std::string::npos;
+    bool is_content_type_form_data;
+    try
+    {
+        is_content_type_form_data = this->_req.get_attrs().at(CONTENT_TYPE).find("multipart/form-data") != std::string::npos;
+    }
+    catch (std::out_of_range &e)
+    {
+        is_content_type_form_data = false;
+    }
 
-    if ((this->_req.has_body() && body_size > 0) && (is_cgi_target && has_file_extension))
+    if ((this->_req.has_body() && body_size > 0) && (is_cgi_target && has_file_extension) && is_content_type_form_data)
     {
         std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(this->_server->get_storage()) : GALLERY_STORAGE_PATH;
         std::string user_defined_env = "GALLERY_PATH=" + gallery_path;
