@@ -24,3 +24,5 @@ except OSError:
     print("Content-Length: " + str(len(json.dumps(result, indent=4))) + "\r")
     print("Server: " + os.getenv("SERVER_SOFTWARE") + "\r")
     print("\r")
+
+    print(json.dumps(result, indent=4))
