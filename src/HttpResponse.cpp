@@ -111,7 +111,7 @@ void HttpResponse::_build_get_res(std::string method)
     else if (this->_req.is_cgi_req())
     {
         std::string gallery_path = this->_server->get_storage().size() ? trim_trailing_leading_slash(this->_server->get_storage()) : GALLERY_STORAGE_PATH;
-        this->_buff = this->_build_cgi_res(gallery_path, nullptr, nullptr);
+        this->_buff = this->_build_cgi_res(gallery_path, NULL, NULL);
         return;
     }
     // It's an asset request

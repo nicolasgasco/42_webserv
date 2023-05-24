@@ -21,10 +21,10 @@ void AddressInfo::_fill_addr_info(std::string const &port, std::string const &ho
 {
     struct addrinfo hints = this->_fill_hints();
 
-    const char *computed_host_name = (host_name == "localhost" ? nullptr : nullptr);
-    if (computed_host_name)
+    if (host_name != "localhost")
     {
         // Project doesn't accept hosts other than localhost
+        // It is not possible to use real-life hostnames
         // continue
     }
     int status = getaddrinfo(NULL, port.c_str(), &hints, &(this->_serv_info));

@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 			std::vector<ServerConnection> connections(max_fd + 1, ServerConnection());
 			std::vector<HttpRequest> requests(max_fd + 1, HttpRequest());
 			std::vector<HttpResponse> responses(max_fd + 1, HttpResponse(router));
-			std::vector<Server *> servers(max_fd + 1, nullptr);
+			std::vector<Server *> servers(max_fd + 1, NULL);
 
 			while (true)
 			{
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 										connections.push_back(ServerConnection());
 										requests.push_back(HttpRequest());
 										responses.push_back(HttpResponse(router));
-										servers.push_back(nullptr);
+										servers.push_back(NULL);
 									}
 									max_fd = client_fd;
 								}
