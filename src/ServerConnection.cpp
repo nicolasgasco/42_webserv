@@ -105,18 +105,9 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
             }
             // It is chunked request
             catch (const std::out_of_range &e)
-
             {
-                // If end of body was found already
-                std::string search_pattern = "0\r\n\r\n";
-                for (std::vector<char>::const_iterator it = req.get_body().begin(); it != (req.get_body().end() - search_pattern.length()); ++it)
-                {
-                    if (find_in_vec(search_pattern, it))
-                    {
-                        this->_read_done = true;
-                        break;
-                    }
-                }
+                this->_read_done = true;
+                req.set_err(HTTP_400_CODE, HTTP_400_REASON);
             }
         }
         // If req has no body
