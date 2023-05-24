@@ -13,7 +13,7 @@ except:
     print_error_page("400", "Bad Request")
 
 try:
-    if fileitem.filename.find("png") == -1 and fileitem.filename.find("jpg") == -1 and fileitem.filename.find("gif") == -1:
+    if fileitem.filename.find("jpg") == -1 and fileitem.filename.find("jpeg") == -1:
         print_error_page("400", "Bad Request")
         sys.exit(0)
 
