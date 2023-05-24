@@ -159,6 +159,14 @@ void HttpResponse::_build_get_res(std::string method)
                 }
             }
         }
+        // Remove Content-Length and Content-Type headers when redirecting
+        // This response is not supposed to have a body
+        std::string content_len_header = "Content-Length: 0\r\n";
+        this->_buff = this->_buff.erase(this->_buff.find(content_len_header), content_len_header.size());
+        std::string content_type_header = "Content-Type: text/html\r\n";
+        this->_buff = this->_buff.erase(this->_buff.find(content_type_header), content_type_header.size());
+        this->_buff += "\r\n";
+        return;
     }
 
     if (method == "GET")
