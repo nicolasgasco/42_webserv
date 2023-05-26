@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: dgerwig- <dgerwig-@student.42urduliz.co    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/02/12 17:44:11 by dgerwig-          #+#    #+#              #
-#    Updated: 2023/05/14 17:58:46 by dgerwig-         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME		= webserv 
 NAME_SAN	= webserv_san
 
@@ -33,7 +21,7 @@ SRC			= $(wildcard $(SRC_MAIN)*.cpp) $(wildcard $(SRC_DIR)*.cpp) $(wildcard $(SR
 OBJ			= $(addprefix $(OBJ_DIR), $(notdir $(SRC:.cpp=.o)))
 OBJ_SAN		= $(addprefix $(OBJ_DIR_SAN), $(notdir $(SRC:.cpp=.o)))
 
-all: $(NAME)
+all: $(NAME) load_gallery
 
 $(NAME): $(OBJ) 
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
