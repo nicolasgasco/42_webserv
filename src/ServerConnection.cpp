@@ -46,15 +46,17 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     int bytes_received = recv(client_fd, (void *)buff.data(), REC_BUFF_SIZE, 0);
 
     // Resize buffer to the size of the actual bytes received
-    buff.resize(bytes_received);
+    buff.resize(bytes_received < 0 ? 0 : bytes_received);
 
     switch (bytes_received)
     {
     case -1:
         this->_has_err = true;
-        std::cerr << "recv: received 0 bytes" << std::endl;
+        std::cerr << "recv: error: " << strerror(errno) << std::endl;
         return;
     case 0:
+        std::cerr << "recv: received 0 bytes" << std::endl;
+        this->_read_done = true;
         return;
     default:
         std::cout << YELLOW << "Bytes received: " << bytes_received << NC << std::endl;
@@ -64,7 +66,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     // There is a body to read
     if (req.has_body())
     {
-        req.set_body(buff);
+        req.add_to_body(buff);
 
         // If read all there was to read
         if (bytes_received < REC_BUFF_SIZE)
@@ -73,8 +75,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     // No body or request wasn't parsed yet
     else
     {
-        req.set_body(buff);
-
+        req.add_to_body(buff);
         req.parse_req(server, webserver);
 
         if (req.has_body())
@@ -106,8 +107,11 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
             // It is chunked request
             catch (const std::out_of_range &e)
             {
-                this->_read_done = true;
-                req.set_err(HTTP_400_CODE, HTTP_400_REASON);
+                std::vector<char> unchunked_body = this->_unchunk_request(req.get_body());
+
+                req.reset();
+                req.set_body(unchunked_body);
+                req.parse_req(server, webserver);
             }
         }
         // If req has no body
@@ -150,6 +154,59 @@ void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
         res.set_buff(remaining_buff);
 
         this->_sent_done = false;
+    }
+}
+
+std::vector<char> ServerConnection::_unchunk_request(const std::vector<char> &body)
+{
+    std::string body_str(body.size(), 0);
+    std::string tmp(body.begin(), body.end());
+
+    // Removing header
+    body_str = tmp.substr(0, tmp.find("\r\n\r\n") + 2);
+    tmp = tmp.substr(tmp.find("\r\n\r\n") + 2);
+
+    try
+    {
+
+        while (1)
+        {
+            // Remove first CRLF
+            tmp = tmp.substr(tmp.find("\r\n") + 2);
+
+            unsigned int chunk_size_int = 0;
+            std::stringstream ss;
+            ss << std::hex << tmp.substr(0, tmp.find("\r\n"));
+            ss >> chunk_size_int;
+
+            tmp = tmp.substr(tmp.find("\r\n") + 2);
+
+            // TODO fix file bigger than buffer
+            if (chunk_size_int > tmp.size())
+            {
+                chunk_size_int = tmp.size();
+                body_str += tmp;
+                tmp.clear();
+                this->_read_done = false;
+                break;
+            }
+            else
+            {
+                body_str += tmp.substr(0, chunk_size_int);
+                tmp = tmp.substr(chunk_size_int);
+                if (tmp == "\r\n0\r\n\r\n")
+                {
+                    this->_read_done = true;
+                    break;
+                }
+            }
+        }
+        return std::vector<char>(body_str.begin(), body_str.end());
+    }
+    catch (const std::exception &e)
+    {
+        this->_read_done = true;
+        return std::vector<char>();
     }
 }
 

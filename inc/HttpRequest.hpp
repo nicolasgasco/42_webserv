@@ -46,7 +46,8 @@ public:
 	bool get_is_redirection() const;
 
 	// Setters
-	void set_body(std::vector<char> &buff);
+	void add_to_body(std::vector<char> &buff);
+	void set_body(std::vector<char> buff);
 
 	// Methods
 	void parse_req(Server const *server, Webserver *webserver);

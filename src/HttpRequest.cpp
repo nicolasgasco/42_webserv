@@ -390,9 +390,21 @@ bool HttpRequest::_is_target_redirection(std::string const &target, Server *serv
     return false;
 }
 
-void HttpRequest::set_body(std::vector<char> &buff)
+/**
+ * Adds to body of request.
+ */
+void HttpRequest::add_to_body(std::vector<char> &buff)
 {
     this->_body.insert(this->_body.end(), buff.begin(), buff.end());
+}
+
+/**
+ * Clear and set body of request.
+ */
+void HttpRequest::set_body(std::vector<char> buff)
+{
+    this->_body.clear();
+    this->_body = buff;
 }
 
 void HttpRequest::set_err(int const &code, std::string const &message)

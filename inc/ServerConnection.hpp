@@ -17,6 +17,8 @@ private:
     bool _read_done, _sent_done;
     bool _has_err;
 
+    std::vector<char> _unchunk_request(const std::vector<char> &body);
+
 public:
     ServerConnection();
     ~ServerConnection();
