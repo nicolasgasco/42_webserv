@@ -75,6 +75,58 @@ std::string const HttpService::decode_whitespace(std::string const &target) cons
 
     if (target.find("%20") != std::string::npos)
         expanded_target = expanded_target.replace(expanded_target.find("%20"), 3, " ");
+    if (target.find("%3C") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%3C"), 3, "<");
+    if (target.find("%3E") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%3E"), 3, ">");
+    if (target.find("%23") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%23"), 3, "#");
+    if (target.find("%25") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%25"), 3, "%");
+    if (target.find("%7B") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%7B"), 3, "{");
+    if (target.find("%7D") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%7D"), 3, "}");
+    if (target.find("%7C") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%7C"), 3, "|");
+    if (target.find("%5C") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%5C"), 3, "\\");
+    if (target.find("%5E") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%5E"), 3, "^");
+    if (target.find("%7E") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%7E"), 3, "~");
+    if (target.find("%5B") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%5B"), 3, "[");
+    if (target.find("%5D") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%5D"), 3, "]");
+    if (target.find("%60") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%60"), 3, "`");
+    if (target.find("%3B") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%3B"), 3, ";");
+    if (target.find("%2F") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%2F"), 3, "/");
+    if (target.find("%3F") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%3F"), 3, "?");
+    if (target.find("%3A") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%3A"), 3, ":");
+    if (target.find("%40") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%40"), 3, "@");
+    if (target.find("%3D") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%3D"), 3, "=");
+    if (target.find("%26") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%26"), 3, "&");
+    if (target.find("%24") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%24"), 3, "$");
+    if (target.find("%2B") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%2B"), 3, "+");
+    if (target.find("%2C") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%2C"), 3, ",");
+    if (target.find("%22") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%22"), 3, "\"");
+    if (target.find("%C3%97") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%C3%97"), 6, "×");
+    if (target.find("%C3%B7") != std::string::npos)
+        expanded_target = expanded_target.replace(expanded_target.find("%C3%B7"), 6, "÷");
 
     return expanded_target;
 }
