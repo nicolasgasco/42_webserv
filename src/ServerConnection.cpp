@@ -2,10 +2,12 @@
 
 ServerConnection::ServerConnection()
 {
+    this->_is_chunked_first_run = true;
 }
 
 ServerConnection::~ServerConnection()
 {
+    this->_is_chunked_first_run = true;
 }
 
 /**
@@ -63,8 +65,8 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     }
     this->_bytes_received += bytes_received;
 
-    // There is a body to read
-    if (req.has_body())
+    // There is a body to read, but it is not chunked request
+    if (req.has_body() && this->_is_chunked_first_run == true)
     {
         req.add_to_body(buff);
 
@@ -75,6 +77,18 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
     // No body or request wasn't parsed yet
     else
     {
+        // Chunked request, but not first run (header already parsed)
+        if (this->_is_chunked_first_run == false)
+        {
+            std::vector<char> unchunked_body = this->_unchunk_request_body(buff);
+
+            req.add_to_body(unchunked_body);
+
+            if (bytes_received < REC_BUFF_SIZE)
+                this->_read_done = true;
+            return;
+        }
+
         req.add_to_body(buff);
         req.parse_req(server, webserver);
 
@@ -107,11 +121,15 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
             // It is chunked request
             catch (const std::out_of_range &e)
             {
-                std::vector<char> unchunked_body = this->_unchunk_request(req.get_body());
+                if (this->_is_chunked_first_run)
+                {
+                    std::vector<char> unchunked_body = this->_unchunk_request(req.get_body());
 
-                req.reset();
-                req.set_body(unchunked_body);
-                req.parse_req(server, webserver);
+                    req.reset();
+                    req.set_body(unchunked_body);
+                    req.parse_req(server, webserver);
+                    this->_is_chunked_first_run = false;
+                }
             }
         }
         // If req has no body
@@ -210,6 +228,41 @@ std::vector<char> ServerConnection::_unchunk_request(const std::vector<char> &bo
     }
 }
 
+std::vector<char> ServerConnection::_unchunk_request_body(const std::vector<char> &body)
+{
+    std::string result;
+    std::string tmp(body.begin(), body.end());
+
+    while (1)
+    {
+
+        size_t start = tmp.find("\r\n");
+        size_t end = tmp.find("\r\n", start + 2);
+        if (end == std::string::npos)
+            break;
+
+        unsigned int chunk_size_int = 0;
+        std::stringstream ss;
+        ss << std::hex << tmp.substr(start + 2, end);
+        ss >> chunk_size_int;
+
+        if (chunk_size_int > tmp.size())
+        {
+            result += tmp.substr(end + 2);
+            break;
+        }
+        else
+        {
+            result += tmp.substr(0, start);
+            result += tmp.substr(end + 2, chunk_size_int);
+
+            tmp = tmp.substr(end + 2 + chunk_size_int);
+        }
+    }
+
+    return std::vector<char>(result.begin(), result.end());
+}
+
 bool ServerConnection::get_has_err() const
 {
     return this->_has_err;
@@ -242,4 +295,5 @@ void ServerConnection::reset()
     this->_has_err = false;
     this->_sent_done = false;
     this->_read_done = false;
+    this->_is_chunked_first_run = true;
 }
