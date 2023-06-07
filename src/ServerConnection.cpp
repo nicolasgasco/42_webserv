@@ -230,34 +230,51 @@ std::vector<char> ServerConnection::_unchunk_request(const std::vector<char> &bo
 
 std::vector<char> ServerConnection::_unchunk_request_body(const std::vector<char> &body)
 {
+    std::cout << "unchunk_request_body" << std::endl;
     std::string result;
     std::string tmp(body.begin(), body.end());
 
-    while (1)
+    try
     {
-
-        size_t start = tmp.find("\r\n");
-        size_t end = tmp.find("\r\n", start + 2);
-        if (end == std::string::npos)
-            break;
-
-        unsigned int chunk_size_int = 0;
-        std::stringstream ss;
-        ss << std::hex << tmp.substr(start + 2, end);
-        ss >> chunk_size_int;
-
-        if (chunk_size_int > tmp.size())
+        while (1)
         {
-            result += tmp.substr(end + 2);
-            break;
-        }
-        else
-        {
-            result += tmp.substr(0, start);
-            result += tmp.substr(end + 2, chunk_size_int);
+            size_t start = tmp.find("\r\n");
+            size_t end = tmp.find("\r\n", start + 2);
 
-            tmp = tmp.substr(end + 2 + chunk_size_int);
+            // Last CRLF in the buffer
+            if (end == std::string::npos)
+                break;
+
+            unsigned int chunk_size_int = 0;
+            std::string chunk_size_str = tmp.substr(start + 2, end - start - 2);
+            std::stringstream ss;
+            ss << std::hex << chunk_size_str;
+            ss >> chunk_size_int;
+
+            // Include cases where hex string wasn't valid
+            if (chunk_size_int == 0)
+            {
+                // Copy buffer until that point and keep searching
+                result += tmp.substr(0, start + 2);
+                tmp = tmp.substr(start + 2);
+            }
+            else if (chunk_size_int > tmp.size())
+            {
+                result += tmp.substr(end + 2);
+                break;
+            }
+            else
+            {
+                result += tmp.substr(0, start);
+                result += tmp.substr(end + 2, chunk_size_int);
+
+                tmp = tmp.substr(end + 2 + chunk_size_int);
+            }
         }
+    }
+    catch (const std::exception &e)
+    {
+        return std::vector<char>(result.begin(), result.end());
     }
 
     return std::vector<char>(result.begin(), result.end());
