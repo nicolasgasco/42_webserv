@@ -85,7 +85,22 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
             req.add_to_body(unchunked_body);
 
             if (bytes_received < REC_BUFF_SIZE)
+            {
+                size_t max_body_size = server->get_max_body_size();
+
+                std::string body_str(req.get_body().begin(), req.get_body().end());
+                size_t content_length = body_str.substr(body_str.find("\r\n\r\n") + 4).size();
+
+                if (content_length > max_body_size && req.get_req_line().method == "POST")
+                {
+                    std::cout << "⚠️ File to upload is bigger than 'max_body_size' " << std::endl;
+                    std::cout << "Max file size allowed: " << max_body_size << std::endl;
+                    std::cout << "File size to upload:   " << content_length << std::endl;
+
+                    req.set_err(HTTP_413_CODE, HTTP_413_REASON);
+                }
                 this->_read_done = true;
+            }
             return;
         }
 
