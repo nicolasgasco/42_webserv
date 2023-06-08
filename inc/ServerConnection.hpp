@@ -19,7 +19,6 @@ private:
     bool _is_chunked_first_run;
 
     std::vector<char> _unchunk_request(const std::vector<char> &body);
-    std::vector<char> _unchunk_request_body(const std::vector<char> &body);
 
 public:
     ServerConnection();

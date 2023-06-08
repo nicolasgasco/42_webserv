@@ -80,7 +80,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
         // Chunked request, but not first run (header already parsed)
         if (this->_is_chunked_first_run == false)
         {
-            std::vector<char> unchunked_body = this->_unchunk_request_body(buff);
+            std::vector<char> unchunked_body = this->_unchunk_request(buff);
 
             req.add_to_body(unchunked_body);
 
@@ -136,7 +136,7 @@ void ServerConnection::receive_req(int const &client_fd, HttpRequest &req, Webse
             // It is chunked request
             catch (const std::out_of_range &e)
             {
-                if (this->_is_chunked_first_run)
+                if (this->_is_chunked_first_run == true)
                 {
                     std::vector<char> unchunked_body = this->_unchunk_request(req.get_body());
 
@@ -192,62 +192,15 @@ void ServerConnection::send_res(int const &client_fd, HttpResponse &res)
 
 std::vector<char> ServerConnection::_unchunk_request(const std::vector<char> &body)
 {
-    std::string body_str(body.size(), 0);
-    std::string tmp(body.begin(), body.end());
-
-    // Removing header
-    body_str = tmp.substr(0, tmp.find("\r\n\r\n") + 2);
-    tmp = tmp.substr(tmp.find("\r\n\r\n") + 2);
-
-    try
-    {
-
-        while (1)
-        {
-            // Remove first CRLF
-            tmp = tmp.substr(tmp.find("\r\n") + 2);
-
-            unsigned int chunk_size_int = 0;
-            std::stringstream ss;
-            ss << std::hex << tmp.substr(0, tmp.find("\r\n"));
-            ss >> chunk_size_int;
-
-            tmp = tmp.substr(tmp.find("\r\n") + 2);
-
-            // TODO fix file bigger than buffer
-            if (chunk_size_int > tmp.size())
-            {
-                chunk_size_int = tmp.size();
-                body_str += tmp;
-                tmp.clear();
-                this->_read_done = false;
-                break;
-            }
-            else
-            {
-                body_str += tmp.substr(0, chunk_size_int);
-                tmp = tmp.substr(chunk_size_int);
-                if (tmp == "\r\n0\r\n\r\n")
-                {
-                    this->_read_done = true;
-                    break;
-                }
-            }
-        }
-        return std::vector<char>(body_str.begin(), body_str.end());
-    }
-    catch (const std::exception &e)
-    {
-        this->_read_done = true;
-        return std::vector<char>();
-    }
-}
-
-std::vector<char> ServerConnection::_unchunk_request_body(const std::vector<char> &body)
-{
-    std::cout << "unchunk_request_body" << std::endl;
     std::string result;
     std::string tmp(body.begin(), body.end());
+
+    if (this->_is_chunked_first_run == true)
+    {
+        // Saving header as is
+        result = tmp.substr(0, tmp.find("\r\n\r\n") + 2);
+        tmp = tmp.substr(tmp.find("\r\n\r\n") + 2);
+    }
 
     try
     {
