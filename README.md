@@ -9,7 +9,7 @@ Quoting from the project's subject:
 
 The server is able to render a static website where users can upload, see, and delete pictures:
 
-<img src="https://github.com/nicolasgasco/42_webserv/assets/73175085/9d6ea6c9-03f5-46cc-800c-7bac6c6977dd" width="750px" />
+[uploading a picture on our server](https://github.com/nicolasgasco/42_webserv/assets/73175085/a28730fa-f8bc-495e-9342-f1f4cb0e59b5)
 
 ## Features
 - Supports GET, HEAD, POST, and DELETE requests
